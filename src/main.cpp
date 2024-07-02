@@ -13,14 +13,25 @@ using namespace vex;
 
 // A global instance of competition
 competition Competition;
+brain Brain;
+controller Controller1 = controller(primary);
 motor MotorLF = motor(PORT1, ratio6_1, true);
 motor MotorLB = motor(PORT2, ratio6_1, true);
 motor MotorRF = motor(PORT3, ratio6_1, false); 
 motor MotorRB = motor(PORT4, ratio6_1, false); 
 motor_group LeftMotors = motor_group(MotorLF, MotorLB);
 motor_group RightMotors = motor_group(MotorRF, MotorRB);
+digital_out clamp = digital_out(Brain.ThreeWirePort.A);
 
 // define your global instances of motors and other devices here
+void clampFunc(){  
+  if (!clamp.value()) {
+        clamp.set(true);
+      }
+      else {
+        clamp.set(false);
+  };
+}
 
 /*---------------------------------------------------------------------------*/
 /*                          Pre-Autonomous Functions                         */
@@ -70,7 +81,10 @@ void usercontrol(void) {
     // This is the main execution loop for the user control program.
     // Each time through the loop your program should update motor + servo
     // values based on feedback from the joysticks.
-
+    RightMotors.setVelocity((Controller1.Axis3.position() - Controller1.Axis1.position() * .5), percent);
+    LeftMotors.setVelocity((Controller1.Axis1.position() * .5 + Controller1.Axis3.position()), percent);
+    RightMotors.spin(forward);
+    LeftMotors.spin(forward);
     // ........................................................................
     // Insert user code here. This is where you use the joystick values to
     // update your motors, etc.
@@ -85,6 +99,7 @@ void usercontrol(void) {
 // Main will set up the competition functions and callbacks.
 //
 int main() {
+    Controller1.ButtonA.pressed(clampFunc);
   // Set up callbacks for autonomous and driver control periods.
   Competition.autonomous(autonomous);
   Competition.drivercontrol(usercontrol);
