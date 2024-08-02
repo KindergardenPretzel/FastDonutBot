@@ -20,6 +20,7 @@ motor MotorLB = motor(PORT2, ratio6_1, true);
 motor MotorRF = motor(PORT3, ratio6_1, false); 
 motor MotorRB = motor(PORT4, ratio6_1, false);
 motor intake = motor(PORT5,ratio18_1,true); 
+motor scoring = motor(PORT6,ratio6_1,true);
 motor_group LeftMotors = motor_group(MotorLF, MotorLB);
 motor_group RightMotors = motor_group(MotorRF, MotorRB);
 digital_out clamp = digital_out(Brain.ThreeWirePort.A);
@@ -45,6 +46,16 @@ void SpinnyThingBack(){
   intake.setVelocity(100.0, percent);
   intake.spin(reverse);
   waitUntil((!Controller1.ButtonL2.pressing()));
+  intake.stop();
+}
+
+void score(){
+  intake.setVelocity(100.0, percent);
+  intake.spin(forward);
+  scoring.setVelocity(50.0, percent);
+  scoring.spin(forward);
+  waitUntil((!Controller1.ButtonR1.pressing()));
+  scoring.stop();
   intake.stop();
 }
 
@@ -114,9 +125,10 @@ void usercontrol(void) {
 // Main will set up the competition functions and callbacks.
 //
 int main() {
-    Controller1.ButtonB.pressed(clampFunc);
-    Controller1.ButtonL1.pressed(SpinnyThing);
-    Controller1.ButtonL2.pressed(SpinnyThingBack);
+    Controller1.ButtonL1.pressed(clampFunc);
+    //Controller1.ButtonL1.pressed(SpinnyThing);
+    //Controller1.ButtonL2.pressed(SpinnyThingBack);
+    Controller1.ButtonR1.pressed(score);
   // Set up callbacks for autonomous and driver control periods.
   Competition.autonomous(autonomous);
   Competition.drivercontrol(usercontrol);
