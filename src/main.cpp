@@ -42,11 +42,14 @@ void SpinnyThing(){
   intake.stop();
 }
 
-void SpinnyThingBack(){
+void reverseIntake(){
   intake.setVelocity(100.0, percent);
   intake.spin(reverse);
-  waitUntil((!Controller1.ButtonL2.pressing()));
+  scoring.setVelocity(50.0, percent);
+  scoring.spin(reverse);
+  waitUntil((!Controller1.ButtonR2.pressing()));
   intake.stop();
+  scoring.stop();
 }
 
 void score(){
@@ -126,7 +129,7 @@ void usercontrol(void) {
 //
 int main() {
     Controller1.ButtonL1.pressed(clampFunc);
-    //Controller1.ButtonL1.pressed(SpinnyThing);
+    Controller1.ButtonR2.pressed(reverseIntake);
     //Controller1.ButtonL2.pressed(SpinnyThingBack);
     Controller1.ButtonR1.pressed(score);
   // Set up callbacks for autonomous and driver control periods.
