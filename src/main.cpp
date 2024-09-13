@@ -108,6 +108,10 @@ void usercontrol(void) {
   // User control code here, inside the loop
   double x = 0;
   double y = 0;
+  MotorRF.setBrake(brake);
+  MotorRB.setBrake(brake);
+  MotorLF.setBrake(brake);
+  MotorLB.setBrake(brake);
   while (1) {
     // This is the main execution loop for the user control program.
     // Each time through the loop your program should update motor + servo
@@ -116,8 +120,8 @@ void usercontrol(void) {
     LeftMotors.setVelocity((Controller1.Axis1.position() * .5 + Controller1.Axis3.position()), percent);
     RightMotors.spin(forward);
     LeftMotors.spin(forward);*/
-    x = (Controller1.Axis3.position() - Controller1.Axis1.position());
-    y = (Controller1.Axis1.position() + Controller1.Axis3.position());
+    x = (Controller1.Axis3.position() - 0.3*Controller1.Axis1.position());
+    y = (0.3*Controller1.Axis1.position() + Controller1.Axis3.position());
     RightMotors.setVelocity(0.01 * x * fabs(x), percent);
     LeftMotors.setVelocity(0.01 * y * fabs(y), percent);
     RightMotors.spin(forward);
