@@ -1,13 +1,17 @@
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
 /*    Module:       main.cpp                                                  */
-/*    Author:       Teacher                                                   */
+/*    Author:       Oleg Khavroniuk                                           */
 /*    Created:      5/10/2024, 4:14:36 PM                                     */
 /*    Description:  V5 project                                                */
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
 #include "vex.h"
+#include "odometry.h"
+
+std::shared_ptr<Odometry> odom(new Odometry(vex::PORT8, vex::PORT9, vex::PORT10));
+
 
 using namespace vex;
 
