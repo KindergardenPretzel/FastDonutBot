@@ -9,6 +9,9 @@
 
 #include "vex.h"
 #include "odometry.h"
+#include "comp_debug.h"
+
+#include <memory>
 
 std::shared_ptr<Odometry> odom(new Odometry(vex::PORT8, vex::PORT9, vex::PORT10));
 
@@ -17,6 +20,8 @@ using namespace vex;
 
 // A global instance of competition
 competition Competition;
+competition_debug Cdebug( Competition );
+
 brain Brain;
 controller Controller1 = controller(primary);
 motor MotorLF = motor(PORT1, ratio6_1, true);
@@ -77,7 +82,8 @@ void score(){
 /*---------------------------------------------------------------------------*/
 
 void pre_auton(void) {
-
+  Brain.Screen.print("Calibrating Inertial Sensor");
+  odom->calibrateInertial();
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
 }
@@ -124,18 +130,16 @@ void usercontrol(void) {
     LeftMotors.setVelocity((Controller1.Axis1.position() * .5 + Controller1.Axis3.position()), percent);
     RightMotors.spin(forward);
     LeftMotors.spin(forward);*/
-    x = (Controller1.Axis3.position() - 0.3*Controller1.Axis1.position());
-    y = (0.3*Controller1.Axis1.position() + Controller1.Axis3.position());
-    RightMotors.setVelocity(0.01 * x * fabs(x), percent);
-    LeftMotors.setVelocity(0.01 * y * fabs(y), percent);
-    RightMotors.spin(forward);
-    LeftMotors.spin(forward);
+    x = (Controller1.Axis3.position() - 0.65 * Controller1.Axis1.position());
+    y = (0.65 * Controller1.Axis1.position() + Controller1.Axis3.position());
+    RightMotors.spin(fwd, 0.01 * x * fabs(x), pct);
+    LeftMotors.spin(fwd, 0.01 * y * fabs(y), pct);
     // ........................................................................
     // Insert user code here. This is where you use the joystick values to
     // update your motors, etc.
     // ........................................................................
 
-    wait(20, msec); // Sleep the task for a short amount of time to
+    wait(10, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.
   }
 }
@@ -148,12 +152,15 @@ int main() {
     Controller1.ButtonR2.pressed(reverseIntake);
     //Controller1.ButtonL2.pressed(SpinnyThingBack);
     Controller1.ButtonR1.pressed(score);
+
+
+  // Run the pre-autonomous function.
+  pre_auton();
   // Set up callbacks for autonomous and driver control periods.
   Competition.autonomous(autonomous);
   Competition.drivercontrol(usercontrol);
 
-  // Run the pre-autonomous function.
-  pre_auton();
+
 
   // Prevent main from exiting with an infinite loop.
   while (true) {

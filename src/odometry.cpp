@@ -1,8 +1,13 @@
 #include "odometry.h"
 
-Odometry::Odometry(int32_t fwdPort, int32_t sidePort,int32_t gyroPort) 
+Odometry::Odometry(int fwdPort, int sidePort, int gyroPort):  fwdRotation(fwdPort), sideRotation(sidePort), gyroSensor(gyroPort)
 {
-    gyroSensor = vex::inertial(gyroPort);
-    fwdRotation = vex::rotation(fwdPort);
-    sideRotation = vex::rotation(sidePort);
+};
+
+void Odometry::calibrateInertial() {
+    this->gyroSensor.startCalibration(2000);
+    while (this->gyroSensor.isCalibrating())
+    {
+        vex::wait(20, vex::msec);
+    };
 }
