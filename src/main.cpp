@@ -13,7 +13,7 @@
 
 #include <memory>
 
-std::shared_ptr<Odometry> odom(new Odometry(vex::PORT8, vex::PORT9, vex::PORT10));
+std::shared_ptr<Odometry> odom(new Odometry(vex::PORT11, vex::PORT12, vex::PORT13));
 
 
 using namespace vex;
@@ -80,10 +80,44 @@ void score(){
 /*  function is only called once after the V5 has been powered on and        */
 /*  not every time that the robot is disabled.                               */
 /*---------------------------------------------------------------------------*/
+int ShowMeInfo(){
+  while (true) {
+    Brain.Screen.setCursor(4,3);
+    Brain.Screen.print("RHeading %f,RRotation %f", odom->getHeadingRad(), odom->getRotationRad());
+    Brain.Screen.setCursor(5,3);
+    Brain.Screen.print("Heading %f,Rotation %f", odom->getHeading(), odom->getRotation());
+    /*Brain.Screen.setCursor(6,3);
+    Brain.Screen.print("Inertial Rotation");
+    Brain.Screen.setCursor(7,3);
+    Brain.Screen.print(DaInertial.rotation(degrees)); 
+    Brain.Screen.setCursor(8,3);
+    Brain.Screen.print("Lift");
+    Brain.Screen.setCursor(9,3);
+    Brain.Screen.print(Lift.position(rotationUnits::deg)); 
+    Brain.Screen.setCursor(10,3);
+    Brain.Screen.print(Competition.isEnabled());
+    Brain.Screen.setCursor(11,3);
+    Brain.Screen.print(Competition.isFieldControl());
+
+    Controller1.Screen.setCursor(1,1);
+    Controller1.Screen.print(MotorLB.temperature(temperatureUnits::celsius)); Controller1.Screen.print(" ");
+    Controller1.Screen.print(MotorLF.temperature(temperatureUnits::celsius)); Controller1.Screen.print(" ");
+
+    Controller1.Screen.print(MotorLB.temperature(temperatureUnits::celsius)); Controller1.Screen.print(" ");
+    Controller1.Screen.print(MotorLF.temperature(temperatureUnits::celsius)); Controller1.Screen.print(" ");
+    this_thread::sleep_for(25);
+    //wait(25, msec);*/
+  } 
+  return 0;
+}
 
 void pre_auton(void) {
+  Brain.Screen.setCursor(4,3);
   Brain.Screen.print("Calibrating Inertial Sensor");
   odom->calibrateInertial();
+  Brain.Screen.clearScreen();
+  odom->setStartingPoint(10, 10);
+  odom->setHeading(90);
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
 }
@@ -156,6 +190,10 @@ int main() {
 
   // Run the pre-autonomous function.
   pre_auton();
+  
+  // start debug output;
+  vex::task Debug(ShowMeInfo);
+
   // Set up callbacks for autonomous and driver control periods.
   Competition.autonomous(autonomous);
   Competition.drivercontrol(usercontrol);
