@@ -6,14 +6,9 @@ class Odometry
         vex::inertial gyroSensor;
         vex::rotation fwdRotation;
         vex::rotation sideRotation;
-        double heading;
-        double x;
-        double y;
-        float fwdPosition;
-        float sidePosition;
-        const float wheelDiameter = 2.75;
+        float in_per_rev;
     public:
-        Odometry(int, int, int);
+        Odometry(int, int, int, float);
         void calibrateInertial();
         double  getRotation();
         void setRotation(double value);
@@ -21,5 +16,13 @@ class Odometry
         void setHeading(double value);
         double getHeadingRad();
         double getRotationRad();
-        void setStartingPoint(double x, double y);
+        void setStartingPoint(float, float, float);
+        float degreesToRadians(float degrees);
+        void updatePosition();
+
+        double heading;
+        double x;
+        double y;
+        float fwdPosition;
+        float sidePosition;
 };

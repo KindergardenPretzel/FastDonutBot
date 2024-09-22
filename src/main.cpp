@@ -13,7 +13,7 @@
 
 #include <memory>
 
-std::shared_ptr<Odometry> odom(new Odometry(vex::PORT11, vex::PORT12, vex::PORT13));
+std::shared_ptr<Odometry> odom(new Odometry(vex::PORT11, vex::PORT12, vex::PORT13, 8.635));
 
 
 using namespace vex;
@@ -81,33 +81,26 @@ void score(){
 /*  not every time that the robot is disabled.                               */
 /*---------------------------------------------------------------------------*/
 int ShowMeInfo(){
-  while (true) {
-    Brain.Screen.setCursor(4,3);
-    Brain.Screen.print("RHeading %f,RRotation %f", odom->getHeadingRad(), odom->getRotationRad());
-    Brain.Screen.setCursor(5,3);
-    Brain.Screen.print("Heading %f,Rotation %f", odom->getHeading(), odom->getRotation());
-    /*Brain.Screen.setCursor(6,3);
-    Brain.Screen.print("Inertial Rotation");
-    Brain.Screen.setCursor(7,3);
-    Brain.Screen.print(DaInertial.rotation(degrees)); 
-    Brain.Screen.setCursor(8,3);
-    Brain.Screen.print("Lift");
-    Brain.Screen.setCursor(9,3);
-    Brain.Screen.print(Lift.position(rotationUnits::deg)); 
-    Brain.Screen.setCursor(10,3);
-    Brain.Screen.print(Competition.isEnabled());
-    Brain.Screen.setCursor(11,3);
-    Brain.Screen.print(Competition.isFieldControl());
+  Brain.Screen.setFont(monoM);
+  Brain.Screen.setPenColor(red);
+  while(true) {
 
-    Controller1.Screen.setCursor(1,1);
-    Controller1.Screen.print(MotorLB.temperature(temperatureUnits::celsius)); Controller1.Screen.print(" ");
-    Controller1.Screen.print(MotorLF.temperature(temperatureUnits::celsius)); Controller1.Screen.print(" ");
+  Brain.Screen.setCursor(6,2);
+  Brain.Screen.print("X: %f, Y: %f", OdometryObjPtr->X, OdometryObjPtr->Y);
+  Brain.Screen.setCursor(7,2);
+  Brain.Screen.print("Heading: %f", OdometryObjPtr->getHeading());
 
-    Controller1.Screen.print(MotorLB.temperature(temperatureUnits::celsius)); Controller1.Screen.print(" ");
-    Controller1.Screen.print(MotorLF.temperature(temperatureUnits::celsius)); Controller1.Screen.print(" ");
-    this_thread::sleep_for(25);
-    //wait(25, msec);*/
-  } 
+  Brain.Screen.setCursor(8,2);
+  Brain.Screen.print("PA: %f, PA2: %f", OdometryObjPtr->polar_angle, OdometryObjPtr->polar_angle2);
+
+  Brain.Screen.setCursor(9,2);
+  Brain.Screen.print("LX: %f, LY: %f", OdometryObjPtr->local_X, OdometryObjPtr->local_Y);
+
+  //Controller1.Screen.print("X: %f, Y: %f", OdometryObjPtr->X, OdometryObjPtr->Y);
+
+  this_thread::sleep_for(40);
+  Brain.Screen.clearScreen();
+  };
   return 0;
 }
 
