@@ -25,4 +25,6 @@ class Odometry
         double y;
         float fwdPosition;
         float sidePosition;
+        float localY;
+        float localX;
 };

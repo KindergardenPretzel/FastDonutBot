@@ -72,6 +72,16 @@ void score(){
   intake.stop();
 }
 
+int updatePos()
+{
+    while(true)
+    {
+        odom->updatePosition();
+        this_thread::sleep_for(10);
+    }
+    return(0);
+}
+
 /*---------------------------------------------------------------------------*/
 /*                          Pre-Autonomous Functions                         */
 /*                                                                           */
@@ -91,12 +101,8 @@ int ShowMeInfo(){
   Brain.Screen.setCursor(7,2);
   Brain.Screen.print("Heading: %f", odom->getHeading());
 
-  //Brain.Screen.setCursor(8,2);
-  //Brain.Screen.print("PA: %f, PA2: %f", odom->polar_angle, odom->polar_angle2);
-
-  Brain.Screen.setCursor(9,2);
-  Brain.Screen.print("LX: %f, LY: %f", odom->x, odom->y);
-
+  Brain.Screen.setCursor(8,2);
+  Brain.Screen.print("LX: %f, LY: %f", odom->localX, odom->localY);
   //Controller1.Screen.print("X: %f, Y: %f", OdometryObjPtr->X, OdometryObjPtr->Y);
 
   this_thread::sleep_for(40);
@@ -144,8 +150,6 @@ void autonomous(void) {
 
 void usercontrol(void) {
   // User control code here, inside the loop
-  double x = 0;
-  double y = 0;
   MotorRF.setBrake(brake);
   MotorRB.setBrake(brake);
   MotorLF.setBrake(brake);
@@ -196,7 +200,7 @@ int main() {
   
   // start debug output;
   vex::task Debug(ShowMeInfo);
-
+  vex::task Position(updatePos);
   // Set up callbacks for autonomous and driver control periods.
   Competition.autonomous(autonomous);
   Competition.drivercontrol(usercontrol);

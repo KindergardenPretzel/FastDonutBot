@@ -46,7 +46,6 @@ void Odometry::setStartingPoint(float x, float y, float heading ){
     this->sideRotation.resetPosition();
     this->fwdPosition = 0;
     this->sidePosition = 0;
-
 }
 
 float Odometry::degreesToRadians(float degrees){
@@ -66,7 +65,31 @@ void Odometry::updatePosition() {
 
     float deltaHeadRad = this->degreesToRadians(deltaHead);
     //calculating robot center path
-    float h = 2 * sin(deltaHeadRad/2) * (deltaFwd/deltaHeadRad + 0.6);
+    if (deltaHead==0) {
+        localX = deltaSide;
+        localY = deltaFwd;
+    }
+    else{
+     localY = 2 * sin(deltaHeadRad/2) * (deltaFwd/deltaHeadRad - 0.6);
+     localX = 2 * sin(deltaHeadRad/2) * (deltaSide/deltaHeadRad - 3);
+     }
+
+    //rotating orientation vector to global coordinates
+    //float deltaX = cos(deltaHead/2 + this->heading) * localX - sin(deltaHead/2 + this->heading) * localY;
+    //float deltaY = sin(deltaHead/2 + this->heading) * localX + cos(deltaHead/2 + this->heading) * localY;
+
+    float vector_length = sqrt(pow(localX,2) + pow(localY, 2));
+    float angle_x_to_vector = atan2(localY, localX);
+
+    //x = r cos θ , y = r sin θ
+    float global_angle = this->degreesToRadians(this->heading) + deltaHeadRad/2 + angle_x_to_vector;
+    float deltaX = vector_length * cos(global_angle);
+    float deltaY = vector_length * sin(global_angle);
+
+    // updating x and y
+
+   this->x += deltaX;
+   this->y += deltaY;
 
     // updating stored positions and rotation
     this->fwdPosition = fwdPos;
