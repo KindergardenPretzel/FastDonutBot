@@ -1,6 +1,10 @@
 #include "odometry.h"
 
-Odometry::Odometry(int fwdPort, int sidePort, int gyroPort, float in_per_rev):  fwdRotation(fwdPort, true), sideRotation(sidePort, true), gyroSensor(gyroPort), in_per_rev(in_per_rev)
+Odometry::Odometry(int fwdPort, int sidePort, int gyroPort, float in_per_rev):  
+ fwdRotation(fwdPort, true), 
+ sideRotation(sidePort, true), 
+ gyroSensor(gyroPort), 
+ in_per_rev(in_per_rev)
 {
 };
 

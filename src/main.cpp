@@ -10,6 +10,7 @@
 #include "vex.h"
 #include "odometry.h"
 #include "comp_debug.h"
+#include "PID.h"
 
 #include <memory>
 
