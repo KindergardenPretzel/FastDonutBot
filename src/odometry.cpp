@@ -53,8 +53,7 @@ float Odometry::degreesToRadians(float degrees){
 }
 
 void Odometry::updatePosition() {
-
-    // getting current positions and current roatations
+    // getting current positions and current roatations and saving them into local variables
     float fwdPos = this->fwdRotation.position(vex::rev) * this->in_per_rev;
     float sidePos = this->sideRotation.position(vex::rev) * this->in_per_rev;
     float currentHead  = this->getHeading();
@@ -70,21 +69,20 @@ void Odometry::updatePosition() {
         localY = deltaFwd;
     }
     else{
-     localY = 2 * sin(deltaHeadRad/2) * (deltaFwd/deltaHeadRad - 0.6);
-     localX = 2 * sin(deltaHeadRad/2) * (deltaSide/deltaHeadRad - 3);
+     localX = 2 * sin(deltaHeadRad/2) * ( (deltaSide/deltaHeadRad) + FWD_DISTANCE);
+     localY = 2 * sin(deltaHeadRad/2) * ( (deltaFwd/deltaHeadRad) + SIDE_DISTANCE);
      }
 
-    //rotating orientation vector to global coordinates
-    //float deltaX = cos(deltaHead/2 + this->heading) * localX - sin(deltaHead/2 + this->heading) * localY;
-    //float deltaY = sin(deltaHead/2 + this->heading) * localX + cos(deltaHead/2 + this->heading) * localY;
-
+    
+    // converting to polar coordinates
     float vector_length = sqrt(pow(localX,2) + pow(localY, 2));
     float angle_x_to_vector = atan2(localY, localX);
 
-    //x = r cos θ , y = r sin θ
-    float global_angle = this->degreesToRadians(this->heading) + deltaHeadRad/2 + angle_x_to_vector;
-    float deltaX = vector_length * cos(global_angle);
-    float deltaY = vector_length * sin(global_angle);
+    // calculate new global angle and convert back to cartesian: x = r cos θ , y = r sin θ
+    float global_angle_polar_coordinates = this->degreesToRadians(this->heading) - deltaHeadRad/2 - angle_x_to_vector;
+
+    float deltaX = vector_length * cos(global_angle_polar_coordinates);
+    float deltaY = vector_length * sin(global_angle_polar_coordinates);
 
     // updating x and y
 

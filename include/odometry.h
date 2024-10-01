@@ -7,6 +7,8 @@ class Odometry
         vex::rotation fwdRotation;
         vex::rotation sideRotation;
         float in_per_rev;
+        const float SIDE_DISTANCE = 0.6;
+        const float FWD_DISTANCE = 3;
     public:
         Odometry(int, int, int, float);
         void calibrateInertial();
