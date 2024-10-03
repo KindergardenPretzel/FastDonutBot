@@ -97,12 +97,12 @@ int ShowMeInfo(){
   Brain.Screen.setPenColor(red);
   while(true) {
 
-  Brain.Screen.setCursor(6,2);
+  Brain.Screen.setCursor(4,2);
   Brain.Screen.print("X: %f, Y: %f", odom->x,odom->y);
-  Brain.Screen.setCursor(7,2);
+  Brain.Screen.setCursor(5,2);
   Brain.Screen.print("Heading: %f", odom->getHeading());
 
-  Brain.Screen.setCursor(8,2);
+  Brain.Screen.setCursor(6,2);
   Brain.Screen.print("LX: %f, LY: %f", odom->localX, odom->localY);
   //Controller1.Screen.print("X: %f, Y: %f", OdometryObjPtr->X, OdometryObjPtr->Y);
 
@@ -117,8 +117,7 @@ void pre_auton(void) {
   Brain.Screen.print("Calibrating Inertial Sensor");
   odom->calibrateInertial();
   Brain.Screen.clearScreen();
-  odom->setStartingPoint(10, 10, 0);
-  odom->setHeading(90);
+  odom->setStartingPoint(10, 10, 90);
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
 }

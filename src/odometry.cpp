@@ -1,4 +1,5 @@
 #include "odometry.h"
+#include "toolbox.h"
 
 Odometry::Odometry(int fwdPort, int sidePort, int gyroPort, float in_per_rev):  
  fwdRotation(fwdPort, true), 
@@ -46,6 +47,7 @@ void Odometry::setStartingPoint(float x, float y, float heading ){
     this->x = x;
     this->y = y;
     this->gyroSensor.setHeading(heading, vex::deg);
+    this->heading = heading;
     this->fwdRotation.resetPosition();
     this->sideRotation.resetPosition();
     this->fwdPosition = 0;
@@ -58,9 +60,11 @@ float Odometry::degreesToRadians(float degrees){
 
 void Odometry::updatePosition() {
     // getting current positions and current roatations and saving them into local variables
-    float fwdPos = this->fwdRotation.position(vex::rev) * this->in_per_rev;
-    float sidePos = this->sideRotation.position(vex::rev) * this->in_per_rev;
-    float currentHead  = this->getHeading();
+    float fwdPos = flround(this->fwdRotation.position(vex::rev)) * this->in_per_rev;
+    float sidePos = flround(this->sideRotation.position(vex::rev)) * this->in_per_rev;
+    float currentHead  = flround(this->getHeading());
+
+    
     //calculating deltas
     float deltaFwd = fwdPos - this->fwdPosition;
     float deltaSide = sidePos - this->sidePosition;
@@ -68,7 +72,7 @@ void Odometry::updatePosition() {
 
     float deltaHeadRad = this->degreesToRadians(deltaHead);
     //calculating robot center path
-    if (deltaHead==0) {
+    if (deltaHeadRad==0) {
         localX = deltaSide;
         localY = deltaFwd;
     }

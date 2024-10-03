@@ -22,9 +22,9 @@ class Odometry
         float degreesToRadians(float degrees);
         void updatePosition();
 
-        double heading;
-        double x;
-        double y;
+        float heading;
+        float x;
+        float y;
         float fwdPosition;
         float sidePosition;
         float localY;
