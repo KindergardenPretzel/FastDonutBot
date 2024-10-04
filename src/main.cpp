@@ -64,13 +64,22 @@ void reverseIntake(){
 }
 
 void score(){
+  static bool enabled = false;
+  if (not enabled)
+  {
   intake.setVelocity(100.0, percent);
   intake.spin(forward);
   scoring.setVelocity(50.0, percent);
   scoring.spin(forward);
-  waitUntil((!Controller1.ButtonR1.pressing()));
-  scoring.stop();
-  intake.stop();
+  enabled = true;
+  }
+  else 
+  {
+  //waitUntil((!Controller1.ButtonR1.pressing()));
+   scoring.stop();
+   intake.stop();
+   enabled = false;
+  };
 }
 
 int updatePos()
