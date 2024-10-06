@@ -11,8 +11,15 @@ class PID
         float integral;
         float minOutput;
         float maxOutput;
+        float pidExitError;
+        unsigned int timeout;
+        unsigned int startTime;
 
     public:
-        PID(float, float, float, float);
-        float calculate(float, float);
+        PID(float, float, float, float, float, int);
+        float calculate(float);
+        bool isFinished();
+        void resetPID();
+        void setPIDmax(float);
+        void setPIDmin(float);
 };

@@ -1,25 +1,42 @@
 #include "PID.h"
+#include "toolbox.h"
 #include <cmath>
 
-PID::PID(float Ki, float Kp, float Kd, float limitIntegral): 
+PID::PID(float Ki, float Kp, float Kd, float limitIntegral, float pidExitError, int timeout): 
  Ki(Ki), 
  Kp(Kp), 
  Kd(Kd),
- limitIntegral(limitIntegral)
+ limitIntegral(limitIntegral),
+ pidExitError(pidExitError),
+ timeout(timeout)
 {
 }
 
-float PID::calculate(float current_position, float destination)//detination😊
+void PID::resetPID(){ 
+    this->prevError = 0;
+    this->firstRun = true;
+}
+
+void PID::setPIDmax(float maxOutput) {
+    this->maxOutput = maxOutput;
+}
+
+void PID::setPIDmin(float minOutput){
+    this->minOutput = minOutput;
+}
+
+float PID::calculate(float error)//detination😊
 {
     float totalGain = 0;
     float proportionalGain = 0;
     float integralGain = 0;
     float derivativeGain = 0;
 
-    this->error = destination - current_position;
+    this->error = error;
     proportionalGain = this->Kp * this->error;
     
     if (this->firstRun) {
+       this->startTime = highResTimer();
        this->prevError = this->error;
        this->firstRun = false;
     }
@@ -45,4 +62,17 @@ float PID::calculate(float current_position, float destination)//detination😊
     }    
     return totalGain;
 
+}
+
+bool PID::isFinished(){
+    unsigned int runningTime = highResTimer() - this->startTime;
+    if(fabs(this->error) < this->pidExitError)
+    {
+        return true;
+    }
+    if(runningTime > this->timeout)
+    {
+        return true;
+    }
+    return false;
 }

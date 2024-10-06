@@ -11,6 +11,7 @@
 #include "odometry.h"
 #include "comp_debug.h"
 #include "PID.h"
+#include "toolbox.h"
 
 #include <memory>
 
@@ -37,6 +38,12 @@ digital_out clamp = digital_out(Brain.ThreeWirePort.A);
 
 float power_pct = 0.8;
 // define your global instances of motors and other devices here
+
+
+unsigned int highResTimer(){
+    return Brain.Timer.systemHighResolution();
+}
+
 void clampFunc(){  
   if (!clamp.value()) {
         clamp.set(true);

@@ -1,5 +1,8 @@
 
-         float flround(float number);
+float flround(float number);
+unsigned int highResTimer();
+
+
 class toolbox
 {
     public:

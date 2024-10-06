@@ -5,6 +5,9 @@
             return (float)value / 100;
         }
 
+
+unsigned int highResTimer();
+
 class toolbox
 {
     public:
