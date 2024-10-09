@@ -19,9 +19,9 @@ class DriveBase
         vex::motor_group RightMotors;
         void calibrateInertial();
         double  getRotation();
-        void setRotation(double value);
+        void setRotation(double);
         double  getHeading();
-        void setHeading(double value);
+        void setHeading(double);
         double getHeadingRad();
         double getRotationRad();
         void resetFwdEncoder();
@@ -29,4 +29,5 @@ class DriveBase
         float getFwdPosition();
         float getSidePosition();
         void SetBrake(vex::brakeType);
+        void FwdDriveDistance(float);
 };

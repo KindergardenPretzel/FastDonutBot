@@ -25,7 +25,7 @@ void PID::setPIDmin(float minOutput){
     this->minOutput = minOutput;
 }
 
-float PID::calculate(float error)//detination😊
+float PID::calculate(float error)
 {
     float totalGain = 0;
     float proportionalGain = 0;

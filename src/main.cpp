@@ -32,7 +32,7 @@ float power_pct = 0.8;
 // define your global instances of motors and other devices here
 
 
-std::shared_ptr<DriveBase> robot(new DriveBase(PORT13, -PORT11, PORT12, -PORT1, -PORT2, PORT3, PORT4, 6.28));
+std::shared_ptr<DriveBase> robot(new DriveBase(PORT13, PORT11, PORT12, -PORT1, -PORT2, PORT3, PORT4, 6.28));
 //std::shared_ptr<Odometry> odom(new Odometry(robot));
 Odometry odom = Odometry(robot);
 
@@ -145,9 +145,7 @@ void pre_auton(void) {
 /*---------------------------------------------------------------------------*/
 
 void autonomous(void) {
-  // ..........................................................................
-  // Insert autonomous user code here.
-  // ..........................................................................
+  robot->FwdDriveDistance(20);
 }
 
 /*---------------------------------------------------------------------------*/

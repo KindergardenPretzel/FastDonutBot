@@ -1,5 +1,6 @@
 #include "vex.h"
 #include "drivebase.h"
+#include "PID.h"
 
 bool DriveBase::is_motor_reversed(int motor){
     if(motor - 1  < 0)
@@ -88,4 +89,20 @@ void DriveBase::SetBrake(vex::brakeType brake_type) {
     this->MotorRF.setBrake(brake_type);
     this->MotorRB.setBrake(brake_type);
 
+}
+void DriveBase::FwdDriveDistance(float distance){
+    PID pid = PID(1, 1, 1, 7, .5, 3000);
+    float destination = this->getFwdPosition() + distance;
+    float error;
+    float speed;
+    while(!pid.isFinished())
+    {
+        error = destination - this->getFwdPosition();
+        speed = pid.calculate(error);
+        this->LeftMotors.spin(vex::fwd, speed, vex::volt);
+        this->RightMotors.spin(vex::fwd, speed, vex::volt);
+        vex::wait(10, vex::msec);
+    }
+    this->LeftMotors.stop();
+    this->RightMotors.stop();
 }
