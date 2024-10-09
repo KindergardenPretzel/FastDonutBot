@@ -57,7 +57,7 @@ void Odometry::updatePosition() {
     // getting current positions and current roatations and saving them into local variables
     float fwdPos = chassis->getFwdPosition();
     float sidePos = chassis->getSidePosition();
-    float currentHead  = flround(chassis->getHeading());
+    float currentHead  = toolbox::fround(chassis->getHeading());
 
     
     //calculating deltas

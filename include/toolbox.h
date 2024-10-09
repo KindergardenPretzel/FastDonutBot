@@ -1,4 +1,5 @@
 
-float flround(float number);
-unsigned int highResTimer();
-
+namespace toolbox {
+    float fround(float number);
+    unsigned long long int highResTimer();
+};

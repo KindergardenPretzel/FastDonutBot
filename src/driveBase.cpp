@@ -75,11 +75,11 @@ void DriveBase::resetSideEncoder(){
 }
 
 float DriveBase::getFwdPosition(){
-     return flround(this->fwdRotation.position(vex::rev)) * this->in_per_rev;
+     return toolbox::fround(this->fwdRotation.position(vex::rev)) * this->in_per_rev;
 }
 
 float DriveBase::getSidePosition(){
-     return flround(this->sideRotation.position(vex::rev)) * this->in_per_rev;
+     return toolbox::fround(this->sideRotation.position(vex::rev)) * this->in_per_rev;
 }
 
 void DriveBase::SetBrake(vex::brakeType brake_type) {

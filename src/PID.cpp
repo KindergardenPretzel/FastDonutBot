@@ -36,7 +36,7 @@ float PID::calculate(float error)//detination😊
     proportionalGain = this->Kp * this->error;
     
     if (this->firstRun) {
-       this->startTime = highResTimer();
+       this->startTime = toolbox::highResTimer();
        this->prevError = this->error;
        this->firstRun = false;
     }
@@ -65,7 +65,7 @@ float PID::calculate(float error)//detination😊
 }
 
 bool PID::isFinished(){
-    unsigned int runningTime = highResTimer() - this->startTime;
+    unsigned int runningTime = toolbox::highResTimer() - this->startTime;
     if(fabs(this->error) < this->pidExitError)
     {
         return true;

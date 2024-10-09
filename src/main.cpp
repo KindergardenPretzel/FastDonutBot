@@ -42,7 +42,7 @@ std::shared_ptr<DriveBase> robot(new DriveBase(vex::PORT13,vex::PORT11,vex::PORT
 //std::shared_ptr<Odometry> odom(new Odometry(robot));
 Odometry odom = Odometry(robot);
 
-unsigned int highResTimer(){
+unsigned long long int toolbox::highResTimer(){
     return Brain.Timer.systemHighResolution();
 }
 
