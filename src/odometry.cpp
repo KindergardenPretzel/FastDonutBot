@@ -67,7 +67,7 @@ void Odometry::updatePosition() {
 
     float deltaHeadRad = this->degreesToRadians(deltaHead);
     //calculating robot center path
-    if (deltaHeadRad==0) {
+    if (deltaHead==0) {
         localX = deltaSide;
         localY = deltaFwd;
     }

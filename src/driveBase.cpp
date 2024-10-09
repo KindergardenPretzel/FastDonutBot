@@ -2,7 +2,7 @@
 #include "drivebase.h"
 
 bool DriveBase::is_motor_reversed(int motor){
-    if(motor < 0)
+    if(motor - 1  < 0)
     {
         return true;
     }
@@ -12,8 +12,8 @@ bool DriveBase::is_motor_reversed(int motor){
 DriveBase::DriveBase(int gyroPort, int fwdRotatePort, int sideRotatePort, 
                      int MotorLFPort, int MotorLBPort, int MotorRFPort, 
                      int MotorRBPort, float in_per_rev):
- fwdRotation(fwdRotatePort), 
- sideRotation(sideRotatePort),
+ fwdRotation(abs(fwdRotatePort)), 
+ sideRotation(abs(sideRotatePort)),
  gyroSensor(gyroPort),
  MotorLF(abs(MotorLFPort)),
  MotorLB(abs(MotorLBPort)),

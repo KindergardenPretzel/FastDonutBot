@@ -24,12 +24,6 @@ competition_debug Cdebug( Competition );
 
 brain Brain;
 controller Controller1 = controller(primary);
-/*motor MotorLF = motor(PORT1, ratio6_1, true);
-motor MotorLB = motor(PORT2, ratio6_1, true);
-motor MotorRF = motor(PORT3, ratio6_1, false); 
-motor MotorRB = motor(PORT4, ratio6_1, false);
-motor_group LeftMotors = motor_group(MotorLF, MotorLB);
-motor_group RightMotors = motor_group(MotorRF, MotorRB);*/
 digital_out clamp = digital_out(Brain.ThreeWirePort.A);
 motor intake = motor(PORT5,ratio18_1,false); 
 motor scoring = motor(PORT6,ratio6_1,false);
@@ -38,7 +32,7 @@ float power_pct = 0.8;
 // define your global instances of motors and other devices here
 
 
-std::shared_ptr<DriveBase> robot(new DriveBase(vex::PORT13,vex::PORT11,vex::PORT12,-vex::PORT1,-vex::PORT2,vex::PORT3,vex::PORT4, 6.28));
+std::shared_ptr<DriveBase> robot(new DriveBase(PORT13, -PORT11, PORT12, -PORT1, -PORT2, PORT3, PORT4, 6.28));
 //std::shared_ptr<Odometry> odom(new Odometry(robot));
 Odometry odom = Odometry(robot);
 
@@ -95,7 +89,7 @@ int updatePos()
 {
     while(true)
     {
-        //odom.updatePosition();
+        odom.updatePosition();
         this_thread::sleep_for(10);
     }
     return(0);
@@ -121,7 +115,7 @@ int ShowMeInfo(){
   Brain.Screen.print("Heading: %f", robot->getHeading());
 
   Brain.Screen.setCursor(6,2);
-  //Brain.Screen.print("LX: %f, LY: %f", odom.localX, odom.localY);
+  Brain.Screen.print("fwdPos: %f, sidePos: %f", odom.fwdPosition, odom.sidePosition);
   //Controller1.Screen.print("X: %f, Y: %f", OdometryObjPtr->X, OdometryObjPtr->Y);
 
   this_thread::sleep_for(40);
@@ -135,7 +129,7 @@ void pre_auton(void) {
   Brain.Screen.print("Calibrating Inertial Sensor");
   robot->calibrateInertial();
   Brain.Screen.clearScreen();
-  odom.setStartingPoint(10, 10, 90);
+  odom.setStartingPoint(10, 10, 0);
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
 }
@@ -167,7 +161,7 @@ void autonomous(void) {
 /*---------------------------------------------------------------------------*/
 
 void usercontrol(void) {
-  robot->SetBrake(brake);
+  robot->SetBrake(coast);
 
   while (1) {
     float throttle = Controller1.Axis3.position();
