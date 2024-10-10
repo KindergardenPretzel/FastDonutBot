@@ -36,9 +36,6 @@ std::shared_ptr<DriveBase> robot(new DriveBase(PORT13, PORT11, PORT12, -PORT1, -
 //std::shared_ptr<Odometry> odom(new Odometry(robot));
 Odometry odom = Odometry(robot);
 
-unsigned long long int toolbox::highResTimer(){
-    return Brain.Timer.systemHighResolution();
-}
 
 void clampFunc(){  
   if (!clamp.value()) {
@@ -115,7 +112,7 @@ int ShowMeInfo(){
   Brain.Screen.print("Heading: %f", robot->getHeading());
 
   Brain.Screen.setCursor(6,2);
-  Brain.Screen.print("fwdPos: %f, sidePos: %f", odom.fwdPosition, odom.sidePosition);
+  Brain.Screen.print("timer: %d", timer::systemHighResolution()/1000);
   //Controller1.Screen.print("X: %f, Y: %f", OdometryObjPtr->X, OdometryObjPtr->Y);
 
   this_thread::sleep_for(40);

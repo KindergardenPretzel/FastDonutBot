@@ -1,6 +1,7 @@
 #include "PID.h"
 #include "toolbox.h"
 #include <cmath>
+#include <iostream>
 
 PID::PID(float Ki, float Kp, float Kd, float limitIntegral, float pidExitError, int timeout): 
  Ki(Ki), 
@@ -10,6 +11,7 @@ PID::PID(float Ki, float Kp, float Kd, float limitIntegral, float pidExitError, 
  pidExitError(pidExitError),
  timeout(timeout)
 {
+    this->firstRun = true;
 }
 
 void PID::resetPID(){ 
@@ -36,7 +38,7 @@ float PID::calculate(float error)
     proportionalGain = this->Kp * this->error;
     
     if (this->firstRun) {
-       this->startTime = toolbox::highResTimer();
+       this->startTime = toolbox::highResTimerMs();
        this->prevError = this->error;
        this->firstRun = false;
     }
@@ -65,7 +67,8 @@ float PID::calculate(float error)
 }
 
 bool PID::isFinished(){
-    unsigned int runningTime = toolbox::highResTimer() - this->startTime;
+    unsigned int runningTime = toolbox::highResTimerMs() - this->startTime;
+    //std::cout << runningTime;
     if(fabs(this->error) < this->pidExitError)
     {
         return true;

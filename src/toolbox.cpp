@@ -1,4 +1,6 @@
 #include <cmath>
+#include "vex.h"
+
 
 namespace toolbox {
 
@@ -7,4 +9,7 @@ namespace toolbox {
         return (float)value / 100;
     }
 
+unsigned long long int highResTimerMs(){
+    return (vex::timer::systemHighResolution())/1000;
+}
 }

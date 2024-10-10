@@ -91,7 +91,7 @@ void DriveBase::SetBrake(vex::brakeType brake_type) {
 
 }
 void DriveBase::FwdDriveDistance(float distance){
-    PID pid = PID(1, 1, 1, 7, .5, 3000);
+    PID pid = PID(1, 1, 1, 7, .5, 5000);
     float destination = this->getFwdPosition() + distance;
     float error;
     float speed;
