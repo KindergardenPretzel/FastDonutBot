@@ -56,11 +56,12 @@ float PID::calculate(float error)
 
     totalGain = proportionalGain + integralGain + derivativeGain;
     
-    if (totalGain > this->maxOutput) {
-        totalGain = this->maxOutput;
+    // clamping gain
+    if (std::abs(totalGain) > this->maxOutput) {
+        totalGain = this->maxOutput * (std::abs(this->maxOutput) / this->maxOutput);
     }
-    if (totalGain < this->minOutput) {
-        totalGain = this->minOutput;
+    if (std::abs(totalGain) < this->minOutput) {
+        totalGain = this->minOutput * (std::abs(this->minOutput) / this->minOutput);
     }    
     return totalGain;
 

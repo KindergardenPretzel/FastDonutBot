@@ -142,7 +142,8 @@ void pre_auton(void) {
 /*---------------------------------------------------------------------------*/
 
 void autonomous(void) {
-  robot->FwdDriveDistance(20);
+  //robot->SetBrake(brake);
+  robot->FwdDriveDistance(-10);
 }
 
 /*---------------------------------------------------------------------------*/

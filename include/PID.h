@@ -6,11 +6,11 @@ class PID
         float Kd;
         float error;
         float prevError;
-        float firstRun;
+        bool firstRun{true};
         float limitIntegral;
         float integral;
-        float minOutput;
-        float maxOutput;
+        float minOutput{1};
+        float maxOutput{12};
         float pidExitError;
         unsigned int timeout;
         unsigned int startTime;
