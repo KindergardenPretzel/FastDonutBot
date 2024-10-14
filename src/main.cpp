@@ -126,7 +126,7 @@ void pre_auton(void) {
   Brain.Screen.print("Calibrating Inertial Sensor");
   robot->calibrateInertial();
   Brain.Screen.clearScreen();
-  odom.setStartingPoint(10, 10, 0);
+  odom.setStartingPoint(10, 10, 90);
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
 }
@@ -143,7 +143,11 @@ void pre_auton(void) {
 
 void autonomous(void) {
   //robot->SetBrake(brake);
+  robot->FwdDriveDistance(10);
+  wait(2,sec);
   robot->FwdDriveDistance(-10);
+
+  //robot->TurnAngle(0);
 }
 
 /*---------------------------------------------------------------------------*/

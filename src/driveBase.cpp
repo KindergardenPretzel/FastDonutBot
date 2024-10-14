@@ -104,6 +104,25 @@ void DriveBase::FwdDriveDistance(float distance){
         this->LeftMotors.spin(vex::fwd, speed, vex::volt);
         this->RightMotors.spin(vex::fwd, speed, vex::volt);
         vex::wait(10, vex::msec);
+        
+    }while(!pid.isFinished());
+
+    this->LeftMotors.stop(vex::brake);
+    this->RightMotors.stop(vex::brake);
+}
+
+void DriveBase::TurnAngle(float angle)
+{
+    PID pid = PID(0.3, 1, 1, .7, .5, 3000);
+    pid.setPIDmax(8);
+    pid.setPIDmin(2);
+    float error;
+    float speed;
+    do{
+        error = angle - this->getHeading();
+        speed = pid.calculate(error);
+        this->LeftMotors.spin(vex::fwd, speed, vex::volt);
+        this->RightMotors.spin(vex::fwd, -speed, vex::volt);
     }while(!pid.isFinished());
     this->LeftMotors.stop(vex::brake);
     this->RightMotors.stop(vex::brake);
