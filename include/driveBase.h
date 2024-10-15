@@ -20,7 +20,7 @@ class DriveBase
         void calibrateInertial();
         double  getRotation();
         void setRotation(double);
-        double  getHeading();
+        float getHeading();
         void setHeading(double);
         double getHeadingRad();
         double getRotationRad();
@@ -31,4 +31,5 @@ class DriveBase
         void SetBrake(vex::brakeType);
         void FwdDriveDistance(float);
         void TurnAngle(float);
+        float turnAngleOptimization(float);
 };

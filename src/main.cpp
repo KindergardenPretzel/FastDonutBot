@@ -32,7 +32,7 @@ float power_pct = 0.8;
 // define your global instances of motors and other devices here
 
 
-std::shared_ptr<DriveBase> robot(new DriveBase(PORT13, PORT11, PORT12, -PORT1, -PORT2, PORT3, PORT4, 6.28));
+std::shared_ptr<DriveBase> robot(new DriveBase(PORT13, -PORT11, PORT12, -PORT1, -PORT2, PORT3, PORT4, 6.28));
 //std::shared_ptr<Odometry> odom(new Odometry(robot));
 Odometry odom = Odometry(robot);
 
@@ -143,9 +143,17 @@ void pre_auton(void) {
 
 void autonomous(void) {
   //robot->SetBrake(brake);
-  robot->FwdDriveDistance(10);
-  wait(2,sec);
-  robot->FwdDriveDistance(-10);
+  //robot->FwdDriveDistance(10);
+  //wait(1,sec);
+  //robot->FwdDriveDistance(-10);
+  //wait(1,sec);
+  robot->TurnAngle(340);
+wait(3,sec);
+  //robot->TurnAngle(60);
+//wait(3,sec);
+ //robot->TurnAngle(120);
+  //wait(1,sec);
+  //robot->TurnAngle(90);
 
   //robot->TurnAngle(0);
 }
@@ -200,7 +208,7 @@ int main() {
   Competition.drivercontrol(usercontrol);
 
 
-
+  //autonomous();
   // Prevent main from exiting with an infinite loop.
   while (true) {
     wait(100, msec);

@@ -1,6 +1,7 @@
 #include "vex.h"
 #include "drivebase.h"
 #include "PID.h"
+#include <iostream>
 
 bool DriveBase::is_motor_reversed(int motor){
     if(motor - 1  < 0)
@@ -49,7 +50,7 @@ void DriveBase::setRotation(double value){
     this->gyroSensor.setRotation(value, vex::deg);
 }
 
-double  DriveBase::getHeading(){
+float DriveBase::getHeading(){
     return this->gyroSensor.heading();
 }
 
@@ -90,10 +91,27 @@ void DriveBase::SetBrake(vex::brakeType brake_type) {
     this->MotorRB.setBrake(brake_type);
 
 }
+
+float DriveBase::turnAngleOptimization(float angle)
+{
+    if(!(angle > -180 && angle < 180))
+    {
+        if(angle < -180)
+        {
+            return angle += 360;
+        }
+        if(angle > 180)
+        {
+            return angle -= 360;
+        }
+    }
+    return angle;
+}
+
 void DriveBase::FwdDriveDistance(float distance){
-    PID pid = PID(0.3, 1, 1, .7, .5, 3000);
+    PID pid = PID(1.5, 0, 0, .7, .5, 3000);
     pid.setPIDmax(8);
-    pid.setPIDmin(2);
+    pid.setPIDmin(3.8);
     float destination = this->getFwdPosition() + distance;
     float error;
     float speed;
@@ -104,7 +122,7 @@ void DriveBase::FwdDriveDistance(float distance){
         this->LeftMotors.spin(vex::fwd, speed, vex::volt);
         this->RightMotors.spin(vex::fwd, speed, vex::volt);
         vex::wait(10, vex::msec);
-        
+
     }while(!pid.isFinished());
 
     this->LeftMotors.stop(vex::brake);
@@ -113,17 +131,27 @@ void DriveBase::FwdDriveDistance(float distance){
 
 void DriveBase::TurnAngle(float angle)
 {
-    PID pid = PID(0.3, 1, 1, .7, .5, 3000);
-    pid.setPIDmax(8);
-    pid.setPIDmin(2);
+    PID pid = PID(0.09, 0, 0, .7, 1, 2000);
+    pid.setPIDmax(6);
+    pid.setPIDmin(1.7);
     float error;
     float speed;
+    float current_heading;
+    std::cout<< "##########################" << std::endl<< std::endl<< std::endl<< std::endl;
     do{
-        error = angle - this->getHeading();
+        current_heading = this->getHeading();
+        error = this->turnAngleOptimization(angle - current_heading);
+        std::cout << "Heading:" << current_heading << std::endl;
+        std::cout << "Error:" << error << std::endl;
         speed = pid.calculate(error);
+        std::cout << "Speed:" << speed << std::endl;
         this->LeftMotors.spin(vex::fwd, speed, vex::volt);
         this->RightMotors.spin(vex::fwd, -speed, vex::volt);
+        vex::wait(10, vex::msec);
+
     }while(!pid.isFinished());
+    //std::cout << "STOP" << std::endl;
+
     this->LeftMotors.stop(vex::brake);
     this->RightMotors.stop(vex::brake);
 }

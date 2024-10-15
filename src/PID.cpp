@@ -3,7 +3,7 @@
 #include <cmath>
 #include <iostream>
 
-PID::PID(float Ki, float Kp, float Kd, float limitIntegral, float pidExitError, int timeout): 
+PID::PID(float Kp, float Ki, float Kd, float limitIntegral, float pidExitError, int timeout): 
  Ki(Ki), 
  Kp(Kp), 
  Kd(Kd),
@@ -58,10 +58,10 @@ float PID::calculate(float error)
     
     // clamping gain
     if (std::abs(totalGain) > this->maxOutput) {
-        totalGain = this->maxOutput * (std::abs(this->maxOutput) / this->maxOutput);
+        totalGain = this->maxOutput * (std::abs(totalGain) / totalGain);
     }
     if (std::abs(totalGain) < this->minOutput) {
-        totalGain = this->minOutput * (std::abs(this->minOutput) / this->minOutput);
+        totalGain = this->minOutput * (std::abs(totalGain) / totalGain);
     }    
     return totalGain;
 
