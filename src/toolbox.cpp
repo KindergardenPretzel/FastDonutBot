@@ -3,7 +3,7 @@
 
 
 namespace toolbox {
-
+    //rounds a float to the nearest hundredth
     float fround(float number){
         float value = (int)(number * 100);
         return (float)value / 100;

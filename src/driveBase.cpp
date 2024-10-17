@@ -3,6 +3,7 @@
 #include "PID.h"
 #include <iostream>
 
+//checks if the port is negative and returns true if it is
 bool DriveBase::is_motor_reversed(int motor){
     if(motor - 1  < 0)
     {
@@ -11,6 +12,7 @@ bool DriveBase::is_motor_reversed(int motor){
     return false;
 }
 
+//DriveBase class constructor
 DriveBase::DriveBase(int gyroPort, int fwdRotatePort, int sideRotatePort, 
                      int MotorLFPort, int MotorLBPort, int MotorRFPort, 
                      int MotorRBPort, float in_per_rev):
@@ -34,6 +36,7 @@ DriveBase::DriveBase(int gyroPort, int fwdRotatePort, int sideRotatePort,
 
 }
 
+//calibrates the inertial
 void DriveBase::calibrateInertial() {
     this->gyroSensor.calibrate();
     while (this->gyroSensor.isCalibrating())
@@ -42,48 +45,59 @@ void DriveBase::calibrateInertial() {
     };
 }
 
+//returns inertial sensor rotation [-180:180]
 double  DriveBase::getRotation(){
     return this->gyroSensor.rotation();
 }
 
+//sets inertial sensor rotation
 void DriveBase::setRotation(double value){
     this->gyroSensor.setRotation(value, vex::deg);
 }
 
+//returns inertial sensor absolute heading [0:360]
 float DriveBase::getHeading(){
     return this->gyroSensor.heading();
 }
 
+//sets inertial sensor heading
 void DriveBase::setHeading(double value){
     this->gyroSensor.setHeading(value, vex::deg);
 }
 
+//returns inertial sensor heading in radians
 double DriveBase::getHeadingRad(){
     double heading = this->gyroSensor.heading();
     return (heading * M_PI) / 180;
 }
 
+//returns inertial sensor rotation in radians
 double DriveBase::getRotationRad(){
     double rotation = this->gyroSensor.rotation();
     return (rotation * M_PI) / 180;
 }
 
+//resets forward tracking sensor to 0
 void DriveBase::resetFwdEncoder(){
      this->fwdRotation.resetPosition();
 }
 
+//resets side tracking sensor to 0
 void DriveBase::resetSideEncoder(){
      this->sideRotation.resetPosition();
 }
 
+//returns current position of forward tracking sensoir in inches
 float DriveBase::getFwdPosition(){
      return toolbox::fround(this->fwdRotation.position(vex::rev)) * this->in_per_rev;
 }
 
+//returns current position of side tracking sensoir in inches
 float DriveBase::getSidePosition(){
      return toolbox::fround(this->sideRotation.position(vex::rev)) * this->in_per_rev;
 }
 
+//sets all motor brake-types to the type instucted
 void DriveBase::SetBrake(vex::brakeType brake_type) {
     this->MotorLF.setBrake(brake_type);
     this->MotorLB.setBrake(brake_type);
@@ -92,6 +106,7 @@ void DriveBase::SetBrake(vex::brakeType brake_type) {
 
 }
 
+//optimizes turning for PID so it turns to the left if the number is greater than 180
 float DriveBase::turnAngleOptimization(float angle)
 {
     if(!(angle > -180 && angle < 180))
@@ -108,10 +123,11 @@ float DriveBase::turnAngleOptimization(float angle)
     return angle;
 }
 
-void DriveBase::FwdDriveDistance(float distance){
-    PID pid = PID(1.5, 0, 0, .7, .5, 3000);
-    pid.setPIDmax(8);
-    pid.setPIDmin(3.8);
+//drives forward or backward for the distance that is instructed
+void DriveBase::DriveDistance(float distance){
+    PID pid = PID(0.625, 0, 2, .7, .5, 3000);
+    pid.setPIDmax(10);
+    pid.setPIDmin(0.1);
     float destination = this->getFwdPosition() + distance;
     float error;
     float speed;
@@ -119,6 +135,7 @@ void DriveBase::FwdDriveDistance(float distance){
     {
         error = destination - this->getFwdPosition();
         speed = pid.calculate(error);
+
         this->LeftMotors.spin(vex::fwd, speed, vex::volt);
         this->RightMotors.spin(vex::fwd, speed, vex::volt);
         vex::wait(10, vex::msec);
@@ -129,6 +146,7 @@ void DriveBase::FwdDriveDistance(float distance){
     this->RightMotors.stop(vex::brake);
 }
 
+//turns to the angle instructed [0:359]
 void DriveBase::TurnAngle(float angle)
 {
     PID pid = PID(0.09, 0, 0, .7, 1, 2000);

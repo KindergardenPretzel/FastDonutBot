@@ -1,43 +1,14 @@
 #include "odometry.h"
 #include "toolbox.h"
 
-
+//odomerty class constructor
 Odometry::Odometry(std::shared_ptr<DriveBase>& chassis):
  chassis(chassis)
 {
     //std::shared_ptr<DriveBase> ptr(robot)
 };
-/*
-void Odometry::calibrateInertial() {
-    chassis->calibrateInertial;
-}
 
-double  Odometry::getRotation(){
-    return this->gyroSensor.rotation();
-}
-
-void Odometry::setRotation(double value){
-    this->gyroSensor.setRotation(value, vex::deg);
-}
-
-double  Odometry::getHeading(){
-    return this->gyroSensor.heading();
-}
-
-void Odometry::setHeading(double value){
-    this->gyroSensor.setHeading(value, vex::deg);
-}
-
-double Odometry::getHeadingRad(){
-    double heading = this->gyroSensor.heading();
-    return (heading * M_PI) / 180;
-}
-
-double Odometry::getRotationRad(){
-    double rotation = this->gyroSensor.rotation();
-    return (rotation * M_PI) / 180;
-}
-*/
+//sets the starting point and heading of the robot
 void Odometry::setStartingPoint(float x, float y, float heading ){
     this->x = x;
     this->y = y;
@@ -49,10 +20,12 @@ void Odometry::setStartingPoint(float x, float y, float heading ){
     this->sidePosition = 0;
 }
 
+//converts degrees to radians
 float Odometry::degreesToRadians(float degrees){
     return (degrees * M_PI) / 180;
 }
 
+//updates the position on the field of the robot
 void Odometry::updatePosition() {
     // getting current positions and current roatations and saving them into local variables
     float fwdPos = chassis->getFwdPosition();
@@ -60,13 +33,14 @@ void Odometry::updatePosition() {
     float currentHead  = toolbox::fround(chassis->getHeading());
 
     
-    //calculating deltas
+    //calculating deltas(difference between old and new positions)
     float deltaFwd = fwdPos - this->fwdPosition;
     float deltaSide = sidePos - this->sidePosition;
     float deltaHead = currentHead - this->heading;
 
     float deltaHeadRad = this->degreesToRadians(deltaHead);
-    //calculating robot center path
+
+    //calculating distance between robot tracking center
     if (deltaHead==0) {
         localX = deltaSide;
         localY = deltaFwd;

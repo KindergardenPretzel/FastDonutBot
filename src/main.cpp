@@ -36,7 +36,7 @@ std::shared_ptr<DriveBase> robot(new DriveBase(PORT13, -PORT11, PORT12, -PORT1, 
 //std::shared_ptr<Odometry> odom(new Odometry(robot));
 Odometry odom = Odometry(robot);
 
-
+//opens or closes clamp depending on whether the pneumatic cylynder is out or in
 void clampFunc(){  
   if (!clamp.value()) {
         clamp.set(true);
@@ -46,6 +46,7 @@ void clampFunc(){
   };
 }
 
+//spinds the intake forward
 void SpinnyThing(){
   intake.setVelocity(100.0, percent);
   intake.spin(forward);
@@ -53,6 +54,7 @@ void SpinnyThing(){
   intake.stop();
 }
 
+//reverses the intake and conveyor belt
 void reverseIntake(){
   intake.setVelocity(100.0, percent);
   intake.spin(reverse);
@@ -63,6 +65,7 @@ void reverseIntake(){
   scoring.stop();
 }
 
+//spins the intake and conveyo belt forward
 void score(){
   static bool enabled = false;
   if (not enabled)
@@ -82,6 +85,7 @@ void score(){
   };
 }
 
+//task that updates the robots position
 int updatePos()
 {
     while(true)
@@ -101,6 +105,8 @@ int updatePos()
 /*  function is only called once after the V5 has been powered on and        */
 /*  not every time that the robot is disabled.                               */
 /*---------------------------------------------------------------------------*/
+
+//prints info on the brain screen
 int ShowMeInfo(){
   Brain.Screen.setFont(monoM);
   Brain.Screen.setPenColor(red);
@@ -112,7 +118,7 @@ int ShowMeInfo(){
   Brain.Screen.print("Heading: %f", robot->getHeading());
 
   Brain.Screen.setCursor(6,2);
-  Brain.Screen.print("timer: %d", timer::systemHighResolution()/1000);
+  Brain.Screen.print("position: %f", robot->getFwdPosition());
   //Controller1.Screen.print("X: %f, Y: %f", OdometryObjPtr->X, OdometryObjPtr->Y);
 
   this_thread::sleep_for(40);
@@ -143,12 +149,12 @@ void pre_auton(void) {
 
 void autonomous(void) {
   //robot->SetBrake(brake);
-  //robot->FwdDriveDistance(10);
+  robot->DriveDistance(20);
   //wait(1,sec);
-  //robot->FwdDriveDistance(-10);
+  //robot->DriveDistance(-10);
   //wait(1,sec);
-  robot->TurnAngle(340);
-wait(3,sec);
+  //robot->TurnAngle(340);
+//wait(3,sec);
   //robot->TurnAngle(60);
 //wait(3,sec);
  //robot->TurnAngle(120);
@@ -175,14 +181,13 @@ void usercontrol(void) {
     float throttle = Controller1.Axis3.position();
     float turn = Controller1.Axis1.position();
 
-      //Brain.Screen.setCursor(4,2);
-      //Brain.Screen.print("throttle: %f, turn: %f", throttle, turn);
-
     robot->LeftMotors.spin(vex::fwd, power_pct * 0.0001 * pow(throttle+turn, 3), vex::pct);
     robot->RightMotors.spin(vex::fwd, power_pct * 0.0001 * pow(throttle-turn, 3), vex::pct);
 
     wait(10, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.
+      //Brain.Screen.setCursor(4,2);
+      //Brain.Screen.print("throttle: %f, turn: %f", throttle, turn);
   }
 }
 
@@ -190,6 +195,8 @@ void usercontrol(void) {
 // Main will set up the competition functions and callbacks.
 //
 int main() {
+
+    //starts all functions
     Controller1.ButtonL1.pressed(clampFunc);
     Controller1.ButtonR2.pressed(reverseIntake);
     //Controller1.ButtonL2.pressed(SpinnyThingBack);
