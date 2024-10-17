@@ -30,6 +30,7 @@ class DriveBase
         float getSidePosition();
         void SetBrake(vex::brakeType);
         void DriveDistance(float);
+        void DriveDistance(float, float);
         void TurnAngle(float);
         float turnAngleOptimization(float);
 };

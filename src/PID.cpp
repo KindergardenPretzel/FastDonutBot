@@ -57,6 +57,7 @@ float PID::calculate(float error)
     integralGain = this->Ki * this->integral;
     
     derivativeGain = (this->error - this->prevError) * this->Kd;
+    //derivativeGain = (this->prevError - this->error) * this->Kd;
     this->prevError = this->error;
 
     totalGain = proportionalGain + integralGain + derivativeGain;
@@ -80,7 +81,7 @@ float PID::calculate(float error)
 //checks if the PID drive has finished
 bool PID::isFinished(){
     unsigned int runningTime = toolbox::highResTimerMs() - this->startTime;
-    //std::cout << runningTime;
+    std::cout << "Running Time:" << runningTime << std::endl;
     if(fabs(this->error) < this->pidExitError)
     {
         return true;
