@@ -63,6 +63,11 @@ void intake_spin_fwd(int speed=90){
   intake.spin(vex::fwd, speed, vex::pct);
 }
 
+//spins the intake reverse
+void intake_spin_back(int speed=90){
+  intake.spin(vex::fwd, -speed, vex::pct);
+}
+
 //spins the intake forward
 void intake_stop(){
   intake.stop();
@@ -71,12 +76,11 @@ void intake_stop(){
 
 //reverses the intake and conveyor belt
 void reverseIntake(){
-  intake.setVelocity(80.0, percent);
-  intake.spin(reverse);
+  intake_spin_back(70);
   scoring.setVelocity(50.0, percent);
   scoring.spin(reverse);
   waitUntil((!Controller1.ButtonR2.pressing()));
-  intake.stop();
+  intake_stop();
   scoring.stop();
 }
 
@@ -127,8 +131,8 @@ int updatePos()
 int ShowMeInfo(){
   Brain.Screen.setFont(monoM);
   Brain.Screen.setPenColor(red);
-  while(true) {
 
+  while(true) {
   Brain.Screen.setCursor(4,2);
   Brain.Screen.print("X: %f, Y: %f", odom.x, odom.y);
   Brain.Screen.setCursor(5,2);
@@ -137,7 +141,7 @@ int ShowMeInfo(){
   Brain.Screen.setCursor(6,2);
   Brain.Screen.print("position: %f", robot->getFwdPosition());
   //Controller1.Screen.print("X: %f, Y: %f", OdometryObjPtr->X, OdometryObjPtr->Y);
-
+  
   this_thread::sleep_for(40);
   Brain.Screen.clearScreen();
   };
