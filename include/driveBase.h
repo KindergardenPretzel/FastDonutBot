@@ -32,5 +32,7 @@ class DriveBase
         void DriveDistance(float);
         void DriveDistance(float, float);
         void TurnAngle(float);
+        void swingRight(float);
+        void swingLeft(float);
         float turnAngleOptimization(float);
 };

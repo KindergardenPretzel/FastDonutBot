@@ -129,7 +129,7 @@ this->DriveDistance(distance, this->getHeading());
 
 //drives forward or backward for the distance that is instructed
 void DriveBase::DriveDistance(float distance, float dest_heading){
-    PID pid = PID(0.8, 0, 0, .7, .1, 4000);
+    PID pid = PID(0.8, 0, 0, .7, .3, 4000);
     pid.setPIDmax(10);
     pid.setPIDmin(0.1);
     PID heading_pid = PID(0.1, 0, 0, 2, 1, 15000);
@@ -182,6 +182,53 @@ void DriveBase::TurnAngle(float angle)
         std::cout << "Speed:" << speed << std::endl;
         this->LeftMotors.spin(vex::fwd, speed, vex::volt);
         this->RightMotors.spin(vex::fwd, -speed, vex::volt);
+        vex::wait(10, vex::msec);
+
+    }while(!pid.isFinished());
+    //std::cout << "STOP" << std::endl;
+
+    this->LeftMotors.stop(vex::brake);
+    this->RightMotors.stop(vex::brake);
+}
+
+void DriveBase::swingRight(float angle)
+{
+    PID pid = PID(0.4, 0, 0, .7, 1, 2000);
+    pid.setPIDmax(6);
+    pid.setPIDmin(1.7);
+    float error;
+    float speed;
+    float current_heading;
+    do{
+        current_heading = this->getHeading();
+        error = this->turnAngleOptimization(angle - current_heading);
+        //error = angle - current_heading;
+        speed = pid.calculate(error);
+        this->LeftMotors.spin(vex::fwd, speed, vex::volt);
+        this->RightMotors.stop(vex::hold);
+        vex::wait(10, vex::msec);
+
+    }while(!pid.isFinished());
+    //std::cout << "STOP" << std::endl;
+
+    this->LeftMotors.stop(vex::brake);
+    this->RightMotors.stop(vex::brake);
+}
+
+void DriveBase::swingLeft(float angle)
+{
+    PID pid = PID(0.4, 0, 0, .7, 1, 2000);
+    pid.setPIDmax(6);
+    pid.setPIDmin(1.7);
+    float error;
+    float speed;
+    float current_heading;
+    do{
+        current_heading = this->getHeading();
+        error = this->turnAngleOptimization(angle - current_heading);
+        speed = pid.calculate(error);
+        this->RightMotors.spin(vex::fwd, speed, vex::volt);
+        this->LeftMotors.stop(vex::hold);
         vex::wait(10, vex::msec);
 
     }while(!pid.isFinished());

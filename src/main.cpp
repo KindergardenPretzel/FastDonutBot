@@ -25,7 +25,9 @@ competition_debug Cdebug( Competition );
 brain Brain;
 controller Controller1 = controller(primary);
 digital_out clamp = digital_out(Brain.ThreeWirePort.A);
-motor intake = motor(PORT5,ratio18_1,false); 
+digital_out intake_lift = digital_out(Brain.ThreeWirePort.B);
+
+motor intake = motor(PORT5,ratio6_1,false); 
 motor scoring = motor(PORT6,ratio6_1,false);
 
 float power_pct = 0.8;
@@ -46,17 +48,30 @@ void clampFunc(){
   };
 }
 
-//spinds the intake forward
-void SpinnyThing(){
-  intake.setVelocity(100.0, percent);
-  intake.spin(forward);
-  waitUntil((!Controller1.ButtonL1.pressing()));
+//lifts intake using pneumatic cylynder
+void lift_intake(){
+  if (!intake_lift.value()) {
+        intake_lift.set(true);
+      }
+      else {
+        intake_lift.set(false);
+  };
+}
+
+//spins the intake forward
+void intake_spin_fwd(int speed=90){
+  intake.spin(vex::fwd, speed, vex::pct);
+}
+
+//spins the intake forward
+void intake_stop(){
   intake.stop();
 }
 
+
 //reverses the intake and conveyor belt
 void reverseIntake(){
-  intake.setVelocity(100.0, percent);
+  intake.setVelocity(80.0, percent);
   intake.spin(reverse);
   scoring.setVelocity(50.0, percent);
   scoring.spin(reverse);
@@ -70,9 +85,10 @@ void score(){
   static bool enabled = false;
   if (not enabled)
   {
-  intake.setVelocity(100.0, percent);
-  intake.spin(forward);
-  scoring.setVelocity(50.0, percent);
+  //intake.setVelocity(90.0, percent);
+  //intake.spin(forward);
+  intake_spin_fwd(90);
+  scoring.setVelocity(70.0, percent);
   scoring.spin(forward);
   enabled = true;
   }
@@ -80,7 +96,8 @@ void score(){
   {
   //waitUntil((!Controller1.ButtonR1.pressing()));
    scoring.stop();
-   intake.stop();
+   //intake.stop();
+   intake_stop();
    enabled = false;
   };
 }
@@ -149,8 +166,16 @@ void pre_auton(void) {
 
 void autonomous(void) {
   //robot->SetBrake(brake);
-  robot->DriveDistance(-30);
-  wait(1,sec);
+  robot->swingRight(270);
+  /*
+  robot->DriveDistance(-43);
+  wait(20,msec);
+  robot->swingLeft(128);
+  wait(20,msec);
+  */
+  //robot->DriveDistance(-10);
+  
+  //robot->DriveDistance(-41, 128);
   //robot->DriveDistance(-10);
   //wait(1,sec);
   //robot->TurnAngle(340);
@@ -198,8 +223,8 @@ int main() {
 
     //starts all functions
     Controller1.ButtonL1.pressed(clampFunc);
+    Controller1.ButtonL2.pressed(lift_intake);
     Controller1.ButtonR2.pressed(reverseIntake);
-    //Controller1.ButtonL2.pressed(SpinnyThingBack);
     Controller1.ButtonR1.pressed(score);
 
 
