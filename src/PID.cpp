@@ -15,6 +15,21 @@ PID::PID(float Kp, float Ki, float Kd, float limitIntegral, float pidExitError, 
     this->firstRun = true;
 }
 
+PID::PID(float Kp, float Ki, float Kd, float limitIntegral, float pidExitError, float minOutput, float maxOutput, int timeout): 
+ Ki(Ki), 
+ Kp(Kp), 
+ Kd(Kd),
+ limitIntegral(limitIntegral),
+ pidExitError(pidExitError),
+ minOutput(minOutput),
+ maxOutput(maxOutput),
+ timeout(timeout)
+{
+    this->firstRun = true;
+}
+
+
+
 //resets the previous error and sets first run to true
 void PID::resetPID(){ 
     this->prevError = 0;

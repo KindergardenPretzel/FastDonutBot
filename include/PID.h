@@ -16,7 +16,8 @@ class PID
         unsigned int startTime;
 
     public:
-        PID(float, float, float, float, float, int);
+        PID(float Kp, float Ki, float Kd, float limitIntegral, float pidExitError, int timeout);
+        PID(float Kp, float Ki, float Kd, float limitIntegral, float pidExitError, float minOutput, float maxOutput, int timeout); 
         float calculate(float);
         bool isFinished();
         void resetPID();

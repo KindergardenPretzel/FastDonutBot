@@ -12,6 +12,14 @@ class DriveBase
         vex::motor MotorRB;
         float in_per_rev;
         bool is_motor_reversed(int);
+        float default_drive_Kp{1.5};
+        float default_drive_Ki{0};
+        float default_drive_Kd{0};
+        float default_drive_limit_integral{0.4};
+        float default_drive_exit_error{0.3};
+        float drive_default_min{1};
+        float drive_default_max{9};
+        int default_drive_timeout;
 
     public:
         DriveBase(int, int, int, int, int, int, int, float);
@@ -29,8 +37,11 @@ class DriveBase
         float getFwdPosition();
         float getSidePosition();
         void SetBrake(vex::brakeType);
-        void DriveDistance(float);
-        void DriveDistance(float, float);
+        void DriveDistance(float distance);
+        void DriveDistance(float distance, float heading);
+        void DriveDistance(float distance, float Kp, float Ki, float Kd, float limit_integral, float exit_error, int timeout);
+        void DriveDistance(float distance, float heading, float Kp, float Ki, float Kd, float limit_integral, float exit_error, int timeout);
+        void DriveDistance(float distance, float dest_heading, float Kp, float Ki, float Kd, float limit_integral, float exit_error, float minOut, float maxOut, float timeout);
         void TurnAngle(float);
         void swingRight(float);
         void swingLeft(float);

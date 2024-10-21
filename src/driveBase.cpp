@@ -123,13 +123,28 @@ float DriveBase::turnAngleOptimization(float angle)
     return angle;
 }
 
+
+
+
 void DriveBase::DriveDistance(float distance){
-this->DriveDistance(distance, this->getHeading());
+    this->DriveDistance(distance, this->getHeading(), default_drive_Kp, default_drive_Ki, default_drive_Kd, default_drive_limit_integral, default_drive_exit_error, drive_default_min, drive_default_max, default_drive_timeout);
+}
+
+void DriveBase::DriveDistance(float distance, float heading){
+    this->DriveDistance(distance, heading, default_drive_Kp, default_drive_Ki, default_drive_Kd, default_drive_limit_integral, default_drive_exit_error, drive_default_min, drive_default_max, default_drive_timeout);
+}
+
+void DriveBase::DriveDistance(float distance, float Kp, float Ki, float Kd, float limit_integral, float exit_error, int timeout){
+    this->DriveDistance(distance, this->getHeading(), default_drive_Kp, default_drive_Ki, default_drive_Kd, default_drive_limit_integral, default_drive_exit_error, drive_default_min, drive_default_max, default_drive_timeout);
+}
+
+void DriveBase::DriveDistance(float distance, float heading, float Kp, float Ki, float Kd, float limit_integral, float exit_error, int timeout){
+    this->DriveDistance(distance, heading, default_drive_Kp, default_drive_Ki, default_drive_Kd, default_drive_limit_integral, default_drive_exit_error, drive_default_min, drive_default_max, default_drive_timeout);
 }
 
 //drives forward or backward for the distance that is instructed
-void DriveBase::DriveDistance(float distance, float dest_heading){
-    PID pid = PID(0.8, 0, 0, .7, .3, 4000);
+void DriveBase::DriveDistance(float distance, float dest_heading, float Kp, float Ki, float Kd, float limit_integral, float exit_error, float minOut, float maxOut, float timeout){
+    PID pid = PID(Kp, Ki, Kd, limit_integral, exit_error, minOut, maxOut, timeout);
     pid.setPIDmax(10);
     pid.setPIDmin(0.1);
     PID heading_pid = PID(0.1, 0, 0, 2, 1, 15000);

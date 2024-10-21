@@ -92,7 +92,7 @@ void score(){
   //intake.setVelocity(90.0, percent);
   //intake.spin(forward);
   intake_spin_fwd(90);
-  scoring.setVelocity(70.0, percent);
+  scoring.setVelocity(65.0, percent);
   scoring.spin(forward);
   enabled = true;
   }
@@ -141,7 +141,7 @@ int ShowMeInfo(){
   Brain.Screen.setCursor(6,2);
   Brain.Screen.print("position: %f", robot->getFwdPosition());
   //Controller1.Screen.print("X: %f, Y: %f", OdometryObjPtr->X, OdometryObjPtr->Y);
-  
+
   this_thread::sleep_for(40);
   Brain.Screen.clearScreen();
   };
@@ -169,6 +169,8 @@ void pre_auton(void) {
 /*---------------------------------------------------------------------------*/
 
 void autonomous(void) {
+
+
   //robot->SetBrake(brake);
   robot->swingRight(270);
   /*
