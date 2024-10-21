@@ -172,27 +172,15 @@ void autonomous(void) {
 
 
   //robot->SetBrake(brake);
-  robot->swingRight(270);
+  //robot->swingRight(270);
   /*
-  robot->DriveDistance(-43);
+  robot->DriveDistance(-40);
   wait(20,msec);
-  robot->swingLeft(128);
+  robot->TurnAngle(126);
   wait(20,msec);
-  */
-  //robot->DriveDistance(-10);
-  
-  //robot->DriveDistance(-41, 128);
-  //robot->DriveDistance(-10);
-  //wait(1,sec);
-  //robot->TurnAngle(340);
-//wait(3,sec);
-  //robot->TurnAngle(60);
-//wait(3,sec);
- //robot->TurnAngle(120);
-  //wait(1,sec);
-  //robot->TurnAngle(90);
-
-  //robot->TurnAngle(0);
+  robot->DriveDistance(-10);
+  wait(20,msec);
+  clampFunc();*/
 }
 
 /*---------------------------------------------------------------------------*/
