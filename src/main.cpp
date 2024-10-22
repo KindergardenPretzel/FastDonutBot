@@ -14,6 +14,7 @@
 #include "PID.h"
 //#include "toolbox.h"
 #include <memory>
+#include <iostream>
 
 
 using namespace vex;
@@ -30,6 +31,8 @@ digital_out intake_lift = digital_out(Brain.ThreeWirePort.B);
 motor intake = motor(PORT5,ratio6_1,false); 
 motor scoring = motor(PORT6,ratio6_1,false);
 
+optical eyeball = optical(PORT9);
+
 float power_pct = 0.8;
 // define your global instances of motors and other devices here
 
@@ -37,6 +40,11 @@ float power_pct = 0.8;
 std::shared_ptr<DriveBase> robot(new DriveBase(PORT13, -PORT11, PORT12, -PORT1, -PORT2, PORT3, PORT4, 6.28));
 //std::shared_ptr<Odometry> odom(new Odometry(robot));
 Odometry odom = Odometry(robot);
+
+enum Colors {
+  OWN = 16711680, // RED 
+  OPPOSITE = 50 // BLUE
+};
 
 //opens or closes clamp depending on whether the pneumatic cylynder is out or in
 void clampFunc(){  
@@ -84,25 +92,72 @@ void reverseIntake(){
   scoring.stop();
 }
 
+int stopWhenColorSeenTask()
+{
+  eyeball.setLightPower(75, vex::pct);
+  eyeball.setLight(ledState::on);
+  bool toggle = true;
+  while (toggle) {
+    color detectColor = eyeball.color();
+    //std::cout << detectColor << std::endl;
+    //vex::wait(10, msec);
+    if (eyeball.color() == OWN) {
+      toggle = false;
+      intake.stop();
+      scoring.stop();
+      eyeball.setLight(ledState::off);
+    }
+   vex::wait(10, msec);
+  }
+  return 0;
+}
+
+void stopWhenColorSeen()
+{
+  static bool enabled = false;
+  if (!enabled) {
+    vex::task Stop(stopWhenColorSeenTask);
+    enabled = true; 
+  }
+  else{
+    task::stop(stopWhenColorSeenTask);
+    eyeball.setLight(ledState::off);
+    enabled = false; 
+  }
+
+}
+
+// checks if intake and belt motor spinning
+bool isBeltSpinning()
+{
+  if(scoring.power() > 0 && intake.power() > 0)
+  {
+    return true;
+  }
+  return false;
+}
+
+
 //spins the intake and conveyo belt forward
 void score(){
-  static bool enabled = false;
-  if (not enabled)
+  //vex::task Color(stopWhenColorSeen);
+
+  //static bool enabled = false;
+  if (!isBeltSpinning())
   {
   //intake.setVelocity(90.0, percent);
   //intake.spin(forward);
   intake_spin_fwd(90);
   scoring.setVelocity(65.0, percent);
   scoring.spin(forward);
-  enabled = true;
+  //enabled = true;
   }
   else 
   {
-  //waitUntil((!Controller1.ButtonR1.pressing()));
    scoring.stop();
    //intake.stop();
    intake_stop();
-   enabled = false;
+   //enabled = false;
   };
 }
 
@@ -220,7 +275,7 @@ int main() {
     Controller1.ButtonL2.pressed(lift_intake);
     Controller1.ButtonR2.pressed(reverseIntake);
     Controller1.ButtonR1.pressed(score);
-
+    Controller1.ButtonY.pressed(stopWhenColorSeen);
 
   // Run the pre-autonomous function.
   pre_auton();
