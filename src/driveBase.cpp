@@ -135,11 +135,11 @@ void DriveBase::DriveDistance(float distance, float heading){
 }
 
 void DriveBase::DriveDistance(float distance, float Kp, float Ki, float Kd, float limit_integral, float exit_error, int timeout){
-    this->DriveDistance(distance, this->getHeading(), default_drive_Kp, default_drive_Ki, default_drive_Kd, default_drive_limit_integral, default_drive_exit_error, drive_default_min, drive_default_max, default_drive_timeout);
+    this->DriveDistance(distance, this->getHeading(), Kp, Ki, Kd, limit_integral, exit_error, drive_default_min, drive_default_max, timeout);
 }
 
 void DriveBase::DriveDistance(float distance, float heading, float Kp, float Ki, float Kd, float limit_integral, float exit_error, int timeout){
-    this->DriveDistance(distance, heading, default_drive_Kp, default_drive_Ki, default_drive_Kd, default_drive_limit_integral, default_drive_exit_error, drive_default_min, drive_default_max, default_drive_timeout);
+    this->DriveDistance(distance, heading, Kp, Ki, Kd, limit_integral, exit_error, drive_default_min, drive_default_max, timeout);
 }
 
 //drives forward or backward for the distance that is instructed
@@ -147,8 +147,8 @@ void DriveBase::DriveDistance(float distance, float dest_heading, float Kp, floa
     PID pid = PID(Kp, Ki, Kd, limit_integral, exit_error, minOut, maxOut, timeout);
     //pid.setPIDmax(10);
     //pid.setPIDmin(0.1);
-    PID heading_pid = PID(0.1, 0, 0, 2, 1, 15000);
-    heading_pid.setPIDmax(6);
+    PID heading_pid = PID(0.1, 0, 0, 1, 1, 15000);
+    heading_pid.setPIDmax(2);
     heading_pid.setPIDmin(0.1);
 
     float destination = this->getFwdPosition() + distance;
@@ -157,59 +157,56 @@ void DriveBase::DriveDistance(float distance, float dest_heading, float Kp, floa
     float position;
     float heading_error;
     float heading_correction_speed;
-    std::cout << "#####################" << std::endl;
+    //std::cout << "#####################" << std::endl;
+
     do
     {   
         position = this->getFwdPosition();
         error = destination - position;
-        std::cout << "Position:" << position << std::endl;
+        //std::cout << "Position:" << position << std::endl;
         speed = pid.calculate(error);
 
         heading_error = dest_heading - this->getHeading();
         heading_correction_speed = heading_pid.calculate(turnAngleOptimization(heading_error));
-
-        this->LeftMotors.spin(vex::fwd, speed + heading_correction_speed, vex::volt);
         this->RightMotors.spin(vex::fwd, speed - heading_correction_speed, vex::volt);
+        this->LeftMotors.spin(vex::fwd, speed + heading_correction_speed, vex::volt);
         vex::wait(10, vex::msec);
 
     }while(!pid.isFinished());
-    std::cout<< "STOP" << std::endl;
-    this->LeftMotors.stop(vex::brake);
-    this->RightMotors.stop(vex::brake);
+    //std::cout<< "STOP" << std::endl;
+    this->LeftMotors.stop(vex::hold);
+    this->RightMotors.stop(vex::hold);
+}
+
+void DriveBase::TurnAngle(float angle){
+    this->TurnAngle(angle, default_turn_Kp, default_turn_Ki, default_turn_Kd, default_turn_limit_integral, default_turn_exit_error, default_turn_min, default_turn_max, default_turn_timeout);
 }
 
 //turns to the angle instructed [0:359]
-void DriveBase::TurnAngle(float angle)
+void DriveBase::TurnAngle(float angle, float Kp, float Ki, float Kd, float limit_integral, float exit_error, float minOut, float maxOut, float timeout)
 {
-    PID pid = PID(0.09, 0, 0, .7, 1, 2000);
-    pid.setPIDmax(6);
-    pid.setPIDmin(1.7);
+    PID pid = PID(Kp, Ki, Kd, limit_integral, exit_error, minOut, maxOut, timeout);
     float error;
     float speed;
     float current_heading;
-    std::cout<< "##########################" << std::endl<< std::endl<< std::endl<< std::endl;
     do{
         current_heading = this->getHeading();
         error = this->turnAngleOptimization(angle - current_heading);
-        std::cout << "Heading:" << current_heading << std::endl;
-        std::cout << "Error:" << error << std::endl;
         speed = pid.calculate(error);
-        std::cout << "Speed:" << speed << std::endl;
         this->LeftMotors.spin(vex::fwd, speed, vex::volt);
         this->RightMotors.spin(vex::fwd, -speed, vex::volt);
         vex::wait(10, vex::msec);
 
     }while(!pid.isFinished());
-    //std::cout << "STOP" << std::endl;
 
     this->LeftMotors.stop(vex::brake);
     this->RightMotors.stop(vex::brake);
 }
 
-void DriveBase::swingRight(float angle)
+void DriveBase::swingRightHold(float angle)
 {
     PID pid = PID(0.4, 0, 0, .7, 1, 2000);
-    pid.setPIDmax(6);
+    pid.setPIDmax(10);
     pid.setPIDmin(1.7);
     float error;
     float speed;
@@ -230,11 +227,11 @@ void DriveBase::swingRight(float angle)
     this->RightMotors.stop(vex::brake);
 }
 
-void DriveBase::swingLeft(float angle)
+void DriveBase::swingLeftHold(float angle)
 {
     PID pid = PID(0.4, 0, 0, .7, 1, 2000);
-    pid.setPIDmax(6);
-    pid.setPIDmin(1.7);
+    pid.setPIDmax(10);
+    pid.setPIDmin(1.5);
     float error;
     float speed;
     float current_heading;
@@ -242,7 +239,7 @@ void DriveBase::swingLeft(float angle)
         current_heading = this->getHeading();
         error = this->turnAngleOptimization(angle - current_heading);
         speed = pid.calculate(error);
-        this->RightMotors.spin(vex::fwd, speed, vex::volt);
+        this->RightMotors.spin(vex::fwd, -speed, vex::volt);
         this->LeftMotors.stop(vex::hold);
         vex::wait(10, vex::msec);
 

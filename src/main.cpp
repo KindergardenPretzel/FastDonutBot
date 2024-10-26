@@ -21,7 +21,7 @@ using namespace vex;
 
 // A global instance of competition
 competition Competition;
-competition_debug Cdebug( Competition );
+//competition_debug Cdebug( Competition );
 
 brain Brain;
 controller Controller1 = controller(primary);
@@ -32,6 +32,8 @@ motor intake = motor(PORT5,ratio6_1,false);
 motor scoring = motor(PORT6,ratio6_1,false);
 
 optical eyeball = optical(PORT9);
+distance DistanceSensor = distance(PORT7);
+
 
 float power_pct = 0.8;
 // define your global instances of motors and other devices here
@@ -40,6 +42,10 @@ float power_pct = 0.8;
 std::shared_ptr<DriveBase> robot(new DriveBase(PORT13, -PORT11, PORT12, -PORT1, -PORT2, PORT3, PORT4, 6.28));
 //std::shared_ptr<Odometry> odom(new Odometry(robot));
 Odometry odom = Odometry(robot);
+bool isBeltSpinning = false;
+bool isStopperEnabled = false;
+
+void score();
 
 enum Colors {
   OWN = 16711680, // RED 
@@ -103,9 +109,9 @@ int stopWhenColorSeenTask()
     //vex::wait(10, msec);
     if (eyeball.color() == OWN) {
       toggle = false;
-      intake.stop();
-      scoring.stop();
+      score();
       eyeball.setLight(ledState::off);
+      isStopperEnabled = false;
     }
    vex::wait(10, msec);
   }
@@ -114,28 +120,27 @@ int stopWhenColorSeenTask()
 
 void stopWhenColorSeen()
 {
-  static bool enabled = false;
-  if (!enabled) {
+  if (!isStopperEnabled) {
     vex::task Stop(stopWhenColorSeenTask);
-    enabled = true; 
+    isStopperEnabled = true; 
   }
   else{
     task::stop(stopWhenColorSeenTask);
     eyeball.setLight(ledState::off);
-    enabled = false; 
+    isStopperEnabled = false; 
   }
 
 }
 
 // checks if intake and belt motor spinning
-bool isBeltSpinning()
-{
-  if(scoring.power() > 0 && intake.power() > 0)
-  {
-    return true;
-  }
-  return false;
-}
+//bool isBeltSpinning()
+//{
+ // if(scoring.power() > 0 || intake.power() > 0)
+ // {
+ //   return true;
+ // }
+ // return false;
+//}
 
 
 //spins the intake and conveyo belt forward
@@ -143,21 +148,22 @@ void score(){
   //vex::task Color(stopWhenColorSeen);
 
   //static bool enabled = false;
-  if (!isBeltSpinning())
+  if (!isBeltSpinning)
   {
   //intake.setVelocity(90.0, percent);
   //intake.spin(forward);
+
   intake_spin_fwd(90);
   scoring.setVelocity(65.0, percent);
   scoring.spin(forward);
-  //enabled = true;
+  isBeltSpinning = true;
   }
   else 
   {
    scoring.stop();
    //intake.stop();
    intake_stop();
-   //enabled = false;
+   isBeltSpinning = false;
   };
 }
 
@@ -208,7 +214,6 @@ void pre_auton(void) {
   Brain.Screen.print("Calibrating Inertial Sensor");
   robot->calibrateInertial();
   Brain.Screen.clearScreen();
-  odom.setStartingPoint(10, 10, 90);
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
 }
@@ -223,19 +228,140 @@ void pre_auton(void) {
 /*  You must modify the code to add your own robot specific commands here.   */
 /*---------------------------------------------------------------------------*/
 
+void auton_red_two_stakes() {
+  
+/* exmaple 
+  robot->DriveDistance(-20, 0.5, 0.07, 0, 2.0, 0.5, 5000);
+  robot->DriveDistance(5, 1.2, 0.07, 0, 1.5, 0.5, 5000);
+  robot->DriveDistance(-10, 1, 0.07, 0, 0.5, 0.5, 5000);
+*/
+// angle, P,I,D,startIntegral, exit, min, max, timeout
+//robot->TurnAngle(175, 0.15, 0.01, 0, 15, 2, 2, 11, 2000);
+
+  odom.setStartingPoint(10, 10, 90);
+
+  robot->DriveDistance(-36, 0.5, 0.07, 0, 2.0, 0.5, 5000);
+  wait(20,msec);
+  robot->swingLeftHold(120);
+  robot->DriveDistance(-8, 1, 0.07, 0, 0.5, 0.5, 2000);
+  robot->DriveDistance(-4.5, 0.5, 0.07, 0, 2.0, 0.5, 5000);
+  wait(30,msec);
+  clampFunc();
+  wait(20,msec);
+  score();
+  robot->swingLeftHold(70);
+  robot->DriveDistance(12, 1, 0.07, 0, 0.5, 0.5, 2000);
+  wait(400,msec);
+  //intake_stop();
+  //clampFunc();
+}
+
+void auton_blue_two_stakes() {
+  odom.setStartingPoint(10, 10, 90);
+
+  robot->DriveDistance(-36, 0.5, 0.07, 0, 2.0, 0.5, 5000);
+  wait(20,msec);
+  robot->swingRightHold(60);
+  robot->DriveDistance(-8, 1, 0.07, 0, 0.5, 0.5, 2000);
+  robot->DriveDistance(-4.5, 0.5, 0.07, 0, 2.0, 0.5, 5000);
+  wait(30,msec);
+  clampFunc();
+  wait(20,msec);
+  score();
+  robot->swingRightHold(110);
+  robot->DriveDistance(12, 1, 0.07, 0, 0.5, 0.5, 2000);
+  wait(400,msec);
+  //intake_stop();
+  //clampFunc();
+}
+
+void auton_red_left() {
+  odom.setStartingPoint(10, 10, 2);
+  robot->DriveDistance(5, 1.2, 0.07, 0, 1.5, 0.5, 2000);
+  robot->TurnAngle(304, 0.15, 0.01, 0, 15, 2, 2, 11, 2000);
+  lift_intake();
+  robot->DriveDistance(4, 1.2, 0.07, 0, 1.5, 0.5, 2000);
+  intake_spin_fwd();
+  wait(20,msec);
+  lift_intake();
+  wait(20,msec);
+  robot->DriveDistance(7, 1.2, 0.07, 0, 1.5, 0.5, 2000);
+  robot->TurnAngle(273, 0.15, 0.01, 0, 15, 2, 2, 11, 2000);
+  wait(20,msec);
+  float distToField = DistanceSensor.objectDistance(inches);
+  wait(20,msec);
+  robot->DriveDistance(-(distToField - 5), 1.1, 0.07, 0, 1.5, 0.5, 2000);
+  intake_stop();
+  wait(20,msec);
+  score();
+  wait(1600,msec);
+  robot->DriveDistance(10, 1.2, 0.07, 0, 1.5, 0.5, 2000);
+  wait(30, msec);
+  score();
+  wait(20,msec);
+  robot->TurnAngle(30, 0.15, 0.01, 0, 15, 2, 2, 11, 2000);
+  wait(300,msec);
+  robot->DriveDistance(-30, 0.5, 0.07, 0, 2.0, 0.5, 5000);
+  wait(20,msec);
+  clampFunc();
+  wait(30,msec);
+  robot->TurnAngle(200, 0.15, 0.01, 0, 15, 2, 2, 11, 2000);
+  wait(30, msec);
+  score();
+  wait(200, msec);
+  robot->DriveDistance(24, 0.5, 0.07, 0, 2.0, 0.5, 5000);
+  wait(20, msec);
+  robot->DriveDistance(-20, 300, 1.2, 0.07, 0, 1.5, 0.5, 2000);
+  wait(20, msec);
+  robot->DriveDistance(15, 1.2, 0.07, 0, 1.5, 0.5, 2000);
+}
+
+void auton_blue_left() {
+  odom.setStartingPoint(10, 10, 2);
+  robot->DriveDistance(5, 1.2, 0.07, 0, 1.5, 0.5, 2000);
+  robot->TurnAngle(304, 0.15, 0.01, 0, 15, 2, 2, 11, 2000);
+  lift_intake();
+  robot->DriveDistance(4, 1.2, 0.07, 0, 1.5, 0.5, 2000);
+  intake_spin_fwd();
+  wait(20,msec);
+  lift_intake();
+  wait(20,msec);
+  robot->DriveDistance(7, 1.2, 0.07, 0, 1.5, 0.5, 2000);
+  robot->TurnAngle(273, 0.15, 0.01, 0, 15, 2, 2, 11, 2000);
+  wait(20,msec);
+  float distToField = DistanceSensor.objectDistance(inches);
+  wait(20,msec);
+  robot->DriveDistance(-(distToField - 5.5), 1.1, 0.07, 0, 1.5, 0.5, 2000);
+  intake_stop();
+  wait(20,msec);
+  score();
+  wait(1600,msec);
+  robot->DriveDistance(10, 1.2, 0.07, 0, 1.5, 0.5, 2000);
+  wait(30, msec);
+  score();
+  wait(20,msec);
+  robot->TurnAngle(30, 0.15, 0.01, 0, 15, 2, 2, 11, 2000);
+  wait(300,msec);
+  robot->DriveDistance(-30, 0.5, 0.07, 0, 2.0, 0.5, 5000);
+  wait(20,msec);
+  clampFunc();
+  wait(30,msec);
+  robot->TurnAngle(165, 0.15, 0.01, 0, 15, 2, 2, 11, 2000);
+  wait(30, msec);
+  score();
+  wait(200, msec);
+  robot->DriveDistance(26, 0.5, 0.07, 0, 2.0, 0.5, 5000);
+  wait(30,msec);
+  robot->TurnAngle(300, 0.15, 0.01, 0, 15, 2, 2, 11, 2000);
+  wait(100, msec);
+  robot->DriveDistance(24, 0.5, 0.07, 0, 1.5, 0.5, 2000);
+}
+
+
 void autonomous(void) {
+//auton_red_left();
+auton_blue_left();
 
-
-  //robot->SetBrake(brake);
-  //robot->swingRight(270);
-  /*
-  robot->DriveDistance(-40);
-  wait(20,msec);
-  robot->TurnAngle(126);
-  wait(20,msec);
-  robot->DriveDistance(-10);
-  wait(20,msec);
-  clampFunc();*/
 }
 
 /*---------------------------------------------------------------------------*/
