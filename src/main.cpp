@@ -47,9 +47,13 @@ bool isStopperEnabled = false;
 
 void score();
 
-enum Colors {
+/*enum Colors {
   OWN = 16711680, // RED 
-  OPPOSITE = 50 // BLUE
+  OPPOSITE = 255 // BLUE
+};*/
+enum Colors {
+  OWN = 255, // BLUE 
+  OPPOSITE = 16711680 // RED
 };
 
 //opens or closes clamp depending on whether the pneumatic cylynder is out or in
@@ -355,14 +359,108 @@ void auton_blue_left() {
   robot->TurnAngle(300, 0.15, 0.01, 0, 15, 2, 2, 11, 2000);
   wait(100, msec);
   robot->DriveDistance(24, 0.5, 0.07, 0, 1.5, 0.5, 2000);
-  wait(100);
+  wait(100, msec);
+  clampFunc();
+}
+
+void auton_red_right() {
+  odom.setStartingPoint(10, 10, 180);
+  lift_intake();
+  robot->DriveDistance(5, 1.2, 0.07, 0, 1.5, 0.5, 2000);
+  wait(20,msec);
+  robot->TurnAngle(239, 0.15, 0.01, 0, 15, 2, 2, 11, 2000);
+  wait(20,msec);
+  robot->DriveDistance(4, 1.2, 0.07, 0, 1.5, 0.5, 2000);
+  wait(20,msec);
+  intake_spin_fwd();
+  wait(20,msec);
+  lift_intake();
+  wait(20,msec);
+  robot->DriveDistance(7, 1.2, 0.07, 0, 1.5, 0.5, 2000);
+  robot->TurnAngle(270, 0.15, 0.01, 0, 15, 2, 2, 11, 2000);
+  wait(20,msec);
+  float distToField = DistanceSensor.objectDistance(inches);
+  wait(20,msec);
+  robot->DriveDistance(-(distToField - 5.5), 1.1, 0.07, 0, 1.5, 0.5, 2000);
+  intake_stop();
+  wait(20,msec);
+  score();
+  wait(1600,msec);
+  robot->DriveDistance(10, 1.2, 0.07, 0, 1.5, 0.5, 2000);
+  wait(30, msec);
+  score();
+  wait(20,msec);
+  robot->TurnAngle(153, 0.15, 0.01, 0, 15, 2, 2, 11, 2000);//127
+  wait(300,msec);
+  robot->DriveDistance(-30, 0.5, 0.07, 0, 2.0, 0.5, 5000);
+  wait(20,msec);
+  clampFunc();
+  wait(30,msec);
+  robot->TurnAngle(10, 0.15, 0.01, 0, 15, 2, 2, 11, 2000);
+  wait(30, msec);
+  score();
+  wait(400, msec);
+  robot->DriveDistance(26, 0.5, 0.07, 0, 2.0, 0.5, 5000);
+  wait(30,msec);
+  robot->TurnAngle(230, 0.15, 0.01, 0, 15, 2, 2, 11, 2000);
+  wait(100, msec);
+  robot->DriveDistance(24, 0.5, 0.07, 0, 1.5, 0.5, 2000);
+  wait(100, msec);
   clampFunc();
 }
 
 
+void auton_blue_right() {
+  odom.setStartingPoint(10, 10, 180);
+  lift_intake();
+  robot->DriveDistance(5, 1.2, 0.07, 0, 1.5, 0.5, 2000);
+  wait(20,msec);
+  robot->TurnAngle(239, 0.15, 0.01, 0, 15, 2, 2, 11, 2000);
+  wait(20,msec);
+  robot->DriveDistance(4, 1.2, 0.07, 0, 1.5, 0.5, 2000);
+  wait(20,msec);
+  intake_spin_fwd();
+  wait(20,msec);
+  lift_intake();
+  wait(20,msec);
+  robot->DriveDistance(7, 1.2, 0.07, 0, 1.5, 0.5, 2000);
+  robot->TurnAngle(270, 0.15, 0.01, 0, 15, 2, 2, 11, 2000);
+  wait(20,msec);
+  float distToField = DistanceSensor.objectDistance(inches);
+  wait(20,msec);
+  robot->DriveDistance(-(distToField - 5.5), 1.1, 0.07, 0, 1.5, 0.5, 2000);
+  intake_stop();
+  wait(20,msec);
+  score();
+  wait(1600,msec);
+  robot->DriveDistance(10, 1.2, 0.07, 0, 1.5, 0.5, 2000);
+  wait(30, msec);
+  score();
+  wait(20,msec);
+  robot->TurnAngle(153, 0.15, 0.01, 0, 15, 2, 2, 11, 2000);//127
+  wait(300,msec);
+  robot->DriveDistance(-30, 0.5, 0.07, 0, 2.0, 0.5, 5000);
+  wait(20,msec);
+  clampFunc();
+  wait(30,msec);
+  robot->TurnAngle(340, 0.15, 0.01, 0, 15, 2, 2, 11, 2000);
+  wait(30, msec);
+  score();
+  wait(400, msec);
+  robot->DriveDistance(24, 0.5, 0.07, 0, 2.0, 0.5, 5000);
+  wait(30,msec);
+  robot->TurnAngle(205, 0.15, 0.01, 0, 15, 2, 2, 11, 2000);
+  wait(100, msec);
+  robot->DriveDistance(24, 0.5, 0.07, 0, 1.5, 0.5, 2000);
+  wait(100, msec);
+  clampFunc();
+}
+
 void autonomous(void) {
 //auton_red_left();
-auton_blue_left();
+//auton_blue_left();
+//auton_red_right();
+auton_blue_right();
 
 }
 
