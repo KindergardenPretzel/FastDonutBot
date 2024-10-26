@@ -355,6 +355,8 @@ void auton_blue_left() {
   robot->TurnAngle(300, 0.15, 0.01, 0, 15, 2, 2, 11, 2000);
   wait(100, msec);
   robot->DriveDistance(24, 0.5, 0.07, 0, 1.5, 0.5, 2000);
+  wait(100);
+  clampFunc();
 }
 
 
