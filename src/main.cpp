@@ -294,7 +294,7 @@ void auton_red_left() {
   wait(20,msec);
   float distToField = DistanceSensor.objectDistance(inches);
   wait(20,msec);
-  robot->DriveDistance(-(distToField - 5), 1.1, 0.07, 0, 1.5, 0.5, 2000);
+  robot->DriveDistance(-(distToField - 5.7), 0.9, 0.07, 0, 1.5, 0.5, 2000);
   intake_stop();
   wait(20,msec);
   score();
@@ -335,7 +335,7 @@ void auton_blue_left() {
   wait(20,msec);
   float distToField = DistanceSensor.objectDistance(inches);
   wait(20,msec);
-  robot->DriveDistance(-(distToField - 5.5), 1.1, 0.07, 0, 1.5, 0.5, 2000);
+  robot->DriveDistance(-(distToField - 5.7), 0.9, 0.07, 0, 1.5, 0.5, 2000);
   intake_stop();
   wait(20,msec);
   score();
@@ -381,7 +381,7 @@ void auton_red_right() {
   wait(20,msec);
   float distToField = DistanceSensor.objectDistance(inches);
   wait(20,msec);
-  robot->DriveDistance(-(distToField - 5.5), 1.1, 0.07, 0, 1.5, 0.5, 2000);
+  robot->DriveDistance(-(distToField - 5.7), 0.9, 0.07, 0, 1.5, 0.5, 2000);
   intake_stop();
   wait(20,msec);
   score();
@@ -428,7 +428,7 @@ void auton_blue_right() {
   wait(20,msec);
   float distToField = DistanceSensor.objectDistance(inches);
   wait(20,msec);
-  robot->DriveDistance(-(distToField - 5.5), 1.1, 0.07, 0, 1.5, 0.5, 2000);
+  robot->DriveDistance(-(distToField - 5.7), 0.9, 0.07, 0, 1.5, 0.5, 2000);
   intake_stop();
   wait(20,msec);
   score();
@@ -458,9 +458,9 @@ void auton_blue_right() {
 
 void autonomous(void) {
 //auton_red_left();
-//auton_blue_left();
+auton_blue_left();
 //auton_red_right();
-auton_blue_right();
+//auton_blue_right();
 
 }
 
