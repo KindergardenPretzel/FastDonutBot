@@ -9,11 +9,12 @@ class PID
         bool firstRun{true};
         float limitIntegral;
         float integral;
-        float minOutput{1};
+        float minOutput{0.1};
         float maxOutput{12};
         float pidExitError;
         unsigned int timeout;
         unsigned int startTime;
+        bool debugOn{false};
 
     public:
         PID(float Kp, float Ki, float Kd, float limitIntegral, float pidExitError, int timeout);
@@ -23,4 +24,5 @@ class PID
         void resetPID();
         void setPIDmax(float);
         void setPIDmin(float);
+        void setDebug(bool);
 };

@@ -27,6 +27,7 @@ brain Brain;
 controller Controller1 = controller(primary);
 digital_out clamp = digital_out(Brain.ThreeWirePort.A);
 digital_out intake_lift = digital_out(Brain.ThreeWirePort.B);
+digital_out bypass = digital_out(Brain.ThreeWirePort.H);
 
 motor intake = motor(PORT5,ratio6_1,false); 
 motor scoring = motor(PORT6,ratio6_1,false);
@@ -44,17 +45,19 @@ std::shared_ptr<DriveBase> robot(new DriveBase(PORT13, -PORT11, PORT12, -PORT1, 
 Odometry odom = Odometry(robot);
 bool isBeltSpinning = false;
 bool isStopperEnabled = false;
-
+bool autonEnabled = true;
+int autonId = 5;
+bool isBypassEnabled = true;
 void score();
 
-/*enum Colors {
+enum Colors {
   OWN = 16711680, // RED 
   OPPOSITE = 255 // BLUE
-};*/
-enum Colors {
+};
+/*enum Colors {
   OWN = 255, // BLUE 
   OPPOSITE = 16711680 // RED
-};
+};*/
 
 //opens or closes clamp depending on whether the pneumatic cylynder is out or in
 void clampFunc(){  
@@ -102,21 +105,34 @@ void reverseIntake(){
   scoring.stop();
 }
 
-int stopWhenColorSeenTask()
+int ColorSensing()
 {
-  eyeball.setLightPower(75, vex::pct);
+  eyeball.setLightPower(50, vex::pct);
   eyeball.setLight(ledState::on);
   bool toggle = true;
   while (toggle) {
     color detectColor = eyeball.color();
     //std::cout << detectColor << std::endl;
     //vex::wait(10, msec);
-    if (eyeball.color() == OWN) {
-      toggle = false;
+    if (eyeball.color() == OWN && isStopperEnabled){
+      //toggle = false;
       score();
-      eyeball.setLight(ledState::off);
+      //eyeball.setLight(ledState::off);
       isStopperEnabled = false;
     }
+    else if(eyeball.color() == OPPOSITE && isBypassEnabled)
+    {
+      bypass.set(true);
+     // vex::wait(200, msec);
+    }
+    else if(eyeball.color() == OWN && isBypassEnabled)
+    {
+      bypass.set(false);
+    }
+    //else
+    //{
+      //bypass.set(false);
+   // }
    vex::wait(10, msec);
   }
   return 0;
@@ -125,12 +141,12 @@ int stopWhenColorSeenTask()
 void stopWhenColorSeen()
 {
   if (!isStopperEnabled) {
-    vex::task Stop(stopWhenColorSeenTask);
+    //vex::task Stop(stopWhenColorSeenTask);
     isStopperEnabled = true; 
   }
   else{
-    task::stop(stopWhenColorSeenTask);
-    eyeball.setLight(ledState::off);
+    //task::stop(stopWhenColorSeenTask);
+    //eyeball.setLight(ledState::off);
     isStopperEnabled = false; 
   }
 
@@ -198,13 +214,13 @@ int ShowMeInfo(){
   Brain.Screen.setPenColor(red);
 
   while(true) {
-  Brain.Screen.setCursor(4,2);
+  Brain.Screen.setCursor(3,2);
   Brain.Screen.print("X: %f, Y: %f", odom.x, odom.y);
-  Brain.Screen.setCursor(5,2);
+  Brain.Screen.setCursor(4,2);
   Brain.Screen.print("Heading: %f", robot->getHeading());
-
-  Brain.Screen.setCursor(6,2);
+  Brain.Screen.setCursor(5,2);
   Brain.Screen.print("position: %f", robot->getFwdPosition());
+  
   //Controller1.Screen.print("X: %f, Y: %f", OdometryObjPtr->X, OdometryObjPtr->Y);
 
   this_thread::sleep_for(40);
@@ -218,6 +234,45 @@ void pre_auton(void) {
   Brain.Screen.print("Calibrating Inertial Sensor");
   robot->calibrateInertial();
   Brain.Screen.clearScreen();
+  while(!autonEnabled)
+  {
+    switch(autonId)
+    {
+      case 1: 
+        Brain.Screen.setCursor(8,2);
+        Brain.Screen.print("Auton: Red Left Side Id: %d", autonId);
+      break;
+      case 2: 
+        Brain.Screen.setCursor(8,2);
+        Brain.Screen.print("Auton: Red Right Side Id: %d", autonId);
+      break;
+      case 3: 
+        Brain.Screen.setCursor(8,2);
+        Brain.Screen.print("Auton: Blue Left Side Id: %d", autonId);
+      break;
+      case 4: 
+        Brain.Screen.setCursor(8,2);
+        Brain.Screen.print("Auton: Blue Right Side Id: %d", autonId);
+      break;
+      case 5: 
+        Brain.Screen.setCursor(8,2);
+        Brain.Screen.print("Auton: Test Id: %d", autonId);
+      break;   
+    }
+    if(Brain.Screen.pressing())
+    {
+      while(Brain.Screen.pressing())
+      {}
+      autonId ++;
+      if(autonId > 5)
+      {
+        autonId = 1;
+      }
+      wait(10, msec);
+      Brain.Screen.clearLine(8);
+    }
+  }
+
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
 }
@@ -456,11 +511,35 @@ void auton_blue_right() {
   clampFunc();
 }
 
+void test_auton()
+{
+  robot->DriveDistance(-20, robot->getHeading(), 1.6, 0, 4, 2, 1, 1, 10, 5000);
+  wait(5,seconds);
+    //robot->DriveDistance(10, robot->getHeading(), 1.5, 0, 3, 2, 1, 1, 10, 5000);
+    //robot->DriveDistance(10, robot->getHeading(), 1.5, 0, 3, 2, 1, 1, 10, 5000);
+
+}
+
 void autonomous(void) {
-//auton_red_left();
-auton_blue_left();
-//auton_red_right();
-//auton_blue_right();
+autonEnabled = true;
+switch(autonId)
+{
+  case 1:
+    auton_red_left();
+  break;
+  case 2:
+    auton_red_right();
+  break;
+  case 3:
+    auton_blue_left();
+  break;
+  case 4:
+    auton_blue_right();
+  break;
+  case 5:
+    test_auton();
+  break;
+}
 
 }
 
@@ -480,6 +559,7 @@ void usercontrol(void) {
   while (1) {
     float throttle = Controller1.Axis3.position();
     float turn = Controller1.Axis1.position();
+    robot->SetBrake(coast);
 
     robot->LeftMotors.spin(vex::fwd, power_pct * 0.0001 * pow(throttle+turn, 3), vex::pct);
     robot->RightMotors.spin(vex::fwd, power_pct * 0.0001 * pow(throttle-turn, 3), vex::pct);
@@ -502,7 +582,7 @@ int main() {
     Controller1.ButtonR2.pressed(reverseIntake);
     Controller1.ButtonR1.pressed(score);
     Controller1.ButtonY.pressed(stopWhenColorSeen);
-
+    bypass.set(false);
   // Run the pre-autonomous function.
   pre_auton();
 
@@ -510,6 +590,8 @@ int main() {
   // start debug output;
   vex::task Debug(ShowMeInfo);
   vex::task Position(updatePos);
+
+  vex::task Stop(ColorSensing);
   // Set up callbacks for autonomous and driver control periods.
   Competition.autonomous(autonomous);
   Competition.drivercontrol(usercontrol);

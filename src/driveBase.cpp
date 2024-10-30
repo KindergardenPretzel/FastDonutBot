@@ -145,6 +145,7 @@ void DriveBase::DriveDistance(float distance, float heading, float Kp, float Ki,
 //drives forward or backward for the distance that is instructed
 void DriveBase::DriveDistance(float distance, float dest_heading, float Kp, float Ki, float Kd, float limit_integral, float exit_error, float minOut, float maxOut, float timeout){
     PID pid = PID(Kp, Ki, Kd, limit_integral, exit_error, minOut, maxOut, timeout);
+    pid.setDebug(true);
     //pid.setPIDmax(10);
     //pid.setPIDmin(0.1);
     PID heading_pid = PID(0.1, 0, 0, 1, 1, 15000);
@@ -163,7 +164,7 @@ void DriveBase::DriveDistance(float distance, float dest_heading, float Kp, floa
     {   
         position = this->getFwdPosition();
         error = destination - position;
-        //std::cout << "Position:" << position << std::endl;
+        std::cout << "Position:" << position << std::endl;
         speed = pid.calculate(error);
 
         heading_error = dest_heading - this->getHeading();

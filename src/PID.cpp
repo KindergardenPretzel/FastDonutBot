@@ -15,6 +15,7 @@ PID::PID(float Kp, float Ki, float Kd, float limitIntegral, float pidExitError, 
     this->firstRun = true;
 }
 
+
 PID::PID(float Kp, float Ki, float Kd, float limitIntegral, float pidExitError, float minOutput, float maxOutput, int timeout): 
  Ki(Ki), 
  Kp(Kp), 
@@ -29,6 +30,10 @@ PID::PID(float Kp, float Ki, float Kd, float limitIntegral, float pidExitError, 
 }
 
 
+//enable Debug Output to console.
+void PID::setDebug(bool enabled) {
+    this->debugOn = true;
+}
 
 //resets the previous error and sets first run to true
 void PID::resetPID(){ 
@@ -61,7 +66,6 @@ float PID::calculate(float error)
        this->startTime = toolbox::highResTimerMs();
        this->prevError = this->error;
        this->firstRun = false;
-       //std::cout << "########################################################################" << std::endl;
     }
 
     if(fabs(this->error) < this->limitIntegral){
@@ -80,18 +84,23 @@ float PID::calculate(float error)
     
     // clamping gain
     if (std::abs(totalGain) > this->maxOutput) {
-        totalGain = this->maxOutput * (std::abs(totalGain) / totalGain);
+        totalGain = this->maxOutput * (std::abs(proportionalGain) / proportionalGain);
     }
     if (std::abs(totalGain) < this->minOutput) {
-        totalGain = this->minOutput * (std::abs(totalGain) / totalGain);
-    }    
-   /*std::cout << "===============" << std::endl;   
-    std::cout << "P:" << proportionalGain << std::endl;
-    std::cout << "I:" << integralGain << std::endl;
-    std::cout << "D:" << derivativeGain << std::endl;
-    std::cout << "Speed:" << totalGain << std::endl;
-    std::cout << "Error:" << error << std::endl;
-    std::cout << "Delta Error:" << this->error - this->prevError << std::endl;*/
+        totalGain = this->minOutput * (std::abs(proportionalGain) / proportionalGain);
+    }  
+    if(debugOn)  
+    {
+        std::cout << "===============" << std::endl;   
+        std::cout << "P:" << proportionalGain << std::endl;
+        std::cout << "I:" << integralGain << std::endl;
+        std::cout << "D:" << derivativeGain << std::endl;
+        std::cout << "Speed:" << totalGain << std::endl;
+        std::cout << "Error:" << error << std::endl;
+        std::cout << "Prev Error:" << this->prevError << std::endl;
+        std::cout << "Delta Error:" << this->error - this->prevError << std::endl;
+    };
+    
     this->prevError = this->error;
     return totalGain;
 
@@ -100,7 +109,10 @@ float PID::calculate(float error)
 //checks if the PID drive has finished
 bool PID::isFinished(){
     unsigned int runningTime = toolbox::highResTimerMs() - this->startTime;
-    //std::cout << "Running Time:" << runningTime << std::endl;
+    if(debugOn)  
+    {
+        std::cout << "Running Time:" << runningTime << std::endl;
+    };
     if(fabs(this->error) < this->pidExitError)
     {
         return true;
