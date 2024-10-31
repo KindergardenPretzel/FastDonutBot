@@ -12,21 +12,21 @@ class DriveBase
         vex::motor MotorRB;
         float in_per_rev;
         bool is_motor_reversed(int);
-        float default_drive_Kp{1.3};
+        float default_drive_Kp{1.5};
         float default_drive_Ki{0};
-        float default_drive_Kd{0};
-        float default_drive_limit_integral{0.4};
-        float default_drive_exit_error{0.3};
-        float drive_default_min{0.1};
-        float drive_default_max{8};
-        int default_drive_timeout{5000};
+        float default_drive_Kd{8};
+        float default_drive_limit_integral{1};
+        float default_drive_exit_error{0.6};
+        float drive_default_min{0};
+        float drive_default_max{10};
+        int default_drive_timeout{7000};
 
         float default_turn_Kp{0.4};
-        float default_turn_Ki{0};
-        float default_turn_Kd{0};
-        float default_turn_limit_integral{10};
-        float default_turn_exit_error{2};
-        float default_turn_min{2};
+        float default_turn_Ki{0.03};
+        float default_turn_Kd{3};
+        float default_turn_limit_integral{15};
+        float default_turn_exit_error{1};
+        float default_turn_min{0};
         float default_turn_max{12};
         int default_turn_timeout{5000};
         

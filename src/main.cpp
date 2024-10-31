@@ -51,10 +51,13 @@ int autonId = 5;
 bool isBypassEnabled = false;
 void score();
 
-enum Colors {
-  OWN = 16711680, // RED 
-  OPPOSITE = 255 // BLUE
+enum Allience {
+  RED = 16711680, // RED  
+  BLUE = 255 // BLUE
 };
+
+Allience OWN;
+Allience OPPOSITE;
 /*enum Colors {
   OWN = 255, // BLUE 
   OPPOSITE = 16711680 // RED
@@ -68,6 +71,20 @@ void clampFunc(){
       else {
         clamp.set(false);
   };
+}
+
+void setAllience(Allience selector)
+{
+  if(selector == RED)
+  {
+    OWN = RED;
+    OPPOSITE = BLUE;
+  }
+  else if(selector == BLUE)
+  {
+    OWN = BLUE;
+    OPPOSITE = RED;
+  }
 }
 
 //lifts intake using pneumatic cylynder
@@ -250,6 +267,7 @@ int ShowMeInfo(){
 
 void pre_auton(void) {
   bypass.set(false);
+  setAllience(RED);
   highStakeLift.set(false);
   Brain.Screen.setCursor(4,3);
   Brain.Screen.print("Calibrating Inertial Sensor");
@@ -534,10 +552,22 @@ void auton_blue_right() {
 
 void test_auton()
 {
-  robot->DriveDistance(-20, robot->getHeading(), 1.6, 0, 4, 2, 1, 1, 10, 5000);
-  wait(5,seconds);
-    //robot->DriveDistance(10, robot->getHeading(), 1.5, 0, 3, 2, 1, 1, 10, 5000);
-    //robot->DriveDistance(10, robot->getHeading(), 1.5, 0, 3, 2, 1, 1, 10, 5000);
+  odom.setStartingPoint(10, 10, 90);
+  robot->DriveDistance(15);
+  wait(20,msec);
+  robot->TurnAngle(0);
+  wait(20,msec);
+  robot->DriveDistance(15);
+  wait(20,msec);
+  robot->TurnAngle(270);
+  wait(20,msec);
+  robot->DriveDistance(15);
+  wait(20,msec);
+  robot->TurnAngle(180);
+  wait(20,msec);
+  robot->DriveDistance(15);
+  wait(20,msec);
+  robot->TurnAngle(90);
 
 }
 
@@ -547,18 +577,23 @@ switch(autonId)
 {
   case 1:
     auton_red_left();
+    setAllience(RED);
   break;
   case 2:
     auton_red_right();
+    setAllience(RED);
   break;
   case 3:
     auton_blue_left();
+    setAllience(BLUE);
   break;
   case 4:
     auton_blue_right();
+    setAllience(BLUE);
   break;
   case 5:
     test_auton();
+    setAllience(RED);
   break;
 }
 
