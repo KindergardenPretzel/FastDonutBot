@@ -28,6 +28,7 @@ controller Controller1 = controller(primary);
 digital_out clamp = digital_out(Brain.ThreeWirePort.A);
 digital_out intake_lift = digital_out(Brain.ThreeWirePort.B);
 digital_out bypass = digital_out(Brain.ThreeWirePort.H);
+digital_out highStakeLift = digital_out(Brain.ThreeWirePort.G);
 
 motor intake = motor(PORT5,ratio6_1,false); 
 motor scoring = motor(PORT6,ratio6_1,false);
@@ -47,7 +48,7 @@ bool isBeltSpinning = false;
 bool isStopperEnabled = false;
 bool autonEnabled = true;
 int autonId = 5;
-bool isBypassEnabled = true;
+bool isBypassEnabled = false;
 void score();
 
 enum Colors {
@@ -105,6 +106,18 @@ void reverseIntake(){
   scoring.stop();
 }
 
+void liftRamp()
+{
+  if(highStakeLift.value())
+  {
+    highStakeLift.set(false);
+  }
+  else if(!highStakeLift.value())
+  {
+    highStakeLift.set(true);
+  }
+}
+
 int ColorSensing()
 {
   eyeball.setLightPower(50, vex::pct);
@@ -123,16 +136,11 @@ int ColorSensing()
     else if(eyeball.color() == OPPOSITE && isBypassEnabled)
     {
       bypass.set(true);
-     // vex::wait(200, msec);
     }
     else if(eyeball.color() == OWN && isBypassEnabled)
     {
       bypass.set(false);
     }
-    //else
-    //{
-      //bypass.set(false);
-   // }
    vex::wait(10, msec);
   }
   return 0;
@@ -141,13 +149,22 @@ int ColorSensing()
 void stopWhenColorSeen()
 {
   if (!isStopperEnabled) {
-    //vex::task Stop(stopWhenColorSeenTask);
     isStopperEnabled = true; 
   }
   else{
-    //task::stop(stopWhenColorSeenTask);
-    //eyeball.setLight(ledState::off);
     isStopperEnabled = false; 
+  }
+
+}
+
+void enableBypass()
+{
+  if (!isBypassEnabled) {
+    isBypassEnabled = true; 
+  }
+  else{
+    isBypassEnabled = false;
+    bypass.set(false);
   }
 
 }
@@ -165,18 +182,17 @@ void stopWhenColorSeen()
 
 //spins the intake and conveyo belt forward
 void score(){
-  //vex::task Color(stopWhenColorSeen);
-
-  //static bool enabled = false;
   if (!isBeltSpinning)
   {
-  //intake.setVelocity(90.0, percent);
-  //intake.spin(forward);
-
-  intake_spin_fwd(90);
-  scoring.setVelocity(65.0, percent);
-  scoring.spin(forward);
-  isBeltSpinning = true;
+  if (!highStakeLift.value()) {
+    intake_spin_fwd(90);
+    scoring.spin(forward, 70, vex::pct);
+    }
+    else
+    {
+      scoring.spin(forward, -70, vex::pct);
+    }
+    isBeltSpinning = true;
   }
   else 
   {
@@ -230,6 +246,8 @@ int ShowMeInfo(){
 }
 
 void pre_auton(void) {
+  bypass.set(false);
+  highStakeLift.set(false);
   Brain.Screen.setCursor(4,3);
   Brain.Screen.print("Calibrating Inertial Sensor");
   robot->calibrateInertial();
@@ -582,7 +600,8 @@ int main() {
     Controller1.ButtonR2.pressed(reverseIntake);
     Controller1.ButtonR1.pressed(score);
     Controller1.ButtonY.pressed(stopWhenColorSeen);
-    bypass.set(false);
+    Controller1.ButtonA.pressed(enableBypass);
+    Controller1.ButtonUp.pressed(liftRamp);
   // Run the pre-autonomous function.
   pre_auton();
 
