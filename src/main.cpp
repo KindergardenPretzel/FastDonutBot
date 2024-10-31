@@ -114,6 +114,9 @@ void liftRamp()
   }
   else if(!highStakeLift.value())
   {
+    if (isBeltSpinning) {
+      scoring.stop();
+    }
     highStakeLift.set(true);
   }
 }
