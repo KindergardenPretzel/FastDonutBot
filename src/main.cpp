@@ -552,23 +552,27 @@ void auton_blue_right() {
 
 void test_auton()
 {
-  odom.setStartingPoint(10, 10, 90);
-  robot->DriveDistance(15);
+  odom.setStartingPoint(10, 10, 0);
+  robot->DriveDistance(6);
   wait(20,msec);
-  robot->TurnAngle(0);
+  robot->TurnAngle(310);
+  lift_intake();
   wait(20,msec);
-  robot->DriveDistance(15);
+  robot->DriveDistance(6);
   wait(20,msec);
-  robot->TurnAngle(270);
+  intake_spin_fwd();
   wait(20,msec);
-  robot->DriveDistance(15);
+  lift_intake();
+  robot->DriveDistance(11,270);
+  float distToField = DistanceSensor.objectDistance(inches);
   wait(20,msec);
-  robot->TurnAngle(180);
-  wait(20,msec);
-  robot->DriveDistance(15);
-  wait(20,msec);
-  robot->TurnAngle(90);
-
+  robot->DriveDistance(-(distToField - 5));
+  intake_stop(); 
+  score();
+  wait(1700,msec);
+  score();
+  wait(20, msec);
+  robot->DriveDistance(48, 210);
 }
 
 void autonomous(void) {
