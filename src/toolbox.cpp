@@ -12,4 +12,7 @@ namespace toolbox {
 unsigned long long int highResTimerMs(){
     return (vex::timer::systemHighResolution())/1000;
 }
+float degreesToRadians(float degrees){
+    return (degrees * M_PI) / 180;
+}
 }

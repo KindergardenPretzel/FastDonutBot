@@ -51,13 +51,13 @@ int autonId = 5;
 bool isBypassEnabled = false;
 void score();
 
-enum Allience {
-  RED = 16711680, // RED  
-  BLUE = 255 // BLUE
+enum Alliance {
+  RED = 16711680,
+  BLUE = 255
 };
 
-Allience OWN;
-Allience OPPOSITE;
+Alliance OWN;
+Alliance OPPOSITE;
 /*enum Colors {
   OWN = 255, // BLUE 
   OPPOSITE = 16711680 // RED
@@ -73,7 +73,7 @@ void clampFunc(){
   };
 }
 
-void setAllience(Allience selector)
+void setAlliance(Alliance selector)//Allience
 {
   if(selector == RED)
   {
@@ -148,9 +148,7 @@ int ColorSensing()
     //std::cout << detectColor << std::endl;
     //vex::wait(10, msec);
     if (eyeball.color() == OWN && isStopperEnabled){
-      //toggle = false;
       score();
-      //eyeball.setLight(ledState::off);
       isStopperEnabled = false;
     }
     else if(eyeball.color() == OPPOSITE && isBypassEnabled)
@@ -206,18 +204,17 @@ void score(){
   {
   if (!highStakeLift.value()) {
     intake_spin_fwd(90);
-    scoring.spin(forward, 70, vex::pct);
+    scoring.spin(forward, 65, vex::pct);
     }
     else
     {
-      scoring.spin(forward, -70, vex::pct);
+      scoring.spin(forward, -50, vex::pct);
     }
     isBeltSpinning = true;
   }
   else 
   {
    scoring.stop();
-   //intake.stop();
    intake_stop();
    isBeltSpinning = false;
   };
@@ -259,15 +256,36 @@ int ShowMeInfo(){
   
   //Controller1.Screen.print("X: %f, Y: %f", OdometryObjPtr->X, OdometryObjPtr->Y);
 
+  
+  if (clamp.value()) 
+  {
+    Controller1.Screen.setCursor(3,5);
+    Controller1.Screen.print("C");
+  }
+
+  if (isBypassEnabled) 
+  {
+    Controller1.Screen.setCursor(3,13);
+    Controller1.Screen.print("B");
+  }
+
+  if (isStopperEnabled) 
+  {
+    Controller1.Screen.setCursor(3,10);
+    Controller1.Screen.print("S");
+  }
   this_thread::sleep_for(40);
+
   Brain.Screen.clearScreen();
+  Controller1.Screen.clearLine(3);
+
   };
   return 0;
 }
 
 void pre_auton(void) {
   bypass.set(false);
-  setAllience(RED);
+  setAlliance(RED);
   highStakeLift.set(false);
   Brain.Screen.setCursor(4,3);
   Brain.Screen.print("Calibrating Inertial Sensor");
@@ -573,6 +591,10 @@ void test_auton()
   score();
   wait(20, msec);
   robot->DriveDistance(48, 210);
+  stopWhenColorSeen();
+  score();
+  robot->DriveDistance(17);
+
 }
 
 void autonomous(void) {
@@ -581,23 +603,23 @@ switch(autonId)
 {
   case 1:
     auton_red_left();
-    setAllience(RED);
+    setAlliance(RED);
   break;
   case 2:
     auton_red_right();
-    setAllience(RED);
+    setAlliance(RED);
   break;
   case 3:
     auton_blue_left();
-    setAllience(BLUE);
+    setAlliance(BLUE);
   break;
   case 4:
     auton_blue_right();
-    setAllience(BLUE);
+    setAlliance(BLUE);
   break;
   case 5:
     test_auton();
-    setAllience(RED);
+    setAlliance(RED);
   break;
 }
 

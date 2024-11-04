@@ -22,7 +22,7 @@ class Odometry
         double getHeadingRad();
         double getRotationRad(); */
         void setStartingPoint(float, float, float);
-        float degreesToRadians(float degrees);
+        //float degreesToRadians(float degrees);
         void updatePosition();
 
         float heading;

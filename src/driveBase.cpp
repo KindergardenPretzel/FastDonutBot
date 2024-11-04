@@ -36,6 +36,17 @@ DriveBase::DriveBase(int gyroPort, int fwdRotatePort, int sideRotatePort,
 
 }
 
+float DriveBase::getX() {
+
+    return 0;
+}
+
+float DriveBase::getY() {
+
+    return 0;
+}
+
+
 //calibrates the inertial
 void DriveBase::calibrateInertial() {
     this->gyroSensor.calibrate();
@@ -183,6 +194,10 @@ void DriveBase::TurnAngle(float angle){
     this->TurnAngle(angle, default_turn_Kp, default_turn_Ki, default_turn_Kd, default_turn_limit_integral, default_turn_exit_error, default_turn_min, default_turn_max, default_turn_timeout);
 }
 
+void DriveBase::TurnAngle(float angle, float Kp, float Ki, float Kd){
+    this->TurnAngle(angle, Kp, Ki, Kd, default_turn_limit_integral, default_turn_exit_error, default_turn_min, default_turn_max, default_turn_timeout);
+}
+
 //turns to the angle instructed [0:359]
 void DriveBase::TurnAngle(float angle, float Kp, float Ki, float Kd, float limit_integral, float exit_error, float minOut, float maxOut, float timeout)
 {
@@ -250,3 +265,13 @@ void DriveBase::swingLeftHold(float angle)
     this->RightMotors.spin(vex::fwd, 0, vex::volt);
     this->LeftMotors.spin(vex::fwd, 0, vex::volt);
 }
+
+void DriveBase::turnToXY(float destX,float destY)
+{
+    float currHead = this->getHeading();
+    float currX = getX();
+    float currY = getY();
+    destX -= currX;
+    destY -= currY;
+    TurnAngle(atan2(destX,destY) - currHead);
+}   

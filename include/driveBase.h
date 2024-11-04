@@ -30,6 +30,7 @@ class DriveBase
         float default_turn_max{12};
         int default_turn_timeout{5000};
         
+        
 
     public:
         DriveBase(int, int, int, int, int, int, int, float);
@@ -54,7 +55,12 @@ class DriveBase
         void DriveDistance(float distance, float dest_heading, float Kp, float Ki, float Kd, float limit_integral, float exit_error, float minOut, float maxOut, float timeout);
         void TurnAngle(float angle, float Kp, float Ki, float Kd, float limit_integral, float exit_error, float minOut, float maxOut, float timeout);
         void TurnAngle(float angle);
+        void TurnAngle(float angle, float Kp, float Ki, float Kd);
         void swingRightHold(float);
         void swingLeftHold(float);
         float turnAngleOptimization(float);
+        float getX();
+        float getY();
+        void turnToXY(float x,float y);
+
 };
