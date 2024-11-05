@@ -34,7 +34,7 @@ class DriveBase
         const float SIDE_DISTANCE = 0.6;
         const float FWD_DISTANCE = 3;
 
-        float heading;
+        float prev_heading;
         float x;
         float y;
         float fwdPosition;

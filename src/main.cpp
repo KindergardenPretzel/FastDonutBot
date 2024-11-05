@@ -21,7 +21,7 @@ using namespace vex;
 
 // A global instance of competition
 competition Competition;
-//competition_debug Cdebug( Competition );
+competition_debug Cdebug( Competition );
 
 brain Brain;
 controller Controller1 = controller(primary);
@@ -248,14 +248,16 @@ int ShowMeInfo(){
   Brain.Screen.setPenColor(red);
 
   while(true) {
-  Brain.Screen.setCursor(3,2);
-  Brain.Screen.print("X: %f, Y: %f", robot->getX(), robot->getY());
-  Brain.Screen.setCursor(4,2);
-  float heading_angle = robot->getHeading();
-  if (heading_angle > 180) { heading_angle -= 360;};
-  Brain.Screen.print("Heading: %f", heading_angle);
-  Brain.Screen.setCursor(5,2);
-  Brain.Screen.print("position: %f", robot->getFwdPosition());
+
+    Brain.Screen.setCursor(3,2);
+    Brain.Screen.print("X: %f, Y: %f", robot->getX(), robot->getY());
+    Brain.Screen.setCursor(4,2);
+    float heading_angle = robot->getHeading();
+    if (heading_angle > 180) { heading_angle -= 360;};
+    
+    Brain.Screen.print("Heading: %f", heading_angle);
+    Brain.Screen.setCursor(5,2);
+    Brain.Screen.print("position: %f", robot->getFwdPosition());
   
 
   
@@ -270,13 +272,13 @@ int ShowMeInfo(){
     Controller1.Screen.setCursor(3,13);
     Controller1.Screen.print("B");
   }
-
   if (isStopperEnabled) 
   {
     Controller1.Screen.setCursor(3,10);
     Controller1.Screen.print("S");
   }
-  this_thread::sleep_for(40);
+
+  vex::wait(40, msec);
 
   Brain.Screen.clearScreen();
   Controller1.Screen.clearLine(3);
@@ -293,6 +295,7 @@ void pre_auton(void) {
   Brain.Screen.print("Calibrating Inertial Sensor");
   robot->calibrateInertial();
   Brain.Screen.clearScreen();
+
   while(!autonEnabled)
   {
     switch(autonId)
@@ -572,7 +575,9 @@ void auton_blue_right() {
 
 void test_auton()
 {
-  robot->setStartingPoint(5.2, 10, 90);
+  robot->turnToXY(40, 40);
+  exit(1);
+
   robot->DriveDistance(6);
   wait(20,msec);
   robot->TurnAngle(40);
@@ -630,24 +635,26 @@ autonEnabled = true;
 switch(autonId)
 {
   case 1:
-    auton_red_left();
     setAlliance(RED);
+    auton_red_left();
   break;
   case 2:
-    auton_red_right();
     setAlliance(RED);
+    auton_red_right();
   break;
   case 3:
-    auton_blue_left();
     setAlliance(BLUE);
+    auton_blue_left();
   break;
   case 4:
-    auton_blue_right();
     setAlliance(BLUE);
+    auton_blue_right();
   break;
   case 5:
-    test_auton();
     setAlliance(RED);
+    robot->setStartingPoint(0, 0, 0);
+    vex::task Position(updatePos);
+    test_auton(); 
   break;
 }
 
@@ -700,7 +707,6 @@ int main() {
   
   // start debug output;
   vex::task Debug(ShowMeInfo);
-  vex::task Position(updatePos);
 
   vex::task Stop(ColorSensing);
   // Set up callbacks for autonomous and driver control periods.

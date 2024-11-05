@@ -15,4 +15,11 @@ unsigned long long int highResTimerMs(){
 float degreesToRadians(float degrees){
     return (degrees * M_PI) / 180;
 }
+
+float radiansToDegrees(float radians) 
+{
+    return (radians * 180) / M_PI;
+}
+
+
 }

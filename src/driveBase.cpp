@@ -41,7 +41,7 @@ void DriveBase::setStartingPoint(float startX, float startY, float startHeading 
     this->x = startX;
     this->y = startY;
     this->setHeading(startHeading);
-    this->heading = startHeading;
+    this->prev_heading = startHeading;
     this->resetFwdEncoder();
     //this->resetSideEncoder();
     this->fwdPosition = 0;
@@ -59,7 +59,7 @@ void DriveBase::updatePosition() {
     //calculating deltas(difference between old and new positions)
     float deltaFwd = fwdPos - this->fwdPosition;
     float deltaSide = sidePos - this->sidePosition;
-    float deltaHead = currentHead - this->heading;
+    float deltaHead = currentHead - this->prev_heading;
 
     float deltaHeadRad = toolbox::degreesToRadians(deltaHead);
 
@@ -69,8 +69,8 @@ void DriveBase::updatePosition() {
         localY = deltaFwd;
     }
     else{
-     localX = 2 * sin(deltaHeadRad/2) * ( (deltaSide/deltaHeadRad) + FWD_DISTANCE);
-     localY = 2 * sin(deltaHeadRad/2) * ( (deltaFwd/deltaHeadRad) + SIDE_DISTANCE);
+     localX = 2 * sin(deltaHeadRad/2) * ( (deltaSide/deltaHeadRad) + SIDE_DISTANCE);
+     localY = 2 * sin(deltaHeadRad/2) * ( (deltaFwd/deltaHeadRad) + FWD_DISTANCE);
      }
 
     
@@ -86,7 +86,7 @@ void DriveBase::updatePosition() {
         angle_x_to_vector = atan2(localY, localX);
     }
     // calculate new global angle and convert back to cartesian: x = r cos θ , y = r sin θ
-    float global_angle_polar_coordinates = toolbox::degreesToRadians(this->heading) - deltaHeadRad/2 - angle_x_to_vector;
+    float global_angle_polar_coordinates = M_PI/2 - toolbox::degreesToRadians(this->prev_heading) - deltaHeadRad/2 - angle_x_to_vector;
 
     float deltaX = vector_length * cos(global_angle_polar_coordinates);
     float deltaY = vector_length * sin(global_angle_polar_coordinates);
@@ -99,7 +99,7 @@ void DriveBase::updatePosition() {
     // updating stored positions and rotation
     this->fwdPosition = fwdPos;
     this->sidePosition = sidePos;
-    this->heading = currentHead;
+    this->prev_heading = currentHead;
 }
 
 float DriveBase::getX() {
@@ -341,7 +341,7 @@ void DriveBase::turnToXY(float destX, float destY)
     float currHead = this->getHeading();
     float currX = this->getX();
     float currY = this->getY();
-    destX -= currX;
-    destY -= currY;
-    this->TurnAngle(atan2(destX,destY) - currHead);
+    float angle_to_turn = toolbox::radiansToDegrees(atan2(destX - currX, destY - currY)) + currHead;
+
+    this->TurnAngle(angle_to_turn);
 }   
