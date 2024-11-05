@@ -246,13 +246,13 @@ int updatePos()
 int ShowMeInfo(){
   Brain.Screen.setFont(monoM);
   Brain.Screen.setPenColor(red);
-
+  float heading_angle;
   while(true) {
 
     Brain.Screen.setCursor(3,2);
     Brain.Screen.print("X: %f, Y: %f", robot->getX(), robot->getY());
     Brain.Screen.setCursor(4,2);
-    float heading_angle = robot->getHeading();
+    heading_angle = robot->getHeading();
     if (heading_angle > 180) { heading_angle -= 360;};
     
     Brain.Screen.print("Heading: %f", heading_angle);
@@ -278,7 +278,7 @@ int ShowMeInfo(){
     Controller1.Screen.print("S");
   }
 
-  vex::wait(40, msec);
+  vex::wait(200, msec);
 
   Brain.Screen.clearScreen();
   Controller1.Screen.clearLine(3);
@@ -394,47 +394,6 @@ void auton_blue_two_stakes() {
   wait(400,msec);
   //intake_stop();
   //clampFunc();
-}
-
-void auton_red_left() {
-  robot->setStartingPoint(10, 10, 2);
-  robot->DriveDistance(5, 1.2, 0.07, 0, 1.5, 0.5, 2000);
-  robot->TurnAngle(304, 0.15, 0.01, 0, 15, 2, 2, 11, 2000);
-  lift_intake();
-  robot->DriveDistance(4, 1.2, 0.07, 0, 1.5, 0.5, 2000);
-  intake_spin_fwd();
-  wait(20,msec);
-  lift_intake();
-  wait(20,msec);
-  robot->DriveDistance(7, 1.2, 0.07, 0, 1.5, 0.5, 2000);
-  robot->TurnAngle(273, 0.15, 0.01, 0, 15, 2, 2, 11, 2000);
-  wait(20,msec);
-  float distToField = DistanceSensor.objectDistance(inches);
-  wait(20,msec);
-  robot->DriveDistance(-(distToField - 5.7), 0.9, 0.07, 0, 1.5, 0.5, 2000);
-  intake_stop();
-  wait(20,msec);
-  score();
-  wait(1600,msec);
-  robot->DriveDistance(10, 1.2, 0.07, 0, 1.5, 0.5, 2000);
-  wait(30, msec);
-  score();
-  wait(20,msec);
-  robot->TurnAngle(30, 0.15, 0.01, 0, 15, 2, 2, 11, 2000);
-  wait(300,msec);
-  robot->DriveDistance(-30, 0.5, 0.07, 0, 2.0, 0.5, 5000);
-  wait(20,msec);
-  clampFunc();
-  wait(30,msec);
-  robot->TurnAngle(200, 0.15, 0.01, 0, 15, 2, 2, 11, 2000);
-  wait(30, msec);
-  score();
-  wait(200, msec);
-  robot->DriveDistance(24, 0.5, 0.07, 0, 2.0, 0.5, 5000);
-  wait(20, msec);
-  robot->DriveDistance(-20, 300, 1.2, 0.07, 0, 1.5, 0.5, 2000);
-  wait(20, msec);
-  robot->DriveDistance(15, 1.2, 0.07, 0, 1.5, 0.5, 2000);
 }
 
 void auton_blue_left() {
@@ -573,11 +532,9 @@ void auton_blue_right() {
   clampFunc();
 }
 
-void test_auton()
+void auton_red_left()
 {
-  robot->turnToXY(40, 40);
-  exit(1);
-
+  // take middle ring
   robot->DriveDistance(6);
   wait(20,msec);
   robot->TurnAngle(40);
@@ -589,27 +546,35 @@ void test_auton()
   wait(20,msec);
   lift_intake();
   robot->DriveDistance(11,0);
+  // measure distane to the wall and drive back to Alliance stake
   float distToField = DistanceSensor.objectDistance(inches);
   wait(20,msec);
   robot->DriveDistance(-(distToField - 5));
   intake_stop(); 
+  // score two rings
   score();
   wait(1400,msec);
   score();
   wait(20, msec);
+  // drive to the MOGO
   robot->DriveDistance(43, -70);
   wait(20, msec);
   robot->TurnAngle(-155);
   robot->DriveDistance(-10);
+  // take MOGO, enable intake and drive to left ring
   clampFunc();
   robot->TurnAngle(-75);
   score();
   robot->DriveDistance(32);
   wait(500, msec);
+
+  // turn to middle line rings
   robot->TurnAngle(14);
   wait(200, msec);
+  // take first
   robot->DriveDistance(10);
    wait(200, msec);
+   // reposition for second ring
    robot->DriveDistance(-5);
    wait(20, msec);
    robot->TurnAngle(90);
@@ -618,17 +583,21 @@ void test_auton()
    wait(20, msec);
    robot->TurnAngle(-10);
    wait(20, msec);
+   // take second
    robot->DriveDistance(7);
    wait(200, msec);
+   // turn to the ladder and touch it.
    robot->TurnAngle(77);
    wait(20, msec);
    robot->DriveDistance(17, 0.5, 0.07, 0, 2.0, 0.5, 5000);
- /* stopWhenColorSeen();
-  score();
-  robot->DriveDistance(15, -53);
-  robot->DriveDistance(7, -90);
-  */
+
 }
+
+
+void test_auton() {
+
+}
+
 
 void autonomous(void) {
 autonEnabled = true;
@@ -636,6 +605,8 @@ switch(autonId)
 {
   case 1:
     setAlliance(RED);
+    robot->setStartingPoint(64.8, 10, 0);
+    vex::task Position(updatePos);
     auton_red_left();
   break;
   case 2:
@@ -652,7 +623,7 @@ switch(autonId)
   break;
   case 5:
     setAlliance(RED);
-    robot->setStartingPoint(0, 0, 0);
+    robot->setStartingPoint(10, 10, 0);
     vex::task Position(updatePos);
     test_auton(); 
   break;

@@ -342,6 +342,5 @@ void DriveBase::turnToXY(float destX, float destY)
     float currX = this->getX();
     float currY = this->getY();
     float angle_to_turn = toolbox::radiansToDegrees(atan2(destX - currX, destY - currY)) + currHead;
-
     this->TurnAngle(angle_to_turn);
 }   
