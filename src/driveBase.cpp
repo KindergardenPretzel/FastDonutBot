@@ -36,14 +36,78 @@ DriveBase::DriveBase(int gyroPort, int fwdRotatePort, int sideRotatePort,
 
 }
 
-float DriveBase::getX() {
+//sets the starting point and heading of the robot
+void DriveBase::setStartingPoint(float startX, float startY, float startHeading ){
+    this->x = startX;
+    this->y = startY;
+    this->setHeading(startHeading);
+    this->heading = startHeading;
+    this->resetFwdEncoder();
+    //this->resetSideEncoder();
+    this->fwdPosition = 0;
+    this->sidePosition = 0;
+}
 
-    return 0;
+//updates the position on the field of the robot
+void DriveBase::updatePosition() {
+    // getting current positions and current roatations and saving them into local variables
+    float fwdPos = this->getFwdPosition();
+    float sidePos = this->getSidePosition();
+    float currentHead  = toolbox::fround(this->getHeading());
+
+    
+    //calculating deltas(difference between old and new positions)
+    float deltaFwd = fwdPos - this->fwdPosition;
+    float deltaSide = sidePos - this->sidePosition;
+    float deltaHead = currentHead - this->heading;
+
+    float deltaHeadRad = toolbox::degreesToRadians(deltaHead);
+
+    //calculating distance between robot tracking center
+    if (deltaHead==0) {
+        localX = deltaSide;
+        localY = deltaFwd;
+    }
+    else{
+     localX = 2 * sin(deltaHeadRad/2) * ( (deltaSide/deltaHeadRad) + FWD_DISTANCE);
+     localY = 2 * sin(deltaHeadRad/2) * ( (deltaFwd/deltaHeadRad) + SIDE_DISTANCE);
+     }
+
+    
+    // converting to polar coordinates
+    float vector_length;
+    float angle_x_to_vector;
+    if (localX == 0 && localY == 0) {
+        vector_length = 0;
+        angle_x_to_vector = 0;
+    }
+    else {
+        vector_length = sqrt(pow(localX,2) + pow(localY, 2));
+        angle_x_to_vector = atan2(localY, localX);
+    }
+    // calculate new global angle and convert back to cartesian: x = r cos θ , y = r sin θ
+    float global_angle_polar_coordinates = toolbox::degreesToRadians(this->heading) - deltaHeadRad/2 - angle_x_to_vector;
+
+    float deltaX = vector_length * cos(global_angle_polar_coordinates);
+    float deltaY = vector_length * sin(global_angle_polar_coordinates);
+
+    // updating x and y
+
+   this->x += deltaX;
+   this->y += deltaY;
+
+    // updating stored positions and rotation
+    this->fwdPosition = fwdPos;
+    this->sidePosition = sidePos;
+    this->heading = currentHead;
+}
+
+float DriveBase::getX() {
+    return this->x;
 }
 
 float DriveBase::getY() {
-
-    return 0;
+    return this->y;
 }
 
 
@@ -105,7 +169,8 @@ float DriveBase::getFwdPosition(){
 
 //returns current position of side tracking sensoir in inches
 float DriveBase::getSidePosition(){
-     return toolbox::fround(this->sideRotation.position(vex::rev)) * this->in_per_rev;
+    return 0;
+    // return toolbox::fround(this->sideRotation.position(vex::rev)) * this->in_per_rev;
 }
 
 //sets all motor brake-types to the type instucted
@@ -169,6 +234,7 @@ void DriveBase::DriveDistance(float distance, float dest_heading, float Kp, floa
     float position;
     float heading_error;
     float heading_correction_speed;
+    if (dest_heading < 0) { dest_heading += 360; };
     //std::cout << "#####################" << std::endl;
 
     do
@@ -205,6 +271,10 @@ void DriveBase::TurnAngle(float angle, float Kp, float Ki, float Kd, float limit
     float error;
     float speed;
     float current_heading;
+    if (angle < 0)
+    {
+        angle += 360;
+    }
     do{
         current_heading = this->getHeading();
         error = this->turnAngleOptimization(angle - current_heading);
@@ -266,12 +336,12 @@ void DriveBase::swingLeftHold(float angle)
     this->LeftMotors.spin(vex::fwd, 0, vex::volt);
 }
 
-void DriveBase::turnToXY(float destX,float destY)
+void DriveBase::turnToXY(float destX, float destY)
 {
     float currHead = this->getHeading();
-    float currX = getX();
-    float currY = getY();
+    float currX = this->getX();
+    float currY = this->getY();
     destX -= currX;
     destY -= currY;
-    TurnAngle(atan2(destX,destY) - currHead);
+    this->TurnAngle(atan2(destX,destY) - currHead);
 }   

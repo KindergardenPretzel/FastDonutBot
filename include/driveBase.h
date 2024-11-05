@@ -30,14 +30,24 @@ class DriveBase
         float default_turn_max{12};
         int default_turn_timeout{5000};
         
-        
+        // odometry part
+        const float SIDE_DISTANCE = 0.6;
+        const float FWD_DISTANCE = 3;
+
+        float heading;
+        float x;
+        float y;
+        float fwdPosition;
+        float sidePosition;
+        float localY;
+        float localX;
 
     public:
         DriveBase(int, int, int, int, int, int, int, float);
         vex::motor_group LeftMotors;
         vex::motor_group RightMotors;
         void calibrateInertial();
-        double  getRotation();
+        double getRotation();
         void setRotation(double);
         float getHeading();
         void setHeading(double);
@@ -59,6 +69,8 @@ class DriveBase
         void swingRightHold(float);
         void swingLeftHold(float);
         float turnAngleOptimization(float);
+        void setStartingPoint(float, float, float);
+        void updatePosition();
         float getX();
         float getY();
         void turnToXY(float x,float y);

@@ -8,8 +8,8 @@
 /*----------------------------------------------------------------------------*/
 
 #include "vex.h"
-#include "odometry.h"
-//#include "drivebase.h"
+//#include "odometry.h"
+#include "drivebase.h"
 #include "comp_debug.h"
 #include "PID.h"
 //#include "toolbox.h"
@@ -43,7 +43,8 @@ float power_pct = 0.8;
 
 std::shared_ptr<DriveBase> robot(new DriveBase(PORT13, -PORT11, PORT12, -PORT1, -PORT2, PORT3, PORT4, 6.28));
 //std::shared_ptr<Odometry> odom(new Odometry(robot));
-Odometry odom = Odometry(robot);
+//Odometry odom = Odometry(robot);
+
 bool isBeltSpinning = false;
 bool isStopperEnabled = false;
 bool autonEnabled = true;
@@ -225,7 +226,7 @@ int updatePos()
 {
     while(true)
     {
-        odom.updatePosition();
+        robot->updatePosition();
         this_thread::sleep_for(10);
     }
     return(0);
@@ -248,13 +249,14 @@ int ShowMeInfo(){
 
   while(true) {
   Brain.Screen.setCursor(3,2);
-  Brain.Screen.print("X: %f, Y: %f", odom.x, odom.y);
+  Brain.Screen.print("X: %f, Y: %f", robot->getX(), robot->getY());
   Brain.Screen.setCursor(4,2);
-  Brain.Screen.print("Heading: %f", robot->getHeading());
+  float heading_angle = robot->getHeading();
+  if (heading_angle > 180) { heading_angle -= 360;};
+  Brain.Screen.print("Heading: %f", heading_angle);
   Brain.Screen.setCursor(5,2);
   Brain.Screen.print("position: %f", robot->getFwdPosition());
   
-  //Controller1.Screen.print("X: %f, Y: %f", OdometryObjPtr->X, OdometryObjPtr->Y);
 
   
   if (clamp.value()) 
@@ -354,7 +356,7 @@ void auton_red_two_stakes() {
 // angle, P,I,D,startIntegral, exit, min, max, timeout
 //robot->TurnAngle(175, 0.15, 0.01, 0, 15, 2, 2, 11, 2000);
 
-  odom.setStartingPoint(10, 10, 90);
+  robot->setStartingPoint(10, 10, 90);
 
   robot->DriveDistance(-36, 0.5, 0.07, 0, 2.0, 0.5, 5000);
   wait(20,msec);
@@ -373,7 +375,7 @@ void auton_red_two_stakes() {
 }
 
 void auton_blue_two_stakes() {
-  odom.setStartingPoint(10, 10, 90);
+  robot->setStartingPoint(10, 10, 90);
 
   robot->DriveDistance(-36, 0.5, 0.07, 0, 2.0, 0.5, 5000);
   wait(20,msec);
@@ -392,7 +394,7 @@ void auton_blue_two_stakes() {
 }
 
 void auton_red_left() {
-  odom.setStartingPoint(10, 10, 2);
+  robot->setStartingPoint(10, 10, 2);
   robot->DriveDistance(5, 1.2, 0.07, 0, 1.5, 0.5, 2000);
   robot->TurnAngle(304, 0.15, 0.01, 0, 15, 2, 2, 11, 2000);
   lift_intake();
@@ -433,7 +435,7 @@ void auton_red_left() {
 }
 
 void auton_blue_left() {
-  odom.setStartingPoint(10, 10, 2);
+  robot->setStartingPoint(10, 10, 2);
   robot->DriveDistance(5, 1.2, 0.07, 0, 1.5, 0.5, 2000);
   robot->TurnAngle(304, 0.15, 0.01, 0, 15, 2, 2, 11, 2000);
   lift_intake();
@@ -476,7 +478,7 @@ void auton_blue_left() {
 }
 
 void auton_red_right() {
-  odom.setStartingPoint(10, 10, 180);
+  robot->setStartingPoint(10, 10, 180);
   lift_intake();
   robot->DriveDistance(5, 1.2, 0.07, 0, 1.5, 0.5, 2000);
   wait(20,msec);
@@ -523,7 +525,7 @@ void auton_red_right() {
 
 
 void auton_blue_right() {
-  odom.setStartingPoint(10, 10, 180);
+  robot->setStartingPoint(10, 10, 180);
   lift_intake();
   robot->DriveDistance(5, 1.2, 0.07, 0, 1.5, 0.5, 2000);
   wait(20,msec);
@@ -570,10 +572,10 @@ void auton_blue_right() {
 
 void test_auton()
 {
-  odom.setStartingPoint(10, 10, 0);
+  robot->setStartingPoint(5.2, 10, 90);
   robot->DriveDistance(6);
   wait(20,msec);
-  robot->TurnAngle(310);
+  robot->TurnAngle(40);
   lift_intake();
   wait(20,msec);
   robot->DriveDistance(6);
@@ -581,20 +583,46 @@ void test_auton()
   intake_spin_fwd();
   wait(20,msec);
   lift_intake();
-  robot->DriveDistance(11,270);
+  robot->DriveDistance(11,0);
   float distToField = DistanceSensor.objectDistance(inches);
   wait(20,msec);
   robot->DriveDistance(-(distToField - 5));
   intake_stop(); 
   score();
-  wait(1700,msec);
+  wait(1400,msec);
   score();
   wait(20, msec);
-  robot->DriveDistance(48, 210);
-  stopWhenColorSeen();
+  robot->DriveDistance(43, -70);
+  wait(20, msec);
+  robot->TurnAngle(-155);
+  robot->DriveDistance(-10);
+  clampFunc();
+  robot->TurnAngle(-75);
   score();
-  robot->DriveDistance(17);
-
+  robot->DriveDistance(32);
+  wait(500, msec);
+  robot->TurnAngle(14);
+  wait(200, msec);
+  robot->DriveDistance(10);
+   wait(200, msec);
+   robot->DriveDistance(-5);
+   wait(20, msec);
+   robot->TurnAngle(90);
+   wait(20, msec);
+   robot->DriveDistance(15);
+   wait(20, msec);
+   robot->TurnAngle(-10);
+   wait(20, msec);
+   robot->DriveDistance(7);
+   wait(200, msec);
+   robot->TurnAngle(77);
+   wait(20, msec);
+   robot->DriveDistance(17, 0.5, 0.07, 0, 2.0, 0.5, 5000);
+ /* stopWhenColorSeen();
+  score();
+  robot->DriveDistance(15, -53);
+  robot->DriveDistance(7, -90);
+  */
 }
 
 void autonomous(void) {
