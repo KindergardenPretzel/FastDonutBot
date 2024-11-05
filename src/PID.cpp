@@ -89,7 +89,7 @@ float PID::calculate(float error)
     if (std::abs(totalGain) < this->minOutput) {
         totalGain = this->minOutput * (std::abs(proportionalGain) / proportionalGain);
     }  
-    if(debugOn)  
+    /*if(debugOn)  
     {
         std::cout << "===============" << std::endl;   
         std::cout << "P:" << proportionalGain << std::endl;
@@ -99,7 +99,7 @@ float PID::calculate(float error)
         std::cout << "Error:" << error << std::endl;
         std::cout << "Prev Error:" << this->prevError << std::endl;
         std::cout << "Delta Error:" << this->error - this->prevError << std::endl;
-    };
+    };*/
     
     this->prevError = this->error;
     return totalGain;
@@ -109,16 +109,20 @@ float PID::calculate(float error)
 //checks if the PID drive has finished
 bool PID::isFinished(){
     unsigned int runningTime = toolbox::highResTimerMs() - this->startTime;
-    if(debugOn)  
-    {
-        std::cout << "Running Time:" << runningTime << std::endl;
-    };
     if(fabs(this->error) < this->pidExitError)
     {
+        if(debugOn)  
+        {
+            std::cout << "PID Running Time:" << runningTime << std::endl;
+        };
         return true;
     }
     if(runningTime > this->timeout)
     {
+        if(debugOn)  
+        {
+            std::cout << "PID Running Time:" << runningTime << std::endl;
+        };
         return true;
     }
     return false;

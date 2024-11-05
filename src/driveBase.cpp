@@ -19,18 +19,18 @@ DriveBase::DriveBase(int gyroPort, int fwdRotatePort, int sideRotatePort,
  fwdRotation(abs(fwdRotatePort)), 
  sideRotation(abs(sideRotatePort)),
  gyroSensor(gyroPort),
- MotorLF(abs(MotorLFPort)),
- MotorLB(abs(MotorLBPort)),
- MotorRF(abs(MotorRFPort)),
- MotorRB(abs(MotorRBPort)),
+ MotorLF(abs(MotorLFPort), vex::ratio6_1, is_motor_reversed(MotorLFPort)),
+ MotorLB(abs(MotorLBPort), vex::ratio6_1, is_motor_reversed(MotorLBPort)),
+ MotorRF(abs(MotorRFPort), vex::ratio6_1, is_motor_reversed(MotorRFPort)),
+ MotorRB(abs(MotorRBPort), vex::ratio6_1, is_motor_reversed(MotorRBPort)),
  LeftMotors(vex::motor_group(MotorLF, MotorLB)), 
  RightMotors(vex::motor_group(MotorRF, MotorRB)),
  in_per_rev(in_per_rev)
 {
-    this->MotorLF.setReversed(is_motor_reversed(MotorLFPort));
-    this->MotorLB.setReversed(is_motor_reversed(MotorLBPort));
-    this->MotorRF.setReversed(is_motor_reversed(MotorRFPort));
-    this->MotorRB.setReversed(is_motor_reversed(MotorRBPort));
+    //this->MotorLF.setReversed(is_motor_reversed(MotorLFPort));
+    //this->MotorLB.setReversed(is_motor_reversed(MotorLBPort));
+    //this->MotorRF.setReversed(is_motor_reversed(MotorRFPort));
+    //this->MotorRB.setReversed(is_motor_reversed(MotorRBPort));
     this->fwdRotation.setReversed(is_motor_reversed(fwdRotatePort));
     this->sideRotation.setReversed(is_motor_reversed(sideRotatePort));
 
@@ -63,6 +63,8 @@ void DriveBase::updatePosition() {
 
     float deltaHeadRad = toolbox::degreesToRadians(deltaHead);
 
+    float localX;
+    float localY;
     //calculating distance between robot tracking center
     if (deltaHead==0) {
         localX = deltaSide;
@@ -77,19 +79,21 @@ void DriveBase::updatePosition() {
     // converting to polar coordinates
     float vector_length;
     float angle_x_to_vector;
+
     if (localX == 0 && localY == 0) {
         vector_length = 0;
         angle_x_to_vector = 0;
     }
     else {
         vector_length = sqrt(pow(localX,2) + pow(localY, 2));
-        angle_x_to_vector = atan2(localY, localX);
+        angle_x_to_vector = atan2(localX, localY);
     }
     // calculate new global angle and convert back to cartesian: x = r cos θ , y = r sin θ
-    float global_angle_polar_coordinates = M_PI/2 - toolbox::degreesToRadians(this->prev_heading) - deltaHeadRad/2 - angle_x_to_vector;
+    //float global_angle_polar_coordinates = M_PI/2 - toolbox::degreesToRadians(this->prev_heading) - deltaHeadRad/2 - angle_x_to_vector;
+    float global_angle_polar_coordinates = toolbox::degreesToRadians(this->prev_heading) + deltaHeadRad/2 + angle_x_to_vector;
 
-    float deltaX = vector_length * cos(global_angle_polar_coordinates);
-    float deltaY = vector_length * sin(global_angle_polar_coordinates);
+    float deltaY = vector_length * cos(global_angle_polar_coordinates);
+    float deltaX = vector_length * sin(global_angle_polar_coordinates);
 
     // updating x and y
 
@@ -241,7 +245,7 @@ void DriveBase::DriveDistance(float distance, float dest_heading, float Kp, floa
     {   
         position = this->getFwdPosition();
         error = destination - position;
-        std::cout << "Position:" << position << std::endl;
+        //std::cout << "Position:" << position << std::endl;
         speed = pid.calculate(error);
 
         heading_error = dest_heading - this->getHeading();

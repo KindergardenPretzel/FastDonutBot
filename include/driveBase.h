@@ -31,16 +31,14 @@ class DriveBase
         int default_turn_timeout{5000};
         
         // odometry part
-        const float SIDE_DISTANCE = 0.6;
-        const float FWD_DISTANCE = 3;
+        const float SIDE_DISTANCE = 3;
+        const float FWD_DISTANCE = 0.6;
 
         float prev_heading;
         float x;
         float y;
         float fwdPosition;
         float sidePosition;
-        float localY;
-        float localX;
 
     public:
         DriveBase(int, int, int, int, int, int, int, float);

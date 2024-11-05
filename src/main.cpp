@@ -227,7 +227,7 @@ int updatePos()
     while(true)
     {
         robot->updatePosition();
-        this_thread::sleep_for(10);
+        this_thread::sleep_for(5);
     }
     return(0);
 }
@@ -603,30 +603,35 @@ void autonomous(void) {
 autonEnabled = true;
 switch(autonId)
 {
-  case 1:
+  case 1: {
     setAlliance(RED);
     robot->setStartingPoint(64.8, 10, 0);
     vex::task Position(updatePos);
     auton_red_left();
   break;
-  case 2:
+  }
+  case 2: {
     setAlliance(RED);
     auton_red_right();
   break;
-  case 3:
+  }
+  case 3: {
     setAlliance(BLUE);
     auton_blue_left();
   break;
-  case 4:
+  }
+  case 4: {
     setAlliance(BLUE);
     auton_blue_right();
   break;
-  case 5:
+  }
+  case 5: {
     setAlliance(RED);
     robot->setStartingPoint(10, 10, 0);
     vex::task Position(updatePos);
     test_auton(); 
   break;
+  }
 }
 
 }
