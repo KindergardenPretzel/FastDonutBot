@@ -345,6 +345,17 @@ void DriveBase::turnToXY(float destX, float destY)
     float currHead = this->getHeading();
     float currX = this->getX();
     float currY = this->getY();
-    float angle_to_turn = toolbox::radiansToDegrees(atan2(destX - currX, destY - currY)) + currHead;
+    float angle_to_turn = toolbox::radiansToDegrees(atan2(destX - currX, destY - currY));
     this->TurnAngle(angle_to_turn);
 }   
+
+void DriveBase::driveStraightToXY(float destX, float destY)
+{
+float distance_to_drive = sqrt(pow(destX-this->getX(),2) + pow(destY-this->getY(),2));
+    float currHead = this->getHeading();
+    float currX = this->getX();
+    float currY = this->getY();
+    float angle_to_turn = toolbox::radiansToDegrees(atan2(destX - currX, destY - currY));  
+    this->TurnAngle(angle_to_turn);
+    this->DriveDistance(distance_to_drive,angle_to_turn);
+}
