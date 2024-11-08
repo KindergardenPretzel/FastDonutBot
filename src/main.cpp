@@ -48,8 +48,12 @@ std::shared_ptr<DriveBase> robot(new DriveBase(PORT13, -PORT11, PORT12, -PORT1, 
 bool isBeltSpinning = false;
 bool isStopperEnabled = false;
 bool autonEnabled = false;
-int autonId = 5;
+int autonId = 1;
 bool isBypassEnabled = false;
+
+float redStakeApproachDist = 4.5;
+float blueStakeApproachDist = 5.5;
+
 void score();
 
 enum Alliance {
@@ -205,7 +209,7 @@ void score(){
   {
   if (!highStakeLift.value()) {
     intake_spin_fwd(100);
-    scoring.spin(forward, 65, vex::pct);
+    scoring.spin(forward, 70, vex::pct);
     }
     else
     {
@@ -413,7 +417,7 @@ void auton_blue_left() {
   // measure distane to the wall and drive back to Alliance stake
   float distToField = DistanceSensor.objectDistance(inches);
   wait(20,msec);
-  robot->DriveDistance(-(distToField - 5));
+  robot->DriveDistance(-(distToField - blueStakeApproachDist));
   intake_stop(); 
   // score two rings
   score();
@@ -456,7 +460,7 @@ void auton_red_right() {
   // measure distane to the wall and drive back to Alliance stake
   float distToField = DistanceSensor.objectDistance(inches);
   wait(20,msec);
-  robot->DriveDistance(-(distToField - 5));
+  robot->DriveDistance(-(distToField - redStakeApproachDist));
   intake_stop(); 
   // score two rings
   score();
@@ -500,8 +504,10 @@ void auton_red_left()
   // measure distane to the wall and drive back to Alliance stake
   float distToField = DistanceSensor.objectDistance(inches);
   wait(20,msec);
-  robot->DriveDistance(-(distToField - 5));
-  intake_stop(); 
+  robot->DriveDistance(-(distToField - redStakeApproachDist));
+  intake_stop();
+  wait(30,msec);
+  
   // score two rings
   score();
   wait(1400,msec);
@@ -538,11 +544,11 @@ void auton_red_left()
    robot->DriveDistance(8);
    wait(200, msec);
    // turn to the ladder and touch it.
-   robot->TurnAngle(80);
+   robot->TurnAngle(90);
    wait(20, msec);
    enableBypass();
-   robot->DriveDistance(17);
-   robot->TurnAngle(30);
+   robot->DriveDistance(36);
+   //robot->TurnAngle(35);
    
 }
 
@@ -566,7 +572,7 @@ void auton_blue_right()
   // measure distane to the wall and drive back to Alliance stake
   float distToField = DistanceSensor.objectDistance(inches);
   wait(20,msec);
-  float dist_to_stake = distToField - 5;
+  float dist_to_stake = distToField - blueStakeApproachDist;
   robot->DriveDistance(-dist_to_stake);
   intake_stop(); 
   // score two rings
@@ -721,6 +727,7 @@ switch(autonId)
 
 void usercontrol(void) {
   robot->SetBrake(coast);
+
 
   while (1) {
     float throttle = Controller1.Axis3.position();
