@@ -21,7 +21,7 @@ using namespace vex;
 
 // A global instance of competition
 competition Competition;
-competition_debug Cdebug( Competition );
+//competition_debug Cdebug( Competition );
 
 brain Brain;
 controller Controller1 = controller(primary);
@@ -51,8 +51,8 @@ bool autonEnabled = false;
 int autonId = 1;
 bool isBypassEnabled = false;
 
-float redStakeApproachDist = 4.5;
-float blueStakeApproachDist = 5.5;
+float redStakeApproachDist = 4.7;
+float blueStakeApproachDist = 4.7;
 
 void score();
 
