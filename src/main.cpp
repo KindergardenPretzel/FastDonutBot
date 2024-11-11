@@ -48,11 +48,11 @@ std::shared_ptr<DriveBase> robot(new DriveBase(PORT13, -PORT11, PORT12, -PORT1, 
 bool isBeltSpinning = false;
 bool isStopperEnabled = false;
 bool autonEnabled = false;
-int autonId = 1;
+int autonId = 4;
 bool isBypassEnabled = false;
 
-float redStakeApproachDist = 4.7;
-float blueStakeApproachDist = 4.7;
+float redStakeApproachDist = 5.2;
+float blueStakeApproachDist = 5.2;
 
 void score();
 
