@@ -68,11 +68,13 @@ class DriveBase
         void swingRightHold(float);
         void swingLeftHold(float);
         float turnAngleOptimization(float);
+        float backwardsAngleOptimization(float angle);
         void setStartingPoint(float, float, float);
         void updatePosition();
         float getX();
         float getY();
         void turnToXY(float x,float y);
         void driveStraightToXY(float destX, float destY);
+        void driveToXY(float destX, float destY);
 
 };

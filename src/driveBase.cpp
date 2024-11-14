@@ -203,6 +203,23 @@ float DriveBase::turnAngleOptimization(float angle)
     return angle;
 }
 
+//optimizes turn angle for driving. In case of robot has to reverse heading - it will drive backwards instead.
+float DriveBase::backwardsAngleOptimization(float angle)
+{
+    if(!(angle > -90 && angle < 90))
+    {
+        if(angle < -90)
+        {
+            return angle += 180;
+        }
+        if(angle > 90)
+        {
+            return angle -= 180;
+        }
+    }
+    return angle;
+}
+
 
 
 
@@ -359,3 +376,57 @@ float distance_to_drive = sqrt(pow(destX-this->getX(),2) + pow(destY-this->getY(
     this->TurnAngle(angle_to_turn);
     this->DriveDistance(distance_to_drive,angle_to_turn);
 }
+
+void DriveBase::driveToXY(float destX, float destY)
+{
+    /*float 
+    float currHead = this->getHeading();
+    float currX = this->getX();
+    float currY = this->getY();
+    float headingError = toolbox::radiansToDegrees(atan2(destX - currX, destY - currY));  */
+    float error;
+    float speed;
+    float headingError;
+    float headingCorrectionSpeed;
+    float destHeading;
+    float currX;
+    float currY;
+    PID drive_pid = PID(default_drive_Kp, default_drive_Ki, default_drive_Kd, default_drive_limit_integral, default_drive_exit_error, drive_default_min, drive_default_max, default_drive_timeout);
+    PID heading_pid = PID(0.4, 0, 1, 0, 1, 0, 6, 15000);
+
+    do
+    {
+        currX = this->getX();
+        currY = this->getY();
+        error = sqrt(pow(destX-currX,2) + pow(destY-currY,2));
+        speed = drive_pid.calculate(error);
+        std::cout << "##########################################" << std::endl;
+        std::cout << "speed:" << speed << std::endl;
+        std::cout << "err:" << error << std::endl;
+        destHeading = toolbox::radiansToDegrees(atan2(destX - currX, destY - currY));
+        std::cout << "destHeading:" << destHeading << std::endl;
+
+        headingError = destHeading - this->getHeading();
+        std::cout << "headingError:" << headingError << std::endl;
+
+        float optimizedAngle = turnAngleOptimization(headingError);
+        std::cout << "optimizedAngle:" << optimizedAngle << std::endl;
+
+        float direction = cos(toolbox::degreesToRadians(optimizedAngle))/fabs(cos(toolbox::degreesToRadians(optimizedAngle)));
+        std::cout << "direction:" << direction << std::endl;
+        
+        headingCorrectionSpeed = heading_pid.calculate(backwardsAngleOptimization(optimizedAngle));
+        std::cout << "headingCorrectionSpeed:" << headingCorrectionSpeed << std::endl;
+
+        std::cout << "backwardsAngleOptimization:" << backwardsAngleOptimization(optimizedAngle) << std::endl;
+
+        this->RightMotors.spin(vex::fwd, direction * (speed - direction * headingCorrectionSpeed), vex::volt);
+        this->LeftMotors.spin(vex::fwd,  direction * (speed + direction * headingCorrectionSpeed), vex::volt);
+        vex::wait(20, vex::msec);
+
+    }while(!drive_pid.isFinished());
+    this->RightMotors.spin(vex::fwd, 0, vex::volt);
+    this->LeftMotors.spin(vex::fwd, 0, vex::volt);
+
+}
+

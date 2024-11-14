@@ -31,7 +31,7 @@ digital_out bypass = digital_out(Brain.ThreeWirePort.H);
 digital_out highStakeLift = digital_out(Brain.ThreeWirePort.G);
 
 motor intake = motor(PORT5,ratio6_1,false); 
-motor scoring = motor(PORT6,ratio6_1,false);
+motor scoring = motor(PORT6,ratio6_1,true);
 
 optical eyeball = optical(PORT9);
 distance DistanceSensor = distance(PORT7);
@@ -47,8 +47,8 @@ std::shared_ptr<DriveBase> robot(new DriveBase(PORT13, -PORT11, PORT12, -PORT1, 
 
 bool isBeltSpinning = false;
 bool isStopperEnabled = false;
-bool autonEnabled = false;
-int autonId = 4;
+bool autonEnabled = true;
+int autonId = 5;
 bool isBypassEnabled = false;
 
 float redStakeApproachDist = 5.2;
@@ -622,52 +622,7 @@ void auton_blue_right()
 
 void test_auton() {
 
-  // take middle ring
-  enableBypass();
-  lift_intake();
-  robot->DriveDistance(6);
-  wait(20,msec);
-  robot->TurnAngle(-40);
-  
-  wait(20,msec);
-  robot->DriveDistance(6);
-  wait(20,msec);
-  intake_spin_fwd();
-  wait(20,msec);
-  lift_intake();
-  robot->DriveDistance(11,0);
-  // measure distane to the wall and drive back to Alliance stake
-  float distToField = DistanceSensor.objectDistance(inches);
-  wait(20,msec);
-  float dist_to_stake = distToField - 5;
-  robot->DriveDistance(-dist_to_stake);
-  intake_stop(); 
-  // score two rings
-  score();
-  wait(1400,msec);
-  score();
-  wait(20, msec);
-
-  robot->DriveDistance(5);
-
-robot->driveStraightToXY(108,37);
-/*
-  float distance_to_drive = sqrt(pow(108-robot->getX(),2) + pow(37-robot->getY(),2));
-  robot->turnToXY(108,37);
-  robot->DriveDistance(distance_to_drive);*/
-
-  robot->TurnAngle(155);
-  robot->DriveDistance(-10);
-  clampFunc();
-  score();
-  wait(100,msec);
-  //robot->driveStraightToXY(124,45);
-  //robot->driveStraightToXY(130,51);
-  //robot->turnToXY(120,47);
-  //wait(600,msec);
-  robot->driveStraightToXY(132,42);
-  wait(50,msec);
-  robot->driveStraightToXY(127,62);
+  robot->driveToXY(10,10);
 
 }
 
@@ -706,7 +661,7 @@ switch(autonId)
   }
   case 5: {
     setAlliance(BLUE);
-    robot->setStartingPoint(84, 12, 270);
+    robot->setStartingPoint(72, 10, 5);
     vex::task Position(updatePos);
     test_auton(); 
   break;
