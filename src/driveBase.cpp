@@ -43,7 +43,7 @@ void DriveBase::setStartingPoint(float startX, float startY, float startHeading 
     this->setHeading(startHeading);
     this->prev_heading = startHeading;
     this->resetFwdEncoder();
-    //this->resetSideEncoder();
+    this->resetSideEncoder();
     this->fwdPosition = 0;
     this->sidePosition = 0;
 }
@@ -78,22 +78,23 @@ void DriveBase::updatePosition() {
     
     // converting to polar coordinates
     float vector_length;
-    float angle_x_to_vector;
+    float angle_to_vector;
 
     if (localX == 0 && localY == 0) {
         vector_length = 0;
-        angle_x_to_vector = 0;
+        angle_to_vector = 0;
     }
     else {
         vector_length = sqrt(pow(localX,2) + pow(localY, 2));
-        angle_x_to_vector = atan2(localX, localY);
+        angle_to_vector = M_PI - atan2(localY, localX);
     }
     // calculate new global angle and convert back to cartesian: x = r cos θ , y = r sin θ
     //float global_angle_polar_coordinates = M_PI/2 - toolbox::degreesToRadians(this->prev_heading) - deltaHeadRad/2 - angle_x_to_vector;
-    float global_angle_polar_coordinates = toolbox::degreesToRadians(this->prev_heading) + deltaHeadRad/2 + angle_x_to_vector;
+    //float global_angle_polar_coordinates = toolbox::degreesToRadians(this->prev_heading) + deltaHeadRad/2 + angle_x_to_vector;
+    float global_angle_polar_coordinates = angle_to_vector - toolbox::degreesToRadians(this->prev_heading) - deltaHeadRad/2 ;
 
-    float deltaY = vector_length * cos(global_angle_polar_coordinates);
-    float deltaX = vector_length * sin(global_angle_polar_coordinates);
+    float deltaX = vector_length * cos(global_angle_polar_coordinates);
+    float deltaY = vector_length * sin(global_angle_polar_coordinates);
 
     // updating x and y
 
@@ -173,8 +174,8 @@ float DriveBase::getFwdPosition(){
 
 //returns current position of side tracking sensoir in inches
 float DriveBase::getSidePosition(){
-    return 0;
-    // return toolbox::fround(this->sideRotation.position(vex::rev)) * this->in_per_rev;
+    //return 0;
+    return toolbox::fround(this->sideRotation.position(vex::rev)) * this->in_per_rev;
 }
 
 //sets all motor brake-types to the type instucted
@@ -391,8 +392,12 @@ void DriveBase::driveToXY(float destX, float destY)
     float destHeading;
     float currX;
     float currY;
-    PID drive_pid = PID(default_drive_Kp, default_drive_Ki, default_drive_Kd, default_drive_limit_integral, default_drive_exit_error, drive_default_min, drive_default_max, default_drive_timeout);
-    PID heading_pid = PID(0.4, 0, 1, 0, 1, 0, 6, 15000);
+    //PID drive_pid = PID(default_drive_Kp, default_drive_Ki, default_drive_Kd, default_drive_limit_integral, default_drive_exit_error, drive_default_min, drive_default_max, default_drive_timeout);
+    //PID heading_pid = PID(0.4, 0, 1, 0, 1, 0, 6, 15000);
+
+    PID drive_pid = PID(default_drive_Kp, default_drive_Ki, default_drive_Kd, default_drive_limit_integral, 2, drive_default_min, 8, default_drive_timeout);
+    PID heading_pid = PID(0.4, 0, 1, 0, 1, 0, 10, 15000);
+
 
     do
     {

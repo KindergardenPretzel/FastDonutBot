@@ -33,7 +33,7 @@ digital_out highStakeLift = digital_out(Brain.ThreeWirePort.G);
 motor intake = motor(PORT5,ratio6_1,false); 
 motor scoring = motor(PORT6,ratio6_1,true);
 
-optical eyeball = optical(PORT9);
+optical eyeball = optical(PORT14);
 distance DistanceSensor = distance(PORT7);
 
 
@@ -41,7 +41,7 @@ float power_pct = 0.8;
 // define your global instances of motors and other devices here
 
 
-std::shared_ptr<DriveBase> robot(new DriveBase(PORT13, -PORT11, PORT12, -PORT1, -PORT2, PORT3, PORT4, 6.28));
+std::shared_ptr<DriveBase> robot(new DriveBase(PORT13, -PORT11, -PORT12, -PORT1, -PORT2, PORT3, PORT4, 6.28));
 //std::shared_ptr<Odometry> odom(new Odometry(robot));
 //Odometry odom = Odometry(robot);
 
@@ -622,8 +622,11 @@ void auton_blue_right()
 
 void test_auton() {
 
-  robot->driveToXY(10,10);
-
+ robot->driveToXY(93,47);
+ vex::wait(2, sec);
+  robot->driveToXY(116,70);
+ vex::wait(2, sec);
+ robot->driveToXY(70,10);
 }
 
 
@@ -661,7 +664,7 @@ switch(autonId)
   }
   case 5: {
     setAlliance(BLUE);
-    robot->setStartingPoint(72, 10, 5);
+    robot->setStartingPoint(70, 10, 0);
     vex::task Position(updatePos);
     test_auton(); 
   break;

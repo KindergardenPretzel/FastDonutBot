@@ -33,7 +33,7 @@ class DriveBase
         // odometry part
         const float SIDE_DISTANCE = 3;
         //const float FWD_DISTANCE = 0.6;
-        float FWD_DISTANCE = 0.6;
+        const float FWD_DISTANCE = 0.25;
 
         float prev_heading;
         float x;
