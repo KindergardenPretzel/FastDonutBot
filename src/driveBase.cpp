@@ -36,7 +36,7 @@ DriveBase::DriveBase(int gyroPort, int fwdRotatePort, int sideRotatePort,
 
 }
 
-//sets the starting point and heading of the robot
+//sets the starting point and heading of the robot. Resets Rotations sensors
 void DriveBase::setStartingPoint(float startX, float startY, float startHeading ){
     this->x = startX;
     this->y = startY;
@@ -148,18 +148,6 @@ void DriveBase::setHeading(double value){
     this->gyroSensor.setHeading(value, vex::deg);
 }
 
-//returns inertial sensor heading in radians
-double DriveBase::getHeadingRad(){
-    double heading = this->gyroSensor.heading();
-    return (heading * M_PI) / 180;
-}
-
-//returns inertial sensor rotation in radians
-double DriveBase::getRotationRad(){
-    double rotation = this->gyroSensor.rotation();
-    return (rotation * M_PI) / 180;
-}
-
 //resets forward tracking sensor to 0
 void DriveBase::resetFwdEncoder(){
      this->fwdRotation.resetPosition();
@@ -190,7 +178,7 @@ void DriveBase::SetBrake(vex::brakeType brake_type) {
 
 }
 
-//optimizes turning for PID so it turns to the left if the number is greater than 180
+//optimizes turning for PID so it turns to the opposite side if the number is greater than 180
 float DriveBase::turnAngleOptimization(float angle)
 {
     if(!(angle > -180 && angle < 180))
@@ -207,7 +195,7 @@ float DriveBase::turnAngleOptimization(float angle)
     return angle;
 }
 
-//optimizes turn angle for driving. In case of robot has to reverse heading - it will drive backwards instead.
+//optimizes turn angle for driving. In case of robot has to reverse heading it will drive backwards instead.
 float DriveBase::backwardsAngleOptimization(float angle)
 {
     if(!(angle > -90 && angle < 90))
@@ -224,9 +212,7 @@ float DriveBase::backwardsAngleOptimization(float angle)
     return angle;
 }
 
-
-
-
+// drive function overloads. I hate to write them.
 void DriveBase::DriveDistance(float distance){
     this->DriveDistance(distance, this->getHeading(), default_drive_Kp, default_drive_Ki, default_drive_Kd, default_drive_limit_integral, default_drive_exit_error, default_drive_min, default_drive_max, default_drive_timeout);
 }
@@ -247,7 +233,7 @@ void DriveBase::DriveDistance(float distance, float heading, float Kp, float Ki,
     this->DriveDistance(distance, heading, Kp, Ki, Kd, limit_integral, exit_error, default_drive_min, default_drive_max, timeout);
 };
 
-//drives forward or backward for the distance that is instructed
+//robot drives forward or backward for the distance that is instructed
 void DriveBase::DriveDistance(float distance, float dest_heading, float Kp, float Ki, float Kd, float limit_integral, float exit_error, float minOut, float maxOut, float timeout){
     // define PID controllers for driving and heading correction
     PID drive_pid = PID(Kp, Ki, Kd, limit_integral, exit_error, minOut, maxOut, timeout);
