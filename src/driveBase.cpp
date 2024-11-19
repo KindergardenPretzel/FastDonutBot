@@ -71,8 +71,8 @@ void DriveBase::updatePosition() {
         localY = deltaFwd;
     }
     else{
-     localX = 2 * sin(deltaHeadRad/2) * ( (deltaSide/deltaHeadRad) + SIDE_DISTANCE);
-     localY = 2 * sin(deltaHeadRad/2) * ( (deltaFwd/deltaHeadRad) + FWD_DISTANCE);
+     localX = 2 * sin(deltaHeadRad/2) * ( (deltaSide/deltaHeadRad) - SIDE_DISTANCE);
+     localY = 2 * sin(deltaHeadRad/2) * ( (deltaFwd/deltaHeadRad) - FWD_DISTANCE);
      }
 
     
@@ -236,9 +236,13 @@ void DriveBase::DriveDistance(float distance, float Kp, float Ki, float Kd, floa
     this->DriveDistance(distance, this->getHeading(), Kp, Ki, Kd, limit_integral, exit_error, drive_default_min, drive_default_max, timeout);
 }
 
+void DriveBase::DriveDistance(float distance, float Kp, float Ki, float Kd, float limit_integral, float exit_error, float minOut, float maxOut, float timeout){
+    this->DriveDistance(distance, this->getHeading(), Kp, Ki, Kd, limit_integral, exit_error, minOut, maxOut, timeout);
+}
+
 void DriveBase::DriveDistance(float distance, float heading, float Kp, float Ki, float Kd, float limit_integral, float exit_error, int timeout){
     this->DriveDistance(distance, heading, Kp, Ki, Kd, limit_integral, exit_error, drive_default_min, drive_default_max, timeout);
-}
+};
 
 //drives forward or backward for the distance that is instructed
 void DriveBase::DriveDistance(float distance, float dest_heading, float Kp, float Ki, float Kd, float limit_integral, float exit_error, float minOut, float maxOut, float timeout){
@@ -395,7 +399,7 @@ void DriveBase::driveToXY(float destX, float destY)
     //PID drive_pid = PID(default_drive_Kp, default_drive_Ki, default_drive_Kd, default_drive_limit_integral, default_drive_exit_error, drive_default_min, drive_default_max, default_drive_timeout);
     //PID heading_pid = PID(0.4, 0, 1, 0, 1, 0, 6, 15000);
 
-    PID drive_pid = PID(default_drive_Kp, default_drive_Ki, default_drive_Kd, default_drive_limit_integral, 2, drive_default_min, 8, default_drive_timeout);
+    PID drive_pid = PID(default_drive_Kp, default_drive_Ki, default_drive_Kd, default_drive_limit_integral, 2, drive_default_min, 6, default_drive_timeout);
     PID heading_pid = PID(0.4, 0, 1, 0, 1, 0, 10, 15000);
 
 
@@ -405,25 +409,25 @@ void DriveBase::driveToXY(float destX, float destY)
         currY = this->getY();
         error = sqrt(pow(destX-currX,2) + pow(destY-currY,2));
         speed = drive_pid.calculate(error);
-        std::cout << "##########################################" << std::endl;
-        std::cout << "speed:" << speed << std::endl;
-        std::cout << "err:" << error << std::endl;
+        //std::cout << "##########################################" << std::endl;
+        //std::cout << "speed:" << speed << std::endl;
+        //std::cout << "err:" << error << std::endl;
         destHeading = toolbox::radiansToDegrees(atan2(destX - currX, destY - currY));
-        std::cout << "destHeading:" << destHeading << std::endl;
+        //std::cout << "destHeading:" << destHeading << std::endl;
 
         headingError = destHeading - this->getHeading();
-        std::cout << "headingError:" << headingError << std::endl;
+        //std::cout << "headingError:" << headingError << std::endl;
 
         float optimizedAngle = turnAngleOptimization(headingError);
-        std::cout << "optimizedAngle:" << optimizedAngle << std::endl;
+        //std::cout << "optimizedAngle:" << optimizedAngle << std::endl;
 
         float direction = cos(toolbox::degreesToRadians(optimizedAngle))/fabs(cos(toolbox::degreesToRadians(optimizedAngle)));
-        std::cout << "direction:" << direction << std::endl;
+        //std::cout << "direction:" << direction << std::endl;
         
         headingCorrectionSpeed = heading_pid.calculate(backwardsAngleOptimization(optimizedAngle));
-        std::cout << "headingCorrectionSpeed:" << headingCorrectionSpeed << std::endl;
+        //std::cout << "headingCorrectionSpeed:" << headingCorrectionSpeed << std::endl;
 
-        std::cout << "backwardsAngleOptimization:" << backwardsAngleOptimization(optimizedAngle) << std::endl;
+        //std::cout << "backwardsAngleOptimization:" << backwardsAngleOptimization(optimizedAngle) << std::endl;
 
         this->RightMotors.spin(vex::fwd, direction * (speed - direction * headingCorrectionSpeed), vex::volt);
         this->LeftMotors.spin(vex::fwd,  direction * (speed + direction * headingCorrectionSpeed), vex::volt);

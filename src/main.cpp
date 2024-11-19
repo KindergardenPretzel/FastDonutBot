@@ -48,7 +48,7 @@ std::shared_ptr<DriveBase> robot(new DriveBase(PORT13, -PORT11, -PORT12, -PORT1,
 bool isBeltSpinning = false;
 bool isStopperEnabled = false;
 bool autonEnabled = true;
-int autonId = 5;
+int autonId = 6;
 bool isBypassEnabled = false;
 
 float redStakeApproachDist = 5.2;
@@ -209,7 +209,7 @@ void score(){
   {
   if (!highStakeLift.value()) {
     intake_spin_fwd(100);
-    scoring.spin(forward, 70, vex::pct);
+    scoring.spin(forward, 60, vex::pct);
     }
     else
     {
@@ -324,13 +324,17 @@ void pre_auton(void) {
         Brain.Screen.setCursor(8,2);
         Brain.Screen.print("Auton: Test Id: %d", autonId);
       break;   
+      case 6: 
+        Brain.Screen.setCursor(8,2);
+        Brain.Screen.print("Auton: Skills Id: %d", autonId);
+      break;   
     }
     if(Brain.Screen.pressing())
     {
       while(Brain.Screen.pressing())
       {}
       autonId ++;
-      if(autonId > 5)
+      if(autonId > 6)
       {
         autonId = 1;
       }
@@ -621,12 +625,76 @@ void auton_blue_right()
 }
 
 void test_auton() {
+//clampFunc();
+//score();
+//robot->DriveDistance(25);
 
- robot->driveToXY(93,47);
+ /*robot->driveToXY(93,47);
  vex::wait(2, sec);
   robot->driveToXY(116,70);
  vex::wait(2, sec);
- robot->driveToXY(70,10);
+ robot->driveToXY(70,10); */
+}
+
+void skills() {
+  score();
+  wait(600, msec);
+  score();
+
+robot->driveToXY(79,24);
+wait(30, msec);
+robot->TurnAngle(-90);
+wait(30, msec);
+robot->DriveDistance(-11, 1.5, 0, 8, 1, 2, 0, 5, 700);
+wait(40, msec);
+clampFunc();
+wait(20, msec);
+robot->turnToXY(92,47);
+wait(20, msec);
+score();
+wait(20, msec);
+robot->driveToXY(98,52);
+wait(20, msec);
+robot->driveToXY(130,70);
+wait(20, msec);
+robot->driveToXY(118,63);
+wait(20, msec);
+//robot->TurnAngle(180);
+robot->turnToXY(116,12);
+wait(20, msec);
+robot->driveToXY(118,38);
+robot->DriveDistance(8, 1.5, 0, 8, 1, 2, 0, 5, 700);
+robot->DriveDistance(-8, 1.5, 0, 8, 1, 2, 0, 5, 700);
+wait(20, msec);
+robot->TurnAngle(150);
+wait(20, msec);
+robot->DriveDistance(11, 1.5, 0, 8, 1, 2, 0, 5, 700);
+wait(20, msec);
+robot->TurnAngle(-160);
+wait(20, msec);
+robot->driveToXY(118,12);
+wait(500, msec);
+robot->TurnAngle(-75);
+robot->DriveDistance(-10, 1.5, 0, 8, 1, 2, 0, 5, 700);
+wait(400, msec);
+clampFunc();
+score();
+wait(20, msec);
+robot->driveToXY(70,23);
+wait(20, msec);
+
+
+
+robot->turnToXY(140, 23);
+//robot->DriveDistance(-19, 1.5, 0, 8, 1, 2, 0, 5, 900);
+wait(20, msec);
+robot->driveToXY(46,23);
+wait(200, msec);
+clampFunc();
+wait(20, msec);
+robot->turnToXY(46,23);
+
+
 }
 
 
@@ -669,6 +737,14 @@ switch(autonId)
     test_auton(); 
   break;
   }
+  case 6: {
+    setAlliance(RED);
+    robot->setStartingPoint(70, 12, 0);
+    vex::task Position(updatePos);
+    skills(); 
+  break;
+  }
+  
 }
 
 }

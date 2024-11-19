@@ -31,9 +31,9 @@ class DriveBase
         int default_turn_timeout{5000};
         
         // odometry part
-        const float SIDE_DISTANCE = 3;
+        const float SIDE_DISTANCE = 4;
         //const float FWD_DISTANCE = 0.6;
-        const float FWD_DISTANCE = 0.25;
+        const float FWD_DISTANCE = 0.5;
 
         float prev_heading;
         float x;
@@ -62,6 +62,7 @@ class DriveBase
         void DriveDistance(float distance, float Kp, float Ki, float Kd, float limit_integral, float exit_error, int timeout);
         void DriveDistance(float distance, float heading, float Kp, float Ki, float Kd, float limit_integral, float exit_error, int timeout);
         void DriveDistance(float distance, float dest_heading, float Kp, float Ki, float Kd, float limit_integral, float exit_error, float minOut, float maxOut, float timeout);
+        void DriveDistance(float distance, float Kp, float Ki, float Kd, float limit_integral, float exit_error, float minOut, float maxOut, float timeout);
         void TurnAngle(float angle, float Kp, float Ki, float Kd, float limit_integral, float exit_error, float minOut, float maxOut, float timeout);
         void TurnAngle(float angle);
         void TurnAngle(float angle, float Kp, float Ki, float Kd);
