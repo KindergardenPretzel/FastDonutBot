@@ -637,10 +637,15 @@ void test_auton() {
 }
 
 void skills() {
-  score();
-  wait(600, msec);
-  score();
+robot->default_drive_exit_error = 2;
+robot->default_drive_max = 6;
+robot->default_heading_max = 10;
+// score alliance stake
+score();
+wait(600, msec);
+score();
 
+//drive to take first MoGo
 robot->driveToXY(79,24);
 wait(30, msec);
 robot->TurnAngle(-90);
@@ -659,7 +664,6 @@ robot->driveToXY(130,70);
 wait(20, msec);
 robot->driveToXY(118,63);
 wait(20, msec);
-//robot->TurnAngle(180);
 robot->turnToXY(116,12);
 wait(20, msec);
 robot->driveToXY(118,38);
@@ -682,17 +686,14 @@ score();
 wait(20, msec);
 robot->driveToXY(70,23);
 wait(20, msec);
-
-
-
 robot->turnToXY(140, 23);
 //robot->DriveDistance(-19, 1.5, 0, 8, 1, 2, 0, 5, 900);
 wait(20, msec);
-robot->driveToXY(46,23);
+robot->driveToXY(46 , 23);
 wait(200, msec);
 clampFunc();
 wait(20, msec);
-robot->turnToXY(46,23);
+robot->turnToXY(46,46);
 
 
 }
@@ -766,6 +767,10 @@ void usercontrol(void) {
   while (1) {
     float throttle = Controller1.Axis3.position();
     float turn = Controller1.Axis1.position() * 0.7 ;
+
+    if (fabs(throttle) < 5) {throttle = 0; }; 
+    if (fabs(turn) < 5) { turn = 0; }
+
     robot->SetBrake(coast);
 
     robot->LeftMotors.spin(vex::fwd, power_pct * 0.0001 * pow(throttle+turn, 3), vex::pct);

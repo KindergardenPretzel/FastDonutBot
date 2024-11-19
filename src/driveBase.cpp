@@ -48,35 +48,38 @@ void DriveBase::setStartingPoint(float startX, float startY, float startHeading 
     this->sidePosition = 0;
 }
 
-//updates the position on the field of the robot
+//Odometry updates X and Y the position on the field of the robot
 void DriveBase::updatePosition() {
-    // getting current positions and current roatations and saving them into local variables
+    // getting current positions and current roatations and saving them into Class variables
     float fwdPos = this->getFwdPosition();
     float sidePos = this->getSidePosition();
     float currentHead  = toolbox::fround(this->getHeading());
-
     
     //calculating deltas(difference between old and new positions)
     float deltaFwd = fwdPos - this->fwdPosition;
     float deltaSide = sidePos - this->sidePosition;
     float deltaHead = currentHead - this->prev_heading;
 
+    // convert heading difference to Radians
     float deltaHeadRad = toolbox::degreesToRadians(deltaHead);
 
     float localX;
     float localY;
+
     //calculating distance between robot tracking center
     if (deltaHead==0) {
+        // if angle is not changed - then localY and localX is corresponding tracking wheel difference
         localX = deltaSide;
         localY = deltaFwd;
     }
     else{
+    // calculate arc chord (h) for side movement and forward movement
      localX = 2 * sin(deltaHeadRad/2) * ( (deltaSide/deltaHeadRad) - SIDE_DISTANCE);
      localY = 2 * sin(deltaHeadRad/2) * ( (deltaFwd/deltaHeadRad) - FWD_DISTANCE);
      }
 
     
-    // converting to polar coordinates
+    // converting localX and localY to polar coordinates
     float vector_length;
     float angle_to_vector;
 
@@ -85,23 +88,23 @@ void DriveBase::updatePosition() {
         angle_to_vector = 0;
     }
     else {
+        // polar vector length is hypotenuse
         vector_length = sqrt(pow(localX,2) + pow(localY, 2));
+        // PI - angle between vector and X axis (to calculate angle between Y and robot heading)
         angle_to_vector = M_PI - atan2(localY, localX);
     }
     // calculate new global angle and convert back to cartesian: x = r cos θ , y = r sin θ
-    //float global_angle_polar_coordinates = M_PI/2 - toolbox::degreesToRadians(this->prev_heading) - deltaHeadRad/2 - angle_x_to_vector;
-    //float global_angle_polar_coordinates = toolbox::degreesToRadians(this->prev_heading) + deltaHeadRad/2 + angle_x_to_vector;
     float global_angle_polar_coordinates = angle_to_vector - toolbox::degreesToRadians(this->prev_heading) - deltaHeadRad/2 ;
 
     float deltaX = vector_length * cos(global_angle_polar_coordinates);
     float deltaY = vector_length * sin(global_angle_polar_coordinates);
 
-    // updating x and y
+    // updating global X and Y by adding delta
 
    this->x += deltaX;
    this->y += deltaY;
 
-    // updating stored positions and rotation
+    // updating stored positions and heading
     this->fwdPosition = fwdPos;
     this->sidePosition = sidePos;
     this->prev_heading = currentHead;
@@ -225,15 +228,15 @@ float DriveBase::backwardsAngleOptimization(float angle)
 
 
 void DriveBase::DriveDistance(float distance){
-    this->DriveDistance(distance, this->getHeading(), default_drive_Kp, default_drive_Ki, default_drive_Kd, default_drive_limit_integral, default_drive_exit_error, drive_default_min, drive_default_max, default_drive_timeout);
+    this->DriveDistance(distance, this->getHeading(), default_drive_Kp, default_drive_Ki, default_drive_Kd, default_drive_limit_integral, default_drive_exit_error, default_drive_min, default_drive_max, default_drive_timeout);
 }
 
 void DriveBase::DriveDistance(float distance, float heading){
-    this->DriveDistance(distance, heading, default_drive_Kp, default_drive_Ki, default_drive_Kd, default_drive_limit_integral, default_drive_exit_error, drive_default_min, drive_default_max, default_drive_timeout);
+    this->DriveDistance(distance, heading, default_drive_Kp, default_drive_Ki, default_drive_Kd, default_drive_limit_integral, default_drive_exit_error, default_drive_min, default_drive_max, default_drive_timeout);
 }
 
 void DriveBase::DriveDistance(float distance, float Kp, float Ki, float Kd, float limit_integral, float exit_error, int timeout){
-    this->DriveDistance(distance, this->getHeading(), Kp, Ki, Kd, limit_integral, exit_error, drive_default_min, drive_default_max, timeout);
+    this->DriveDistance(distance, this->getHeading(), Kp, Ki, Kd, limit_integral, exit_error, default_drive_min, default_drive_max, timeout);
 }
 
 void DriveBase::DriveDistance(float distance, float Kp, float Ki, float Kd, float limit_integral, float exit_error, float minOut, float maxOut, float timeout){
@@ -241,43 +244,44 @@ void DriveBase::DriveDistance(float distance, float Kp, float Ki, float Kd, floa
 }
 
 void DriveBase::DriveDistance(float distance, float heading, float Kp, float Ki, float Kd, float limit_integral, float exit_error, int timeout){
-    this->DriveDistance(distance, heading, Kp, Ki, Kd, limit_integral, exit_error, drive_default_min, drive_default_max, timeout);
+    this->DriveDistance(distance, heading, Kp, Ki, Kd, limit_integral, exit_error, default_drive_min, default_drive_max, timeout);
 };
 
 //drives forward or backward for the distance that is instructed
 void DriveBase::DriveDistance(float distance, float dest_heading, float Kp, float Ki, float Kd, float limit_integral, float exit_error, float minOut, float maxOut, float timeout){
-    PID pid = PID(Kp, Ki, Kd, limit_integral, exit_error, minOut, maxOut, timeout);
-    pid.setDebug(true);
-    //pid.setPIDmax(10);
-    //pid.setPIDmin(0.1);
-    PID heading_pid = PID(0.4, 0, 1, 0, 1, 15000);
-    heading_pid.setPIDmax(6);
-    heading_pid.setPIDmin(0);
+    // define PID controllers for driving and heading correction
+    PID drive_pid = PID(Kp, Ki, Kd, limit_integral, exit_error, minOut, maxOut, timeout);
+    drive_pid.setDebug(false);
+    PID heading_pid = PID(default_heading_Kp, default_heading_Ki, default_heading_Kd, default_heading_limit_integral, default_heading_exit_error, default_heading_min, default_heading_max, default_heading_timeout);
 
+    // calculate destination by adding requested distance to current forward tracking wheel position in inches
     float destination = this->getFwdPosition() + distance;
     float error;
     float speed;
     float position;
     float heading_error;
     float heading_correction_speed;
+
+    // if heading is specified in negative, convert to global heading [0 - 360]
     if (dest_heading < 0) { dest_heading += 360; };
-    //std::cout << "#####################" << std::endl;
 
     do
     {   
+        // calculate distance to go
         position = this->getFwdPosition();
         error = destination - position;
-        //std::cout << "Position:" << position << std::endl;
-        speed = pid.calculate(error);
+        // calculate speed
+        speed = drive_pid.calculate(error);
 
+        // calculate heading correction angle and speed
         heading_error = dest_heading - this->getHeading();
         heading_correction_speed = heading_pid.calculate(turnAngleOptimization(heading_error));
+
         this->RightMotors.spin(vex::fwd, speed - heading_correction_speed, vex::volt);
         this->LeftMotors.spin(vex::fwd, speed + heading_correction_speed, vex::volt);
         vex::wait(20, vex::msec);
 
-    }while(!pid.isFinished());
-    //std::cout<< "STOP" << std::endl;
+    }while(!drive_pid.isFinished());
     this->RightMotors.spin(vex::fwd, 0, vex::volt);
     this->LeftMotors.spin(vex::fwd, 0, vex::volt);
 }
@@ -356,7 +360,6 @@ void DriveBase::swingLeftHold(float angle)
         vex::wait(10, vex::msec);
 
     }while(!pid.isFinished());
-    //std::cout << "STOP" << std::endl;
 
     this->RightMotors.spin(vex::fwd, 0, vex::volt);
     this->LeftMotors.spin(vex::fwd, 0, vex::volt);
@@ -382,13 +385,9 @@ float distance_to_drive = sqrt(pow(destX-this->getX(),2) + pow(destY-this->getY(
     this->DriveDistance(distance_to_drive,angle_to_turn);
 }
 
+// Odometry based drive to X, Y coordinate
 void DriveBase::driveToXY(float destX, float destY)
 {
-    /*float 
-    float currHead = this->getHeading();
-    float currX = this->getX();
-    float currY = this->getY();
-    float headingError = toolbox::radiansToDegrees(atan2(destX - currX, destY - currY));  */
     float error;
     float speed;
     float headingError;
@@ -396,38 +395,32 @@ void DriveBase::driveToXY(float destX, float destY)
     float destHeading;
     float currX;
     float currY;
-    //PID drive_pid = PID(default_drive_Kp, default_drive_Ki, default_drive_Kd, default_drive_limit_integral, default_drive_exit_error, drive_default_min, drive_default_max, default_drive_timeout);
-    //PID heading_pid = PID(0.4, 0, 1, 0, 1, 0, 6, 15000);
 
-    PID drive_pid = PID(default_drive_Kp, default_drive_Ki, default_drive_Kd, default_drive_limit_integral, 2, drive_default_min, 6, default_drive_timeout);
-    PID heading_pid = PID(0.4, 0, 1, 0, 1, 0, 10, 15000);
-
+    // define PID controllers for Drive and Heading correction
+    PID drive_pid = PID(default_drive_Kp, default_drive_Ki, default_drive_Kd, default_drive_limit_integral, default_drive_exit_error, default_drive_min, default_drive_max, default_drive_timeout);
+    PID heading_pid = PID(default_heading_Kp, default_heading_Ki, default_heading_Kd, default_heading_limit_integral, default_heading_exit_error, default_heading_min, default_heading_max, default_heading_timeout);
 
     do
-    {
+    {   // get current X, Y postion
         currX = this->getX();
         currY = this->getY();
+
+        // Calculate distance to the point using pythagorean theorem.
         error = sqrt(pow(destX-currX,2) + pow(destY-currY,2));
         speed = drive_pid.calculate(error);
-        //std::cout << "##########################################" << std::endl;
-        //std::cout << "speed:" << speed << std::endl;
-        //std::cout << "err:" << error << std::endl;
-        destHeading = toolbox::radiansToDegrees(atan2(destX - currX, destY - currY));
-        //std::cout << "destHeading:" << destHeading << std::endl;
 
+        // calculate heading correction angle using atan2 function. X,Y flipped, so we calculating angle to Y axis
+        destHeading = toolbox::radiansToDegrees(atan2(destX - currX, destY - currY));
         headingError = destHeading - this->getHeading();
-        //std::cout << "headingError:" << headingError << std::endl;
 
         float optimizedAngle = turnAngleOptimization(headingError);
-        //std::cout << "optimizedAngle:" << optimizedAngle << std::endl;
 
+        // if robot need to turn more than 90 degress - we going to go backwards. Cosine of angle more than 90 is negative.
+        // we use it for reversing direction  
         float direction = cos(toolbox::degreesToRadians(optimizedAngle))/fabs(cos(toolbox::degreesToRadians(optimizedAngle)));
-        //std::cout << "direction:" << direction << std::endl;
         
+        // if we need to turn more than 90 degree - change angle and go backwards.
         headingCorrectionSpeed = heading_pid.calculate(backwardsAngleOptimization(optimizedAngle));
-        //std::cout << "headingCorrectionSpeed:" << headingCorrectionSpeed << std::endl;
-
-        //std::cout << "backwardsAngleOptimization:" << backwardsAngleOptimization(optimizedAngle) << std::endl;
 
         this->RightMotors.spin(vex::fwd, direction * (speed - direction * headingCorrectionSpeed), vex::volt);
         this->LeftMotors.spin(vex::fwd,  direction * (speed + direction * headingCorrectionSpeed), vex::volt);
