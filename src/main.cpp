@@ -623,21 +623,27 @@ void auton_blue_right()
 }
 
 void test_auton() {
-//clampFunc();
-//score();
-//robot->DriveDistance(25);
-
- /*robot->driveToXY(93,47);
- vex::wait(2, sec);
-  robot->driveToXY(116,70);
- vex::wait(2, sec);
- robot->driveToXY(70,10); */
+  robot->driveToXY(90, 25);
+  wait(1, sec);
+  robot->TurnAngle(0);
+  wait(1, sec);
+  robot->TurnAngle(90);
+  wait(1, sec);
+  robot->TurnAngle(180);
+  wait(1, sec);
+  robot->TurnAngle(270);
+  wait(1, sec);
+  robot->TurnAngle(0);
 }
 
 void skills() {
 robot->default_drive_exit_error = 2;
 robot->default_drive_max = 7;
 robot->default_heading_max = 10;
+
+// do not score blue rings
+enableBypass();
+
 // score alliance stake
 score();
 wait(600, msec);
@@ -740,8 +746,8 @@ switch(autonId)
   break;
   }
   case 5: {
-    setAlliance(BLUE);
-    robot->setStartingPoint(70, 10, 0);
+    setAlliance(RED);
+    robot->setStartingPoint(70, 12, 90);
     vex::task Position(updatePos);
     test_auton(); 
   break;

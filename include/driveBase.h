@@ -62,9 +62,8 @@ class DriveBase
         double getRotation();
         void setRotation(double);
         float getHeading();
+        float getHeadingCCW();
         void setHeading(double);
-        double getHeadingRad();
-        double getRotationRad();
         void resetFwdEncoder();
         void resetSideEncoder();
         float getFwdPosition();

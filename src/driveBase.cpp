@@ -2,6 +2,7 @@
 #include "drivebase.h"
 #include "PID.h"
 #include <iostream>
+#include <cmath>
 
 //checks if the port is negative and returns true if it is
 bool DriveBase::is_motor_reversed(int motor){
@@ -154,6 +155,11 @@ void DriveBase::setRotation(double value){
 //returns inertial sensor absolute heading [0:360]
 float DriveBase::getHeading(){
     return this->gyroSensor.heading();
+}
+
+//return inertial heading in CCW direction to simplify odometry calculation. 0 degrees is positive X-axis direction.
+float DriveBase::getHeadingCCW() {
+    return std::fmod(360 - this->gyroSensor.heading(vex::degrees), 360);
 }
 
 //sets inertial sensor heading
