@@ -45,7 +45,7 @@ std::shared_ptr<DriveBase> robot(new DriveBase(PORT13, -PORT11, -PORT12, -PORT1,
 
 bool isBeltSpinning = false;
 bool isStopperEnabled = false;
-bool autonEnabled = true;
+bool autonEnabled = false;
 int autonId = 6;
 bool isBypassEnabled = false;
 
@@ -206,7 +206,7 @@ void score(){
   if (!isBeltSpinning)
   {
   if (!highStakeLift.value()) {
-    intake_spin_fwd(100);
+    intake_spin_fwd(65);
     scoring.spin(forward, 60, vex::pct);
     }
     else
@@ -636,7 +636,7 @@ void test_auton() {
 
 void skills() {
 robot->default_drive_exit_error = 2;
-robot->default_drive_max = 6;
+robot->default_drive_max = 7;
 robot->default_heading_max = 10;
 // score alliance stake
 score();
@@ -652,13 +652,13 @@ robot->DriveDistance(-11, 1.5, 0, 8, 1, 2, 0, 5, 700);
 wait(40, msec);
 clampFunc();
 wait(20, msec);
-robot->turnToXY(92,47);
+robot->turnToXY(88,47);
 wait(20, msec);
 score();
 wait(20, msec);
 robot->driveToXY(98,52);
 wait(20, msec);
-robot->driveToXY(130,70);
+robot->driveToXY(127,70);
 wait(20, msec);
 robot->driveToXY(118,63);
 wait(20, msec);
@@ -690,10 +690,19 @@ wait(20, msec);
 robot->driveToXY(46 , 23);
 wait(200, msec);
 clampFunc();
+wait(100, msec);
+robot->turnToXY(51,46);
+score();
 wait(20, msec);
-robot->turnToXY(46,46);
-
-
+robot->driveToXY(51 , 48);
+wait(20, msec);
+robot->driveToXY(10,75);
+wait(20, msec);
+robot->driveToXY(27.5,66);
+wait(20, msec);
+robot->turnToXY(25,46);
+wait(20, msec);
+robot->driveToXY(25,46);
 }
 
 
