@@ -27,6 +27,7 @@ digital_out clamp = digital_out(Brain.ThreeWirePort.A);
 digital_out intake_lift = digital_out(Brain.ThreeWirePort.B);
 digital_out bypass = digital_out(Brain.ThreeWirePort.H);
 digital_out highStakeLift = digital_out(Brain.ThreeWirePort.G);
+limit auton_switch = limit(Brain.ThreeWirePort.E);
 
 motor intake = motor(PORT5,ratio6_1,false); 
 motor scoring = motor(PORT6,ratio6_1,true);
@@ -340,9 +341,9 @@ void pre_auton(void) {
         Controller1.Screen.print("A: SKLS");
       break;   
     }
-    if(Brain.Screen.pressing())
+    if(Brain.Screen.pressing() || auton_switch.pressing())
     {
-      while(Brain.Screen.pressing())
+      while(Brain.Screen.pressing() || auton_switch.pressing())
       {}
       autonId ++;
       if(autonId > 6)
