@@ -291,7 +291,21 @@ int ShowMeInfo(){
   return 0;
 }
 
+void auton_select() {
+  autonId ++;
+  if(autonId > 6)
+    {
+      autonId = 1;
+    }
+  Brain.Screen.clearLine(8);
+  Controller1.Screen.clearLine(3);
+}
+
 void pre_auton(void) {
+  // auton selector callbacks
+  auton_switch.pressed(auton_select);
+  Brain.Screen.pressed(auton_select);
+
   bypass.set(false);
   setAlliance(RED);
   highStakeLift.set(false);
@@ -341,7 +355,8 @@ void pre_auton(void) {
         Controller1.Screen.print("A: SKLS");
       break;   
     }
-    if(Brain.Screen.pressing() || auton_switch.pressing())
+
+    /*if(Brain.Screen.pressing() || auton_switch.pressing())
     {
       while(Brain.Screen.pressing() || auton_switch.pressing())
       {}
@@ -353,12 +368,14 @@ void pre_auton(void) {
       wait(10, msec);
       Brain.Screen.clearLine(8);
       Controller1.Screen.clearLine(3);
-    }
+    }*/
+
+      //wait(1000, msec);
+
   }
 
-  // All activities that occur before the competition starts
-  // Example: clearing encoders, setting servo positions, ...
 }
+
 
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
@@ -829,7 +846,6 @@ int main() {
   
    // start debug output;
   vex::task Debug(ShowMeInfo);
-
   vex::task Stop(ColorSensing);
   
   // Run the pre-autonomous function.
