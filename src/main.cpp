@@ -124,6 +124,7 @@ void reverseIntake(){
   scoring.stop();
 }
 
+/*
 void liftRamp()
 {
   if(highStakeLift.value())
@@ -138,17 +139,17 @@ void liftRamp()
     highStakeLift.set(true);
   }
 }
+*/
 
 int ColorSensing()
 {
   eyeball.setLightPower(50, vex::pct);
   eyeball.setLight(ledState::on);
-  bool toggle = true;
-  while (toggle) {
+  while (true) {
     color detectColor = eyeball.color();
     //std::cout << detectColor << std::endl;
     //vex::wait(10, msec);
-    if (eyeball.color() == OWN && isStopperEnabled){
+    if (eyeball.color() == OWN && isStopperEnabled && isBeltSpinning){
       score();
       isStopperEnabled = false;
     }
@@ -202,15 +203,15 @@ void enableBypass()
 //spins the intake and conveyo belt forward
 void score(){
   if (!isBeltSpinning)
-  {
-  if (!highStakeLift.value()) {
+ {
+//  if (!highStakeLift.value()) {
     intake_spin_fwd(65);
     scoring.spin(forward, 60, vex::pct);
-    }
-    else
-    {
-      scoring.spin(forward, -50, vex::pct);
-    }
+ //   }
+ //   else
+ //   {
+//      scoring.spin(forward, -50, vex::pct);
+//    }
     isBeltSpinning = true;
   }
   else 
@@ -809,7 +810,7 @@ int main() {
     Controller1.ButtonR1.pressed(score);
     Controller1.ButtonY.pressed(stopWhenColorSeen);
     Controller1.ButtonA.pressed(enableBypass);
-    Controller1.ButtonUp.pressed(liftRamp);
+    // Controller1.ButtonUp.pressed(liftRamp);
   
   
    // start debug output;
