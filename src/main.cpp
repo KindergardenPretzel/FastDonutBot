@@ -252,17 +252,17 @@ int ShowMeInfo(){
 
     Brain.Screen.setCursor(3,2);
     Brain.Screen.print("X: %f, Y: %f", robot->getX(), robot->getY());
+
     Brain.Screen.setCursor(4,2);
     heading_angle = robot->getHeading();
-    if (heading_angle > 180) { heading_angle -= 360;};
-    
+    //if (heading_angle > 180) { heading_angle -= 360;};
     Brain.Screen.print("Heading: %f", heading_angle);
+
     Brain.Screen.setCursor(5,2);
     Brain.Screen.print("position: %f", robot->getFwdPosition());
+
     Brain.Screen.setCursor(6,2);
     Brain.Screen.print("X1: %f, Y1: %f", robot->x1, robot->y1);
-  
-
   
   if (clamp.value()) 
   {
@@ -306,26 +306,38 @@ void pre_auton(void) {
       case 1: 
         Brain.Screen.setCursor(8,2);
         Brain.Screen.print("Auton: Red Left Side Id: %d", autonId);
+        Controller1.Screen.setCursor(3,10);
+        Controller1.Screen.print("A: RL");
       break;
       case 2: 
         Brain.Screen.setCursor(8,2);
         Brain.Screen.print("Auton: Red Right Side Id: %d", autonId);
+        Controller1.Screen.setCursor(3,10);
+        Controller1.Screen.print("A: RR");
       break;
       case 3: 
         Brain.Screen.setCursor(8,2);
         Brain.Screen.print("Auton: Blue Left Side Id: %d", autonId);
+        Controller1.Screen.setCursor(3,10);
+        Controller1.Screen.print("A: BL");
       break;
       case 4: 
         Brain.Screen.setCursor(8,2);
         Brain.Screen.print("Auton: Blue Right Side Id: %d", autonId);
+        Controller1.Screen.setCursor(3,10);
+        Controller1.Screen.print("A: BR");
       break;
       case 5: 
         Brain.Screen.setCursor(8,2);
         Brain.Screen.print("Auton: Test Id: %d", autonId);
+        Controller1.Screen.setCursor(3,10);
+        Controller1.Screen.print("A: TST");
       break;   
       case 6: 
         Brain.Screen.setCursor(8,2);
         Brain.Screen.print("Auton: Skills Id: %d", autonId);
+        Controller1.Screen.setCursor(3,10);
+        Controller1.Screen.print("A: SKLS");
       break;   
     }
     if(Brain.Screen.pressing())
@@ -339,6 +351,7 @@ void pre_auton(void) {
       }
       wait(10, msec);
       Brain.Screen.clearLine(8);
+      Controller1.Screen.clearLine(3);
     }
   }
 
