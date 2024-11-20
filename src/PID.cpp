@@ -113,7 +113,7 @@ bool PID::isFinished(){
     {
         if(debugOn)  
         {
-            std::cout << "PID Running Time:" << runningTime << std::endl;
+            std::cout << "PID Eror Exit. Running Time:" << runningTime << std::endl;
         };
         return true;
     }
@@ -121,7 +121,7 @@ bool PID::isFinished(){
     {
         if(debugOn)  
         {
-            std::cout << "PID Running Time:" << runningTime << std::endl;
+            std::cout << "PID Timeout Exit. Running Time:" << runningTime << std::endl;
         };
         return true;
     }

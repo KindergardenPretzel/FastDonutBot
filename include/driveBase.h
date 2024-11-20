@@ -10,7 +10,7 @@ class DriveBase
         vex::motor MotorLB;
         vex::motor MotorRF;
         vex::motor MotorRB;
-        float in_per_rev;
+        float inchesPerRev;
         bool is_motor_reversed(int);
         // odometry part
         const float SIDE_DISTANCE = 4;
@@ -24,6 +24,8 @@ class DriveBase
         float sidePosition;
 
     public:
+        float x1;
+        float y1;
         float default_drive_Kp{1.5};
         float default_drive_Ki{0};
         float default_drive_Kd{8};
@@ -51,8 +53,9 @@ class DriveBase
         float default_heading_max{6};
         int default_heading_timeout{15000};
 //odometry heading correction PID(0.4, 0, 1, 0, 1, 0, 10, 15000); 
-
-        DriveBase(int, int, int, int, int, int, int, float);
+        DriveBase(int gyroPort, int fwdRotatePort, int sideRotatePort, 
+                     int MotorLFPort, int MotorLBPort, int MotorRFPort, 
+                     int MotorRBPort, float inchesPerRev);
         vex::motor_group LeftMotors;
         vex::motor_group RightMotors;
         void calibrateInertial();

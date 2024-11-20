@@ -15,7 +15,7 @@ bool DriveBase::is_motor_reversed(int motor){
 //DriveBase class constructor
 DriveBase::DriveBase(int gyroPort, int fwdRotatePort, int sideRotatePort, 
                      int MotorLFPort, int MotorLBPort, int MotorRFPort, 
-                     int MotorRBPort, float in_per_rev):
+                     int MotorRBPort, float inchesPerRev):
  fwdRotation(abs(fwdRotatePort)), 
  sideRotation(abs(sideRotatePort)),
  gyroSensor(gyroPort),
@@ -25,12 +25,8 @@ DriveBase::DriveBase(int gyroPort, int fwdRotatePort, int sideRotatePort,
  MotorRB(abs(MotorRBPort), vex::ratio6_1, is_motor_reversed(MotorRBPort)),
  LeftMotors(vex::motor_group(MotorLF, MotorLB)), 
  RightMotors(vex::motor_group(MotorRF, MotorRB)),
- in_per_rev(in_per_rev)
+ inchesPerRev(inchesPerRev)
 {
-    //this->MotorLF.setReversed(is_motor_reversed(MotorLFPort));
-    //this->MotorLB.setReversed(is_motor_reversed(MotorLBPort));
-    //this->MotorRF.setReversed(is_motor_reversed(MotorRFPort));
-    //this->MotorRB.setReversed(is_motor_reversed(MotorRBPort));
     this->fwdRotation.setReversed(is_motor_reversed(fwdRotatePort));
     this->sideRotation.setReversed(is_motor_reversed(sideRotatePort));
 
@@ -40,6 +36,10 @@ DriveBase::DriveBase(int gyroPort, int fwdRotatePort, int sideRotatePort,
 void DriveBase::setStartingPoint(float startX, float startY, float startHeading ){
     this->x = startX;
     this->y = startY;
+    // test part
+    this->x1 = startX;
+    this->y1 = startY;
+    // test part
     this->setHeading(startHeading);
     this->prev_heading = startHeading;
     this->resetFwdEncoder();
@@ -47,6 +47,9 @@ void DriveBase::setStartingPoint(float startX, float startY, float startHeading 
     this->fwdPosition = 0;
     this->sidePosition = 0;
 }
+
+
+
 
 //Odometry updates X and Y the position on the field of the robot
 void DriveBase::updatePosition() {
@@ -90,8 +93,9 @@ void DriveBase::updatePosition() {
     else {
         // polar vector length is hypotenuse
         vector_length = sqrt(pow(localX,2) + pow(localY, 2));
-        // PI - angle between vector and X axis (to calculate angle between Y and robot heading)
-        angle_to_vector = M_PI - atan2(localY, localX);
+        // (M_PI/2 - angle between vector and X axis) to calculate angle between Y and robot heading
+        //angle_to_vector = M_PI - atan2(localY, localX);
+        angle_to_vector = M_PI/2 - atan2(localY, localX);
     }
     // calculate new global angle and convert back to cartesian: x = r cos θ , y = r sin θ
     float global_angle_polar_coordinates = angle_to_vector - toolbox::degreesToRadians(this->prev_heading) - deltaHeadRad/2 ;
@@ -100,9 +104,18 @@ void DriveBase::updatePosition() {
     float deltaY = vector_length * sin(global_angle_polar_coordinates);
 
     // updating global X and Y by adding delta
-
    this->x += deltaX;
    this->y += deltaY;
+
+
+///// test part
+    float delta_Y_test = localY * cos(toolbox::degreesToRadians(this->prev_heading + deltaHead/2));
+    float delta_X_test = localX * sin(toolbox::degreesToRadians(this->prev_heading + deltaHead/2));
+
+    this->x1 += delta_X_test;
+    this->y1 += delta_Y_test;
+///// test part
+
 
     // updating stored positions and heading
     this->fwdPosition = fwdPos;
@@ -160,13 +173,14 @@ void DriveBase::resetSideEncoder(){
 
 //returns current position of forward tracking sensoir in inches
 float DriveBase::getFwdPosition(){
-     return toolbox::fround(this->fwdRotation.position(vex::rev)) * this->in_per_rev;
+    return this->fwdRotation.position(vex::rev) * this->inchesPerRev;
+     //return toolbox::fround(this->fwdRotation.position(vex::rev)) * this->inchesPerRev;
 }
 
 //returns current position of side tracking sensoir in inches
 float DriveBase::getSidePosition(){
-    //return 0;
-    return toolbox::fround(this->sideRotation.position(vex::rev)) * this->in_per_rev;
+    return this->sideRotation.position(vex::rev) * this->inchesPerRev;
+    //return toolbox::fround(this->sideRotation.position(vex::rev)) * this->inchesPerRev;
 }
 
 //sets all motor brake-types to the type instucted
@@ -237,7 +251,7 @@ void DriveBase::DriveDistance(float distance, float heading, float Kp, float Ki,
 void DriveBase::DriveDistance(float distance, float dest_heading, float Kp, float Ki, float Kd, float limit_integral, float exit_error, float minOut, float maxOut, float timeout){
     // define PID controllers for driving and heading correction
     PID drive_pid = PID(Kp, Ki, Kd, limit_integral, exit_error, minOut, maxOut, timeout);
-    drive_pid.setDebug(false);
+    drive_pid.setDebug(true);
     PID heading_pid = PID(default_heading_Kp, default_heading_Ki, default_heading_Kd, default_heading_limit_integral, default_heading_exit_error, default_heading_min, default_heading_max, default_heading_timeout);
 
     // calculate destination by adding requested distance to current forward tracking wheel position in inches
@@ -323,7 +337,6 @@ void DriveBase::swingRightHold(float angle)
         vex::wait(10, vex::msec);
 
     }while(!pid.isFinished());
-    //std::cout << "STOP" << std::endl;
 
     this->RightMotors.spin(vex::fwd, 0, vex::volt);
     this->LeftMotors.spin(vex::fwd, 0, vex::volt);

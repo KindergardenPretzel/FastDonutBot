@@ -38,10 +38,8 @@ distance DistanceSensor = distance(PORT7);
 float power_pct = 0.8;
 // define your global instances of motors and other devices here
 
-
+// Inertial, ForwardTrackingWheel, SideTrackingWheel, LeftFrontMotor, LeftBackMotor, RightFrontMotor, RightBackMotor, trackingIntchesPerRevolution
 std::shared_ptr<DriveBase> robot(new DriveBase(PORT13, -PORT11, -PORT12, -PORT1, -PORT2, PORT3, PORT4, 6.28));
-//std::shared_ptr<Odometry> odom(new Odometry(robot));
-//Odometry odom = Odometry(robot);
 
 bool isBeltSpinning = false;
 bool isStopperEnabled = false;
@@ -260,6 +258,8 @@ int ShowMeInfo(){
     Brain.Screen.print("Heading: %f", heading_angle);
     Brain.Screen.setCursor(5,2);
     Brain.Screen.print("position: %f", robot->getFwdPosition());
+    Brain.Screen.setCursor(6,2);
+    Brain.Screen.print("X1: %f, Y1: %f", robot->x1, robot->y1);
   
 
   
@@ -675,7 +675,7 @@ wait(20, msec);
 robot->TurnAngle(-160);
 wait(20, msec);
 robot->driveToXY(118,12);
-wait(500, msec);
+wait(700, msec);    // all rings are scored before turning
 robot->TurnAngle(-75);
 robot->DriveDistance(-10, 1.5, 0, 8, 1, 2, 0, 5, 700);
 wait(400, msec);
@@ -685,12 +685,13 @@ wait(20, msec);
 robot->driveToXY(70,23);
 wait(20, msec);
 robot->turnToXY(140, 23);
-//robot->DriveDistance(-19, 1.5, 0, 8, 1, 2, 0, 5, 900);
 wait(20, msec);
 robot->driveToXY(46 , 23);
+
 wait(200, msec);
 clampFunc();
-wait(100, msec);
+wait(200, msec);
+
 robot->turnToXY(51,46);
 score();
 wait(20, msec);
