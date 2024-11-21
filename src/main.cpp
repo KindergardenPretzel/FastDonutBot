@@ -40,7 +40,7 @@ float power_pct = 0.8;
 // define your global instances of motors and other devices here
 
 // Inertial, ForwardTrackingWheel, SideTrackingWheel, LeftFrontMotor, LeftBackMotor, RightFrontMotor, RightBackMotor, trackingIntchesPerRevolution
-std::shared_ptr<DriveBase> robot(new DriveBase(PORT13, -PORT11, -PORT12, -PORT1, -PORT2, PORT3, PORT4, 6.28));
+std::shared_ptr<DriveBase> robot(new DriveBase(PORT13, -PORT11, PORT12, -PORT1, -PORT2, PORT3, PORT4, 6.28));
 
 bool isBeltSpinning = false;
 bool isStopperEnabled = false;
@@ -655,22 +655,13 @@ void auton_blue_right()
 }
 
 void test_auton() {
-  robot->driveToXY(90, 25);
-  wait(1, sec);
-  robot->TurnAngle(0);
-  wait(1, sec);
-  robot->TurnAngle(90);
-  wait(1, sec);
-  robot->TurnAngle(180);
-  wait(1, sec);
-  robot->TurnAngle(270);
-  wait(1, sec);
-  robot->TurnAngle(0);
+  robot->DriveDistance(30, 60);
+
 }
 
 void skills() {
 robot->default_drive_exit_error = 2;
-robot->default_drive_max = 7;
+robot->default_drive_max = 6;
 robot->default_heading_max = 10;
 
 // do not score blue rings
@@ -682,11 +673,11 @@ wait(600, msec);
 score();
 
 //drive to take first MoGo
-robot->driveToXY(79,24);
+robot->driveToXY(75,24);
 wait(30, msec);
-robot->TurnAngle(-90);
+robot->TurnAngle(180);
 wait(30, msec);
-robot->DriveDistance(-11, 1.5, 0, 8, 1, 2, 0, 5, 700);
+robot->DriveDistance(-13, 1.5, 0, 8, 1, 2, 0, 5, 700);
 wait(40, msec);
 clampFunc();
 wait(20, msec);
@@ -699,32 +690,34 @@ wait(20, msec);
 robot->driveToXY(127,70);
 wait(20, msec);
 robot->driveToXY(118,63);
-wait(20, msec);
-robot->turnToXY(116,12);
+wait(300, msec); // wait before turning
+robot->turnToXY(120,12);
 wait(20, msec);
 robot->driveToXY(118,38);
 robot->DriveDistance(8, 1.5, 0, 8, 1, 2, 0, 5, 700);
+wait(20, msec);
 robot->DriveDistance(-8, 1.5, 0, 8, 1, 2, 0, 5, 700);
 wait(20, msec);
-robot->TurnAngle(150);
+//robot->TurnAngle(150);
+robot->turnToXY(130, 23);
 wait(20, msec);
-robot->DriveDistance(11, 1.5, 0, 8, 1, 2, 0, 5, 700);
+robot->DriveDistance(12, 1.5, 0, 8, 1, 2, 0, 5, 700);
 wait(20, msec);
-robot->TurnAngle(-160);
+robot->driveToXY(118,12);
 wait(20, msec);
 robot->driveToXY(118,12);
 wait(700, msec);    // all rings are scored before turning
-robot->TurnAngle(-75);
-robot->DriveDistance(-10, 1.5, 0, 8, 1, 2, 0, 5, 700);
+robot->turnToXY(94, 23);
+robot->DriveDistance(-13, 1.5, 0, 8, 1, 2, 0, 5, 700);
 wait(400, msec);
 clampFunc();
 score();
 wait(20, msec);
-robot->driveToXY(70,23);
+robot->driveToXY(60,24);
+wait(100, msec);
+robot->turnToXY(140, 24);
 wait(20, msec);
-robot->turnToXY(140, 23);
-wait(20, msec);
-robot->driveToXY(46 , 23);
+robot->driveToXY(40 , 24);
 
 wait(200, msec);
 clampFunc();
@@ -739,9 +732,21 @@ robot->driveToXY(10,75);
 wait(20, msec);
 robot->driveToXY(27.5,66);
 wait(20, msec);
-robot->turnToXY(25,46);
+robot->turnToXY(23,43);
 wait(20, msec);
-robot->driveToXY(25,46);
+robot->driveToXY(23,43);
+wait(20, msec);
+robot->turnToXY(23,43);
+robot->DriveDistance(8, 1.5, 0, 8, 1, 2, 0, 5, 700);
+wait(20, msec);
+robot->DriveDistance(-8, 1.5, 0, 8, 1, 2, 0, 5, 700);
+exit(1);
+
+robot->turnToXY(14,23);
+wait(20, msec);
+robot->DriveDistance(8, 1.5, 0, 8, 1, 2, 0, 5, 700);
+wait(20, msec);
+robot->DriveDistance(-8, 1.5, 0, 8, 1, 2, 0, 5, 700);
 }
 
 
@@ -786,7 +791,7 @@ switch(autonId)
   }
   case 6: {
     setAlliance(RED);
-    robot->setStartingPoint(70, 12, 0);
+    robot->setStartingPoint(70, 12, 90);
     vex::task Position(updatePos);
     skills(); 
   break;

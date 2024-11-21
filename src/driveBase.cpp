@@ -95,11 +95,11 @@ void DriveBase::updatePosition() {
         // polar vector length is hypotenuse
         vector_length = sqrt(pow(localX,2) + pow(localY, 2));
         // (M_PI/2 - angle between vector and X axis) to calculate angle between Y and robot heading
-        //angle_to_vector = M_PI - atan2(localY, localX);
+        //WAS angle_to_vector = M_PI - atan2(localY, localX);
         angle_to_vector = M_PI/2 - atan2(localY, localX);
     }
     // calculate new global angle and convert back to cartesian: x = r cos θ , y = r sin θ
-    float global_angle_polar_coordinates = angle_to_vector - toolbox::degreesToRadians(this->prev_heading) - deltaHeadRad/2 ;
+    float global_angle_polar_coordinates = angle_to_vector + toolbox::degreesToRadians(this->prev_heading) + deltaHeadRad/2 ;
 
     float deltaX = vector_length * cos(global_angle_polar_coordinates);
     float deltaY = vector_length * sin(global_angle_polar_coordinates);
@@ -153,18 +153,19 @@ void DriveBase::setRotation(double value){
 }
 
 //returns inertial sensor absolute heading [0:360]
-float DriveBase::getHeading(){
+float DriveBase::getHeadingCCW(){
     return this->gyroSensor.heading();
 }
 
 //return inertial heading in CCW direction to simplify odometry calculation. 0 degrees is positive X-axis direction.
-float DriveBase::getHeadingCCW() {
+float DriveBase::getHeading() {
     return std::fmod(360 - this->gyroSensor.heading(vex::degrees), 360);
 }
 
 //sets inertial sensor heading
 void DriveBase::setHeading(double value){
-    this->gyroSensor.setHeading(value, vex::deg);
+    //this->gyroSensor.setHeading(value, vex::deg);
+    this->gyroSensor.setHeading(std::fmod(360 - value, 360), vex::deg);
 }
 
 //resets forward tracking sensor to 0
@@ -283,8 +284,8 @@ void DriveBase::DriveDistance(float distance, float dest_heading, float Kp, floa
         heading_error = dest_heading - this->getHeading();
         heading_correction_speed = heading_pid.calculate(turnAngleOptimization(heading_error));
 
-        this->RightMotors.spin(vex::fwd, speed - heading_correction_speed, vex::volt);
-        this->LeftMotors.spin(vex::fwd, speed + heading_correction_speed, vex::volt);
+        this->RightMotors.spin(vex::fwd, speed + heading_correction_speed, vex::volt);
+        this->LeftMotors.spin(vex::fwd, speed - heading_correction_speed, vex::volt);
         vex::wait(20, vex::msec);
 
     }while(!drive_pid.isFinished());
@@ -315,8 +316,8 @@ void DriveBase::TurnAngle(float angle, float Kp, float Ki, float Kd, float limit
         current_heading = this->getHeading();
         error = this->turnAngleOptimization(angle - current_heading);
         speed = pid.calculate(error);
-        this->LeftMotors.spin(vex::fwd, speed, vex::volt);
-        this->RightMotors.spin(vex::fwd, -speed, vex::volt);
+        this->LeftMotors.spin(vex::fwd, -speed, vex::volt);
+        this->RightMotors.spin(vex::fwd, speed, vex::volt);
         vex::wait(10, vex::msec);
 
     }while(!pid.isFinished());
@@ -374,7 +375,7 @@ void DriveBase::turnToXY(float destX, float destY)
 {
     float currX = this->getX();
     float currY = this->getY();
-    float angle_to_turn = toolbox::radiansToDegrees(atan2(destX - currX, destY - currY));
+    float angle_to_turn = toolbox::radiansToDegrees(atan2(destY - currY, destX - currX));
     this->TurnAngle(angle_to_turn);
 }   
 
@@ -383,7 +384,7 @@ void DriveBase::driveStraightToXY(float destX, float destY)
 float distance_to_drive = sqrt(pow(destX-this->getX(),2) + pow(destY-this->getY(),2));
     float currX = this->getX();
     float currY = this->getY();
-    float angle_to_turn = toolbox::radiansToDegrees(atan2(destX - currX, destY - currY));  
+    float angle_to_turn = toolbox::radiansToDegrees(atan2(destY - currY, destX - currX));  
     this->TurnAngle(angle_to_turn);
     this->DriveDistance(distance_to_drive,angle_to_turn);
 }
@@ -413,7 +414,8 @@ void DriveBase::driveToXY(float destX, float destY)
         speed = drive_pid.calculate(error);
 
         // calculate heading correction angle using atan2 function. X,Y flipped, so we calculating angle to Y axis
-        destHeading = toolbox::radiansToDegrees(atan2(destX - currX, destY - currY));
+        //destHeading = toolbox::radiansToDegrees(atan2(destX - currX, destY - currY));
+        destHeading = toolbox::radiansToDegrees(atan2(destY - currY, destX - currX));
         headingError = destHeading - this->getHeading();
 
         float optimizedAngle = turnAngleOptimization(headingError);
@@ -425,8 +427,8 @@ void DriveBase::driveToXY(float destX, float destY)
         // if we need to turn more than 90 degree - change angle and go backwards.
         headingCorrectionSpeed = heading_pid.calculate(backwardsAngleOptimization(optimizedAngle));
 
-        this->RightMotors.spin(vex::fwd, direction * (speed - direction * headingCorrectionSpeed), vex::volt);
-        this->LeftMotors.spin(vex::fwd,  direction * (speed + direction * headingCorrectionSpeed), vex::volt);
+        this->RightMotors.spin(vex::fwd, direction * (speed + direction * headingCorrectionSpeed), vex::volt);
+        this->LeftMotors.spin(vex::fwd,  direction * (speed - direction * headingCorrectionSpeed), vex::volt);
         vex::wait(20, vex::msec);
 
     }while(!drive_pid.isFinished());
