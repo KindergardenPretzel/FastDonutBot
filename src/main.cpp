@@ -151,7 +151,7 @@ int ColorSensing()
     //std::cout << detectColor << std::endl;
     //vex::wait(10, msec);
     if (eyeball.color() == OWN && isStopperEnabled && isBeltSpinning){
-      wait(5, msec);
+      wait(10, msec);
       score();
       isStopperEnabled = false;
     }
