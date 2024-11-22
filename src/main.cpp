@@ -206,8 +206,8 @@ void score(){
   if (!isBeltSpinning)
  {
 //  if (!highStakeLift.value()) {
-    intake_spin_fwd(65);
-    scoring.spin(forward, 60, vex::pct);
+    intake_spin_fwd(70);
+    scoring.spin(forward, 75, vex::pct);
  //   }
  //   else
  //   {
@@ -655,7 +655,7 @@ void auton_blue_right()
 }
 
 void test_auton() {
-  robot->DriveDistance(30, 60);
+  //robot->DriveDistance(30, 60);
 
 }
 
@@ -694,30 +694,30 @@ wait(300, msec); // wait before turning
 robot->turnToXY(120,12);
 wait(20, msec);
 robot->driveToXY(118,38);
-robot->DriveDistance(8, 1.5, 0, 8, 1, 2, 0, 5, 700);
+robot->DriveDistance(8, 1.5, 0, 8, 1, 2, 0, 5, 750);
 wait(20, msec);
-robot->DriveDistance(-8, 1.5, 0, 8, 1, 2, 0, 5, 700);
+robot->DriveDistance(-8, 1.5, 0, 8, 1, 2, 0, 5, 750);
 wait(20, msec);
 //robot->TurnAngle(150);
 robot->turnToXY(130, 23);
 wait(20, msec);
-robot->DriveDistance(12, 1.5, 0, 8, 1, 2, 0, 5, 700);
+robot->DriveDistance(12, 1.5, 0, 8, 1, 2, 0, 5, 750);
 wait(20, msec);
 robot->driveToXY(118,12);
 wait(20, msec);
 robot->driveToXY(118,12);
 wait(700, msec);    // all rings are scored before turning
 robot->turnToXY(94, 23);
-robot->DriveDistance(-13, 1.5, 0, 8, 1, 2, 0, 5, 700);
+robot->DriveDistance(-13, 1.5, 0, 8, 1, 2, 0, 5, 600); // corner
 wait(400, msec);
 clampFunc();
 score();
 wait(20, msec);
-robot->driveToXY(60,24);
+robot->driveToXY(60,27);
 wait(100, msec);
-robot->turnToXY(140, 24);
+robot->turnToXY(140, 27);
 wait(20, msec);
-robot->driveToXY(40 , 24);
+robot->DriveDistance(-13, 1.5, 0, 8, 1, 2, 0, 5, 700); 
 
 wait(200, msec);
 clampFunc();
@@ -730,16 +730,16 @@ robot->driveToXY(51 , 48);
 wait(20, msec);
 robot->driveToXY(10,75);
 wait(20, msec);
-robot->driveToXY(27.5,66);
+robot->driveToXY(25,73);
 wait(20, msec);
-robot->turnToXY(23,43);
+robot->turnToXY(25,43);
 wait(20, msec);
-robot->driveToXY(23,43);
+robot->driveToXY(25,12);
 wait(20, msec);
-robot->turnToXY(23,43);
-robot->DriveDistance(8, 1.5, 0, 8, 1, 2, 0, 5, 700);
-wait(20, msec);
-robot->DriveDistance(-8, 1.5, 0, 8, 1, 2, 0, 5, 700);
+
+//robot->DriveDistance(8, 1.5, 0, 8, 1, 2, 0, 5, 700);
+//wait(20, msec);
+//robot->DriveDistance(-8, 1.5, 0, 8, 1, 2, 0, 5, 700);
 exit(1);
 
 robot->turnToXY(14,23);
