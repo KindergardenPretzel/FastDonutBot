@@ -151,6 +151,7 @@ int ColorSensing()
     //std::cout << detectColor << std::endl;
     //vex::wait(10, msec);
     if (eyeball.color() == OWN && isStopperEnabled && isBeltSpinning){
+      wait(5, msec);
       score();
       isStopperEnabled = false;
     }
@@ -673,11 +674,12 @@ wait(600, msec);
 score();
 
 //drive to take first MoGo
-robot->driveToXY(75,24);
+robot->driveToXY(75,25);
 wait(30, msec);
-robot->TurnAngle(180);
+//robot->TurnAngle(180);
+robot->turnToXY(60, 25); // +1 inch for controller exit error correction
 wait(30, msec);
-robot->DriveDistance(-13, 1.5, 0, 8, 1, 2, 0, 5, 700);
+robot->DriveDistance(-14, 1.5, 0, 8, 1, 2, 0, 5, 750);
 wait(40, msec);
 clampFunc();
 wait(20, msec);
@@ -685,68 +687,99 @@ robot->turnToXY(88,47);
 wait(20, msec);
 score();
 wait(20, msec);
-robot->driveToXY(98,52);
+robot->driveToXY(93,52); // was 98
 wait(20, msec);
 robot->driveToXY(127,70);
 wait(20, msec);
-robot->driveToXY(118,63);
-wait(300, msec); // wait before turning
-robot->turnToXY(120,12);
+robot->driveToXY(118,69); // was 63
+wait(500, msec); // wait before turning
+robot->turnToXY(118,12);
 wait(20, msec);
-robot->driveToXY(118,38);
-robot->DriveDistance(8, 1.5, 0, 8, 1, 2, 0, 5, 750);
-wait(20, msec);
+//robot->default_drive_max = 6;
+robot->driveToXY(118,16);//was 118, 38
+
+wait(200, msec);
+robot->driveToXY(115,35);
+robot->turnToXY(129,24);
+robot->driveToXY(129,24);
+wait(200, msec);
+
 robot->DriveDistance(-8, 1.5, 0, 8, 1, 2, 0, 5, 750);
 wait(20, msec);
-//robot->TurnAngle(150);
-robot->turnToXY(130, 23);
+robot->TurnAngle(233);
 wait(20, msec);
-robot->DriveDistance(12, 1.5, 0, 8, 1, 2, 0, 5, 750);
+robot->TurnAngle(117);
+
+robot->DriveDistance(-22, 1.5, 0, 8, 1, 2, 0, 5, 1000);
 wait(20, msec);
-robot->driveToXY(118,12);
-wait(20, msec);
-robot->driveToXY(118,12);
-wait(700, msec);    // all rings are scored before turning
-robot->turnToXY(94, 23);
-robot->DriveDistance(-13, 1.5, 0, 8, 1, 2, 0, 5, 600); // corner
-wait(400, msec);
 clampFunc();
 score();
+robot->default_drive_max = 7;
 wait(20, msec);
-robot->driveToXY(60,27);
+robot->driveToXY(65,26);
 wait(100, msec);
-robot->turnToXY(140, 27);
+robot->turnToXY(140, 26);
 wait(20, msec);
-robot->DriveDistance(-13, 1.5, 0, 8, 1, 2, 0, 5, 700); 
+robot->default_drive_max = 5;
+robot->driveToXY(46,26);
 
 wait(200, msec);
 clampFunc();
 wait(200, msec);
-
+robot->default_drive_max = 6;
 robot->turnToXY(51,46);
 score();
 wait(20, msec);
-robot->driveToXY(51 , 48);
+robot->driveToXY(46 , 48);
 wait(20, msec);
 robot->driveToXY(10,75);
 wait(20, msec);
-robot->driveToXY(25,73);
+robot->driveToXY(22,73);
 wait(20, msec);
-robot->turnToXY(25,43);
+robot->turnToXY(22,43);
 wait(20, msec);
-robot->driveToXY(25,12);
+robot->driveToXY(22,16);
+wait(200, msec);
+robot->driveToXY(25,35); 
 wait(20, msec);
 
-//robot->DriveDistance(8, 1.5, 0, 8, 1, 2, 0, 5, 700);
-//wait(20, msec);
-//robot->DriveDistance(-8, 1.5, 0, 8, 1, 2, 0, 5, 700);
-exit(1);
-
-robot->turnToXY(14,23);
+robot->turnToXY(10,24);
 wait(20, msec);
-robot->DriveDistance(8, 1.5, 0, 8, 1, 2, 0, 5, 700);
+robot->driveToXY(10,24);
 wait(20, msec);
-robot->DriveDistance(-8, 1.5, 0, 8, 1, 2, 0, 5, 700);
+robot->DriveDistance(-8, 1.5, 0, 8, 1, 2, 0, 5, 750);
+wait(20, msec);
+robot->TurnAngle(120);
+wait(20, msec);
+robot->TurnAngle(57);
+robot->DriveDistance(-19, 1.5, 0, 8, 1, 2, 0, 5, 1000);
+wait(20, msec);
+clampFunc();
+wait(20, msec);
+score();
+stopWhenColorSeen();
+robot->driveToXY(66,66);
+score();
+robot->driveToXY(82,82);
+//score();
+intake_spin_fwd();
+robot->driveToXY(96,96);
+wait(200, msec);
+intake_stop();
+robot->TurnAngle(315);
+wait(20, msec);
+robot->driveToXY(82, 106);
+wait(20, msec);
+robot->default_drive_max = 5;
+robot->driveToXY(70, 122);
+wait(20, msec);
+robot->default_drive_max = 6;
+clampFunc();
+wait(100, msec);
+score();
+robot->turnToXY(47, 96);
+wait(20, msec);
+robot->driveToXY(47, 96);
 }
 
 
@@ -791,7 +824,7 @@ switch(autonId)
   }
   case 6: {
     setAlliance(RED);
-    robot->setStartingPoint(70, 12, 90);
+    robot->setStartingPoint(70, 11, 90);
     vex::task Position(updatePos);
     skills(); 
   break;

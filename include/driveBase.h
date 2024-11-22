@@ -33,7 +33,7 @@ class DriveBase
         float default_drive_exit_error{0.8};
         float default_drive_min{0};
         float default_drive_max{10};
-        int default_drive_timeout{2000};
+        int default_drive_timeout{5000};
 
         float default_turn_Kp{0.4};
         float default_turn_Ki{0.03};
