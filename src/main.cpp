@@ -45,7 +45,7 @@ std::shared_ptr<DriveBase> robot(new DriveBase(PORT13, -PORT11, PORT12, -PORT1, 
 bool isBeltSpinning = false;
 bool isStopperEnabled = false;
 bool autonEnabled = false;
-int autonId = 6;
+int autonId = 4;
 bool isBypassEnabled = false;
 
 float redStakeApproachDist = 5.2;
@@ -388,271 +388,232 @@ void pre_auton(void) {
 /*  You must modify the code to add your own robot specific commands here.   */
 /*---------------------------------------------------------------------------*/
 
-void auton_red_two_stakes() {
-  
-/* exmaple 
-  robot->DriveDistance(-20, 0.5, 0.07, 0, 2.0, 0.5, 5000);
-  robot->DriveDistance(5, 1.2, 0.07, 0, 1.5, 0.5, 5000);
-  robot->DriveDistance(-10, 1, 0.07, 0, 0.5, 0.5, 5000);
-*/
-// angle, P,I,D,startIntegral, exit, min, max, timeout
-//robot->TurnAngle(175, 0.15, 0.01, 0, 15, 2, 2, 11, 2000);
 
-  robot->setStartingPoint(10, 10, 90);
 
-  robot->DriveDistance(-36, 0.5, 0.07, 0, 2.0, 0.5, 5000);
-  wait(20,msec);
-  robot->swingLeftHold(120);
-  robot->DriveDistance(-8, 1, 0.07, 0, 0.5, 0.5, 2000);
-  robot->DriveDistance(-4.5, 0.5, 0.07, 0, 2.0, 0.5, 5000);
-  wait(30,msec);
-  clampFunc();
-  wait(20,msec);
-  score();
-  robot->swingLeftHold(70);
-  robot->DriveDistance(12, 1, 0.07, 0, 0.5, 0.5, 2000);
-  wait(400,msec);
-  //intake_stop();
-  //clampFunc();
-}
 
-void auton_blue_two_stakes() {
-  robot->setStartingPoint(10, 10, 90);
-
-  robot->DriveDistance(-36, 0.5, 0.07, 0, 2.0, 0.5, 5000);
-  wait(20,msec);
-  robot->swingRightHold(60);
-  robot->DriveDistance(-8, 1, 0.07, 0, 0.5, 0.5, 2000);
-  robot->DriveDistance(-4.5, 0.5, 0.07, 0, 2.0, 0.5, 5000);
-  wait(30,msec);
-  clampFunc();
-  wait(20,msec);
-  score();
-  robot->swingRightHold(110);
-  robot->DriveDistance(12, 1, 0.07, 0, 0.5, 0.5, 2000);
-  wait(400,msec);
-  //intake_stop();
-  //clampFunc();
-}
 
 void auton_blue_left() {
- // take middle ring
-  enableBypass();
-  robot->DriveDistance(6);
-  wait(20,msec);
-  robot->TurnAngle(40);
-  lift_intake();
-  wait(20,msec);
-  robot->DriveDistance(6);
-  wait(20,msec);
-  intake_spin_fwd();
-  wait(20,msec);
-  lift_intake();
-  robot->DriveDistance(11,0);
-  // measure distane to the wall and drive back to Alliance stake
-  float distToField = DistanceSensor.objectDistance(inches);
-  wait(20,msec);
-  robot->DriveDistance(-(distToField - blueStakeApproachDist));
-  intake_stop(); 
-  // score two rings
-  score();
-  wait(1400,msec);
-  score();
-  wait(20, msec);
-  robot->DriveDistance(43, -70);
-  wait(20, msec);
-  robot->TurnAngle(-155);
-  robot->DriveDistance(-10);
-  // take MOGO, enable intake and drive to left ring
-  clampFunc();
-  robot->TurnAngle(-75);
-  score();
-  robot->DriveDistance(32);
-  wait(1500, msec);
-  robot->TurnAngle(-95);
-  wait(20, msec);
-  robot->DriveDistance(-40);
-  wait(1000, msec);
-  score();
-  enableBypass();
-}
 
-void auton_red_right() {
-   // take middle ring
-     lift_intake();
+ robot->default_drive_exit_error = 1;
+  robot->default_drive_max = 6;
+  robot->default_heading_max = 10;
 
-  enableBypass();
-  robot->DriveDistance(6);
-  wait(20,msec);
-  robot->TurnAngle(-40);
-  wait(20,msec);
-  robot->DriveDistance(6);
-  wait(20,msec);
-  intake_spin_fwd();
+
+  // take middle ring
+  enableBypass(); 
+  lift_intake();
+  robot->DriveDistance(9, 1.5, 0, 8, 1, 2, 0, 5, 750);
   wait(20,msec);
   lift_intake();
-  robot->DriveDistance(11,0);
-  // measure distane to the wall and drive back to Alliance stake
+  intake_spin_fwd();
+  wait(400,msec);
+  intake_stop();
+  robot->DriveDistance(12, 1.5, 0, 8, 1, 2, 0, 5, 750);
+  wait(40,msec);
+  robot->TurnAngle(90);
+
+
   float distToField = DistanceSensor.objectDistance(inches);
   wait(20,msec);
   robot->DriveDistance(-(distToField - redStakeApproachDist));
-  intake_stop(); 
+  wait(20,msec);
   // score two rings
   score();
-  wait(1400,msec);
+  wait(600,msec);
   score();
   wait(20, msec);
-  robot->DriveDistance(43, 70);
+  // drive to the MOGO
+  robot->driveToXY(32, 32);
+  robot->TurnAngle(240);
+  robot->driveToXY(43, 49);
   wait(20, msec);
-  robot->TurnAngle(155);
-  robot->DriveDistance(-10);
-  // take MOGO, enable intake and drive to left ring
   clampFunc();
-  robot->TurnAngle(75);
+  robot->turnToXY(21, 46);
   score();
-  robot->DriveDistance(32);
-  wait(1500, msec);
-  robot->TurnAngle(95);
+    wait(100,msec);
+
+  robot->driveToXY(25, 46);
+    wait(100,msec);
+    robot->TurnAngle(0);
+wait(100,msec);
+  robot->driveToXY(60, 46);  
+ }
+
+void auton_red_right() {
+robot->default_drive_exit_error = 1;
+  robot->default_drive_max = 6;
+  robot->default_heading_max = 10;
+
+
+  // take middle ring
+  enableBypass(); 
+  lift_intake();
+  robot->DriveDistance(9, 1.5, 0, 8, 1, 2, 0, 5, 750);
+  wait(20,msec);
+  lift_intake();
+  intake_spin_fwd();
+  wait(400,msec);
+  intake_stop();
+  robot->DriveDistance(12, 1.5, 0, 8, 1, 2, 0, 5, 750);
+  wait(40,msec);
+  robot->TurnAngle(90);
+
+
+  float distToField = DistanceSensor.objectDistance(inches);
+  wait(20,msec);
+  robot->DriveDistance(-(distToField - redStakeApproachDist));
+  wait(20,msec);
+  // score two rings
+  score();
+  wait(600,msec);
+  score();
   wait(20, msec);
-  robot->DriveDistance(-40);
-  wait(1000, msec);
+  // drive to the MOGO
+  robot->driveToXY(108, 32);
+  robot->TurnAngle(305);
+  robot->driveToXY(97, 49);
+  wait(20, msec);
+  clampFunc();
+  robot->turnToXY(118, 46);
   score();
-  enableBypass();
+    wait(100,msec);
+
+  robot->driveToXY(118, 46);
+    wait(100,msec);
+    robot->TurnAngle(180);
+wait(100,msec);
+  robot->driveToXY(80, 46);  
+ 
 }
 
 
 void auton_red_left()
 {
+  robot->default_drive_exit_error = 1;
+  robot->default_drive_max = 6;
+  robot->default_heading_max = 10;
+
+
   // take middle ring
-  enableBypass();
-  robot->DriveDistance(6);
-  wait(20,msec);
-  robot->TurnAngle(40);
+  enableBypass(); 
   lift_intake();
+  robot->DriveDistance(9, 1.5, 0, 8, 1, 2, 0, 5, 750);
   wait(20,msec);
-  robot->DriveDistance(6);
-  wait(20,msec);
+  lift_intake();
   intake_spin_fwd();
-  wait(20,msec);
-  lift_intake();
-  robot->DriveDistance(11,0);
-  // measure distane to the wall and drive back to Alliance stake
+  wait(400,msec);
+  intake_stop();
+  robot->DriveDistance(12, 1.5, 0, 8, 1, 2, 0, 5, 750);
+  wait(40,msec);
+  robot->TurnAngle(90);
+
+
   float distToField = DistanceSensor.objectDistance(inches);
   wait(20,msec);
   robot->DriveDistance(-(distToField - redStakeApproachDist));
-  intake_stop();
-  wait(30,msec);
-  
+  wait(20,msec);
   // score two rings
   score();
-  wait(1400,msec);
+  wait(600,msec);
   score();
   wait(20, msec);
   // drive to the MOGO
-  robot->DriveDistance(43, -70);
+  robot->driveToXY(32, 32);
+  robot->TurnAngle(240);
+  robot->driveToXY(43, 49);
   wait(20, msec);
-  robot->TurnAngle(-155);
-  robot->DriveDistance(-10);
-  // take MOGO, enable intake and drive to left ring
   clampFunc();
-  robot->TurnAngle(-75);
+  robot->turnToXY(21, 46);
   score();
-  robot->DriveDistance(32);
-  wait(500, msec);
+    wait(100,msec);
 
-  // turn to middle line rings
-  robot->TurnAngle(10);
-  wait(200, msec);
-  // take first
-  robot->DriveDistance(9);
-   wait(200, msec);
-   // reposition for second ring
-   robot->DriveDistance(-5);
-   wait(20, msec);
-   robot->TurnAngle(90);
-   wait(20, msec);
-   robot->DriveDistance(15);
-   wait(20, msec);
-   robot->TurnAngle(-10);
-   wait(20, msec);
-   // take second
-   robot->DriveDistance(8);
-   wait(200, msec);
-   // turn to the ladder and touch it.
-   robot->TurnAngle(90);
-   wait(20, msec);
-   enableBypass();
-   robot->DriveDistance(36);
-   //robot->TurnAngle(35);
-   
+  robot->driveToXY(25, 46);
+    wait(100,msec);
+    robot->TurnAngle(90);
+    wait(20,msec);
+
+      robot->default_drive_max = 6;
+      float X1 = robot->getX();
+      float Y1 = robot->getY();
+  robot->driveToXY(X1, Y1+14);
+  wait(300,msec);
+  robot->DriveDistance(-10, 1.5, 0, 8, 1, 2, 0, 5, 750);
+  wait(40,msec);
+ robot->TurnAngle(109);
+ wait(40,msec);
+   robot->DriveDistance(10, 1.5, 0, 8, 1, 2, 0, 5, 750);
+wait(300,msec);
+   robot->TurnAngle(10);
+    wait(40,msec);
+   robot->default_drive_max = 10;
+      robot->DriveDistance(21, 1.5, 0, 8, 1, 2, 0, 5, 1450);
+score();
+
 }
 
 
 void auton_blue_right()
 {
+  robot->default_drive_exit_error = 1;
+  robot->default_drive_max = 6;
+  robot->default_heading_max = 10;
+
+
   // take middle ring
-  enableBypass();
+  enableBypass(); 
   lift_intake();
-  robot->DriveDistance(6);
+  robot->DriveDistance(9, 1.5, 0, 8, 1, 2, 0, 5, 750);
   wait(20,msec);
-  robot->TurnAngle(-40);
-  
-  wait(20,msec);
-  robot->DriveDistance(6);
-  wait(20,msec);
+  lift_intake();
   intake_spin_fwd();
-  wait(20,msec);
-  lift_intake();
-  robot->DriveDistance(11,0);
-  // measure distane to the wall and drive back to Alliance stake
+  wait(400,msec);
+  intake_stop();
+  robot->DriveDistance(10, 1.5, 0, 8, 1, 2, 0, 5, 750);
+  wait(40,msec);
+  robot->TurnAngle(90);
+
+
   float distToField = DistanceSensor.objectDistance(inches);
   wait(20,msec);
-  float dist_to_stake = distToField - blueStakeApproachDist;
-  robot->DriveDistance(-dist_to_stake);
-  intake_stop(); 
+  robot->DriveDistance(-(distToField - redStakeApproachDist));
+  wait(20,msec);
   // score two rings
   score();
-  wait(1300,msec);
+  wait(600,msec);
   score();
   wait(20, msec);
-
   // drive to the MOGO
-  //exit(1);
-  robot->DriveDistance(43, 70);
+  robot->driveToXY(108, 32);
+  robot->TurnAngle(305);
+  robot->driveToXY(97, 49);
   wait(20, msec);
-  robot->TurnAngle(155);
-  robot->DriveDistance(-10);
-  // take MOGO, enable intake and drive to left ring
   clampFunc();
-  robot->TurnAngle(75);
+  robot->turnToXY(114, 46);
   score();
-  robot->DriveDistance(30);
-  wait(500, msec);
-  // turn to middle line rings
-  robot->TurnAngle(-15);
-  wait(200, msec);
-  // take first
-  robot->DriveDistance(9);
-   wait(200, msec);
-   // reposition for second ring
-   robot->DriveDistance(-5);
-   wait(20, msec);
-   robot->TurnAngle(-90); 
-   wait(20, msec);
-   robot->DriveDistance(15);
-   wait(20, msec);
-   robot->TurnAngle(10);
-   wait(20, msec);
-   // take second
-   robot->DriveDistance(8);
-   wait(200, msec);
-   // turn to the ladder and touch it.
-   robot->TurnAngle(-80);
-   wait(20, msec);
-   enableBypass();
-   robot->DriveDistance(17);
-   robot->TurnAngle(-30);
-   
+    wait(100,msec);
+
+  robot->driveToXY(114, 46);
+    wait(100,msec);
+   robot->TurnAngle(90);
+    wait(50,msec);
+      robot->default_drive_max = 6;
+      float X1 = robot->getX();
+      float Y1 = robot->getY();
+  robot->driveToXY(X1, Y1+14);
+  wait(300,msec);
+    robot->driveToXY(X1, Y1);
+  wait(40,msec);
+
+   robot->TurnAngle(64);
+   robot->DriveDistance(14, 1.5, 0, 8, 1, 2, 0, 5, 750);
+  wait(300,msec);
+   robot->TurnAngle(170);
+    wait(40,msec);
+   robot->default_drive_max = 10;
+      robot->DriveDistance(21, 1.5, 0, 8, 1, 2, 0, 5, 1450);
+score();
+
+
 }
 
 void test_auton() {
@@ -789,28 +750,28 @@ switch(autonId)
 {
   case 1: {
     setAlliance(RED);
-    robot->setStartingPoint(64.8, 10, 90);
+    robot->setStartingPoint(55, 12, 45);
     vex::task Position(updatePos);
     auton_red_left();
   break;
   }
   case 2: {
     setAlliance(RED);
-    robot->setStartingPoint(64.8, 10, 270);
+    robot->setStartingPoint(85, 10, 135);
     vex::task Position(updatePos);
     auton_red_right();
   break;
   }
   case 3: {
     setAlliance(BLUE);
-    robot->setStartingPoint(64.8, 10, 90);
+    robot->setStartingPoint(55, 12, 45);
     vex::task Position(updatePos);
     auton_blue_left();
   break;
   }
   case 4: {
     setAlliance(BLUE);
-    robot->setStartingPoint(64.8, 10, 270);
+    robot->setStartingPoint(85, 10, 135);
     vex::task Position(updatePos);
     auton_blue_right();
   break;
@@ -849,7 +810,7 @@ void usercontrol(void) {
 
 
   while (1) {
-    float throttle = Controller1.Axis3.position();
+    float throttle = Controller1.Axis3.position() * 0.9;
     float turn = Controller1.Axis1.position() * 0.7 ;
 
     if (fabs(throttle) < 5) {throttle = 0; }; 
