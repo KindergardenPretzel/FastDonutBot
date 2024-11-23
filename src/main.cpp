@@ -585,8 +585,8 @@ void auton_blue_right()
   // drive to the MOGO
   robot->driveToXY(108, 32);
   robot->TurnAngle(305);
-  robot->driveToXY(97, 49);
-  wait(20, msec);
+  robot->driveToXY(97, 50);
+  wait(105, msec);
   clampFunc();
   robot->turnToXY(114, 46);
   score();
@@ -810,7 +810,7 @@ void usercontrol(void) {
 
 
   while (1) {
-    float throttle = Controller1.Axis3.position() * 0.9;
+    float throttle = Controller1.Axis3.position();
     float turn = Controller1.Axis1.position() * 0.7 ;
 
     if (fabs(throttle) < 5) {throttle = 0; }; 
