@@ -736,10 +736,16 @@ wait(20, msec);
 robot->default_drive_max = 6;
 clampFunc();
 wait(100, msec);
-score();
+
 robot->turnToXY(47, 96);
+wait(30, msec);
+score();
 wait(20, msec);
 robot->driveToXY(47, 96);
+wait(200, msec);
+robot->turnToXY(22,96);
+wait(40, msec);
+robot->driveToXY(22,96);
 }
 
 
