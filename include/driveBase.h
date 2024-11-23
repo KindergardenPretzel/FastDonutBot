@@ -22,10 +22,11 @@ class DriveBase
         float y;
         float fwdPosition;
         float sidePosition;
-
+        float turnAngleOptimization(float);
+        float backwardsAngleOptimization(float angle);
+        void resetFwdEncoder();
+        void resetSideEncoder();
     public:
-        float x1;
-        float y1;
         float default_drive_Kp{1.5};
         float default_drive_Ki{0};
         float default_drive_Kd{8};
@@ -59,13 +60,8 @@ class DriveBase
         vex::motor_group LeftMotors;
         vex::motor_group RightMotors;
         void calibrateInertial();
-        double getRotation();
-        void setRotation(double);
         float getHeading();
-        float getHeadingCCW();
         void setHeading(double);
-        void resetFwdEncoder();
-        void resetSideEncoder();
         float getFwdPosition();
         float getSidePosition();
         void SetBrake(vex::brakeType);
@@ -80,13 +76,12 @@ class DriveBase
         void TurnAngle(float angle, float Kp, float Ki, float Kd);
         void swingRightHold(float);
         void swingLeftHold(float);
-        float turnAngleOptimization(float);
-        float backwardsAngleOptimization(float angle);
+
         void setStartingPoint(float, float, float);
         void updatePosition();
         float getX();
         float getY();
-        void turnToXY(float x,float y);
+        void turnToXY(float x, float y);
         void driveStraightToXY(float destX, float destY);
         void driveToXY(float destX, float destY);
 

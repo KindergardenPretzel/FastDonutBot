@@ -37,10 +37,6 @@ DriveBase::DriveBase(int gyroPort, int fwdRotatePort, int sideRotatePort,
 void DriveBase::setStartingPoint(float startX, float startY, float startHeading ){
     this->x = startX;
     this->y = startY;
-    // test part
-    this->x1 = startX;
-    this->y1 = startY;
-    // test part
     this->setHeading(startHeading);
     this->prev_heading = startHeading;
     this->resetFwdEncoder();
@@ -109,15 +105,6 @@ void DriveBase::updatePosition() {
    this->y += deltaY;
 
 
-///// test part
-    float delta_Y_test = localY * cos(toolbox::degreesToRadians(this->prev_heading + deltaHead/2));
-    float delta_X_test = localX * sin(toolbox::degreesToRadians(this->prev_heading + deltaHead/2));
-
-    this->x1 += delta_X_test;
-    this->y1 += delta_Y_test;
-///// test part
-
-
     // updating stored positions and heading
     this->fwdPosition = fwdPos;
     this->sidePosition = sidePos;
@@ -140,21 +127,6 @@ void DriveBase::calibrateInertial() {
     {
         vex::wait(20, vex::msec);
     };
-}
-
-//returns inertial sensor rotation [-180:180]
-double  DriveBase::getRotation(){
-    return this->gyroSensor.rotation();
-}
-
-//sets inertial sensor rotation
-void DriveBase::setRotation(double value){
-    this->gyroSensor.setRotation(value, vex::deg);
-}
-
-//returns inertial sensor absolute heading [0:360]
-float DriveBase::getHeadingCCW(){
-    return this->gyroSensor.heading();
 }
 
 //return inertial heading in CCW direction to simplify odometry calculation. 0 degrees is positive X-axis direction.
@@ -386,7 +358,7 @@ float distance_to_drive = sqrt(pow(destX-this->getX(),2) + pow(destY-this->getY(
     float currY = this->getY();
     float angle_to_turn = toolbox::radiansToDegrees(atan2(destY - currY, destX - currX));  
     this->TurnAngle(angle_to_turn);
-    this->DriveDistance(distance_to_drive,angle_to_turn);
+    this->DriveDistance(distance_to_drive, angle_to_turn);
 }
 
 // Odometry based drive to X, Y coordinate

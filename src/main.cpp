@@ -251,7 +251,6 @@ int ShowMeInfo(){
   Brain.Screen.setPenColor(red);
   float heading_angle;
   while(true) {
-
     Brain.Screen.setCursor(3,2);
     Brain.Screen.print("X: %f, Y: %f", robot->getX(), robot->getY());
 
@@ -261,10 +260,10 @@ int ShowMeInfo(){
     Brain.Screen.print("Heading: %f", heading_angle);
 
     Brain.Screen.setCursor(5,2);
-    Brain.Screen.print("position: %f", robot->getFwdPosition());
+    Brain.Screen.print("Fwd Tracker value: %f", robot->getFwdPosition());
 
     Brain.Screen.setCursor(6,2);
-    Brain.Screen.print("X1: %f, Y1: %f", robot->x1, robot->y1);
+    Brain.Screen.print("Side Tracker value: %f", robot->getSidePosition());
   
   if (clamp.value()) 
   {
