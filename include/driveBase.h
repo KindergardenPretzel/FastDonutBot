@@ -26,6 +26,8 @@ class DriveBase
         float backwardsAngleOptimization(float angle);
         void resetFwdEncoder();
         void resetSideEncoder();
+        bool isLeftMotorSpinning();
+        bool isRightMotorSpinning();
     public:
         float default_drive_Kp{1.5};
         float default_drive_Ki{0};
@@ -82,7 +84,13 @@ class DriveBase
         float getX();
         float getY();
         void turnToXY(float x, float y);
-        void driveStraightToXY(float destX, float destY);
-        void driveToXY(float destX, float destY);
+        void driveStraightToXY(float destX, float destY); 
+        //void driveToXY(float destX, float destY);
+        void driveToXY(float destX, float destY, bool wait=true);
+        void driveToXY(float destX, float destY, float maxOut, bool wait=true);
+        
+        
+        
+       
 
 };

@@ -361,8 +361,18 @@ float distance_to_drive = sqrt(pow(destX-this->getX(),2) + pow(destY-this->getY(
     this->DriveDistance(distance_to_drive, angle_to_turn);
 }
 
+
 // Odometry based drive to X, Y coordinate
-void DriveBase::driveToXY(float destX, float destY)
+//void DriveBase::driveToXY(float destX, float destY) {
+//    this->driveToXY(destX, destY, default_drive_max, true);
+//}
+
+// Odometry based drive to X, Y coordinate
+void DriveBase::driveToXY(float destX, float destY , bool wait) {
+    this->driveToXY(destX, destY, default_drive_max, wait);
+}
+
+void DriveBase::driveToXY(float destX, float destY, float maxOut, bool wait)
 {
     float error;
     float speed;
@@ -373,7 +383,7 @@ void DriveBase::driveToXY(float destX, float destY)
     float currY;
 
     // define PID controllers for Drive and Heading correction
-    PID drive_pid = PID(default_drive_Kp, default_drive_Ki, default_drive_Kd, default_drive_limit_integral, default_drive_exit_error, default_drive_min, default_drive_max, default_drive_timeout);
+    PID drive_pid = PID(default_drive_Kp, default_drive_Ki, default_drive_Kd, default_drive_limit_integral, default_drive_exit_error, default_drive_min, maxOut, default_drive_timeout);
     PID heading_pid = PID(default_heading_Kp, default_heading_Ki, default_heading_Kd, default_heading_limit_integral, default_heading_exit_error, default_heading_min, default_heading_max, default_heading_timeout);
 
     do
@@ -406,6 +416,27 @@ void DriveBase::driveToXY(float destX, float destY)
     }while(!drive_pid.isFinished());
     this->RightMotors.spin(vex::fwd, 0, vex::volt);
     this->LeftMotors.spin(vex::fwd, 0, vex::volt);
+   if (wait) {
+    while(isLeftMotorSpinning() && isRightMotorSpinning()){
+        vex::wait(5, vex::msec);
+    }
+   }
+}
+bool DriveBase::isLeftMotorSpinning()
+{
+    if(this->LeftMotors.velocity(vex::rpm) < 5 && this->LeftMotors.direction() == vex::directionType::undefined)
+    {
+        return false;
+    }
+    return true;
+}
 
+bool DriveBase::isRightMotorSpinning()
+{
+    if(this->RightMotors.velocity(vex::rpm) < 5 && this->RightMotors.direction() == vex::directionType::undefined)
+    {
+        return false;
+    }
+    return true;
 }
 
