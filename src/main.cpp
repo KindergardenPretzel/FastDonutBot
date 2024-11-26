@@ -51,6 +51,21 @@ bool isBypassEnabled = false;
 float redStakeApproachDist = 5.2;
 float blueStakeApproachDist = 5.2;
 
+#define JOYSTICK_DEADZONE 8
+
+int getExpoValue(int joystickValue)
+{
+    int output = 0;
+    // Ignore joystick input if it's too small
+    if(abs(joystickValue) > JOYSTICK_DEADZONE){
+      // Direction is either 1 or -1, based on joystick value
+      int direction = abs(joystickValue) / joystickValue;
+      // Plug joystick value into exponential function
+      output = direction * (1.2 * pow(1.0356, abs(joystickValue)) - 1.2 + 0.2 * abs(joystickValue));
+    }
+    return output;
+}
+
 void score();
 
 enum Alliance {
@@ -817,16 +832,18 @@ void usercontrol(void) {
 
 
   while (1) {
-    float throttle = Controller1.Axis3.position();
-    float turn = Controller1.Axis1.position() * 0.7 ;
-
-    if (fabs(throttle) < 5) {throttle = 0; }; 
-    if (fabs(turn) < 5) { turn = 0; }
-
+    float throttle = getExpoValue(Controller1.Axis3.value());
+    float turn = getExpoValue(Controller1.Axis1.value()) * 0.4;
     robot->SetBrake(coast);
+    robot->LeftMotors.spin(fwd, throttle+turn, vex::pct);
+    robot->RightMotors.spin(fwd, throttle-turn, vex::pct);
 
-    robot->LeftMotors.spin(vex::fwd, power_pct * 0.0001 * pow(throttle+turn, 3), vex::pct);
-    robot->RightMotors.spin(vex::fwd, power_pct * 0.0001 * pow(throttle-turn, 3), vex::pct);
+    //float throttle = Controller1.Axis3.position();
+    //float turn = Controller1.Axis1.position() * 0.7 ;
+    //if (fabs(throttle) < 5) {throttle = 0; }; 
+    //if (fabs(turn) < 5) { turn = 0; }
+    //robot->LeftMotors.spin(vex::fwd, power_pct * 0.0001 * pow(throttle+turn, 3), vex::pct);
+    //robot->RightMotors.spin(vex::fwd, power_pct * 0.0001 * pow(throttle-turn, 3), vex::pct);
 
     wait(10, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.

@@ -296,6 +296,9 @@ void DriveBase::TurnAngle(float angle, float Kp, float Ki, float Kd, float limit
 
     this->RightMotors.spin(vex::fwd, 0, vex::volt);
     this->LeftMotors.spin(vex::fwd, 0, vex::volt);
+    while(isLeftMotorSpinning() || isRightMotorSpinning()){
+        vex::wait(5, vex::msec);
+    }
 }
 
 void DriveBase::swingRightHold(float angle)
@@ -341,7 +344,7 @@ void DriveBase::swingLeftHold(float angle)
 
     this->RightMotors.spin(vex::fwd, 0, vex::volt);
     this->LeftMotors.spin(vex::fwd, 0, vex::volt);
-}
+} 
 
 void DriveBase::turnToXY(float destX, float destY)
 {
@@ -349,6 +352,7 @@ void DriveBase::turnToXY(float destX, float destY)
     float currY = this->getY();
     float angle_to_turn = toolbox::radiansToDegrees(atan2(destY - currY, destX - currX));
     this->TurnAngle(angle_to_turn);
+    
 }   
 
 void DriveBase::driveStraightToXY(float destX, float destY)
@@ -371,6 +375,7 @@ float distance_to_drive = sqrt(pow(destX-this->getX(),2) + pow(destY-this->getY(
 void DriveBase::driveToXY(float destX, float destY , bool wait) {
     this->driveToXY(destX, destY, default_drive_max, wait);
 }
+
 
 void DriveBase::driveToXY(float destX, float destY, float maxOut, bool wait)
 {
@@ -417,7 +422,7 @@ void DriveBase::driveToXY(float destX, float destY, float maxOut, bool wait)
     this->RightMotors.spin(vex::fwd, 0, vex::volt);
     this->LeftMotors.spin(vex::fwd, 0, vex::volt);
    if (wait) {
-    while(isLeftMotorSpinning() && isRightMotorSpinning()){
+    while(isLeftMotorSpinning() || isRightMotorSpinning()){
         vex::wait(5, vex::msec);
     }
    }
