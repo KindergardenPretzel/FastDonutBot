@@ -33,7 +33,7 @@ DriveBase::DriveBase(int gyroPort, int fwdRotatePort, int sideRotatePort,
 
 }
 
-//sets the starting point and heading of the robot. Resets Rotations sensors
+//function sets the starting point and heading of the robot. Resets Rotations sensors
 void DriveBase::setStartingPoint(float startX, float startY, float startHeading ){
     this->x = startX;
     this->y = startY;
@@ -46,16 +46,14 @@ void DriveBase::setStartingPoint(float startX, float startY, float startHeading 
 }
 
 
-
-
-//Odometry updates X and Y the position on the field of the robot
+//Odometry function. Updates X and Y coordinates (position on the field) of the robot
 void DriveBase::updatePosition() {
-    // getting current positions and current roatations and saving them into Class variables
+    // getting current rotation sensors positions and current heading of the robot, and saving them into DriveBase Class variables.
     float fwdPos = this->getFwdPosition();
     float sidePos = this->getSidePosition();
     float currentHead  = toolbox::fround(this->getHeading());
     
-    //calculating deltas(difference between old and new positions)
+    //calculating deltas(difference between old and new positions, heading)
     float deltaFwd = fwdPos - this->fwdPosition;
     float deltaSide = sidePos - this->sidePosition;
     float deltaHead = currentHead - this->prev_heading;
@@ -90,8 +88,7 @@ void DriveBase::updatePosition() {
     else {
         // polar vector length is hypotenuse
         vector_length = sqrt(pow(localX,2) + pow(localY, 2));
-        // (M_PI/2 - angle between vector and X axis) to calculate angle between Y and robot heading
-        //WAS angle_to_vector = M_PI - atan2(localY, localX);
+        // angle between field X axis and vector (+flip axis)
         angle_to_vector = M_PI/2 - atan2(localY, localX);
     }
     // calculate new global angle and convert back to cartesian: x = r cos θ , y = r sin θ
@@ -111,10 +108,12 @@ void DriveBase::updatePosition() {
     this->prev_heading = currentHead;
 }
 
+// returns X coordinate
 float DriveBase::getX() {
     return this->x;
 }
 
+// returns Y coordinate
 float DriveBase::getY() {
     return this->y;
 }
