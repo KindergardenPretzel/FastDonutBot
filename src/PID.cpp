@@ -60,14 +60,17 @@ float PID::calculate(float error)
     float derivativeGain = 0;
 
     this->error = error;
+    // calculate proportional gain
     proportionalGain = this->Kp * this->error;
-    
+
+    // if PID was instantiated and runs for the first time, then save start time (for timeout) and set previous error to error
     if (this->firstRun) {
        this->startTime = toolbox::highResTimerMs();
        this->prevError = this->error;
        this->firstRun = false;
     }
 
+    // if error is less than limitIntegral value, then start accumulating integral
     if(fabs(this->error) < this->limitIntegral){
         this->integral += this->error;
     }
@@ -76,19 +79,21 @@ float PID::calculate(float error)
     }
     integralGain = this->Ki * this->integral;
     
+    // calculate derivative component
     derivativeGain = (this->error - this->prevError) * this->Kd;
-    //derivativeGain = (this->prevError - this->error) * this->Kd;
     
 
     totalGain = proportionalGain + integralGain + derivativeGain;
     
-    // clamping gain
+    // clamping max gain. If gain is more than max allowed output - return max. (sign preserved)
     if (std::abs(totalGain) > this->maxOutput) {
         totalGain = this->maxOutput * (std::abs(proportionalGain) / proportionalGain);
     }
+    // clamping min gain. If gain is less than min allowed output - return min. (sign preserved)
     if (std::abs(totalGain) < this->minOutput) {
         totalGain = this->minOutput * (std::abs(proportionalGain) / proportionalGain);
     }  
+    // if debug is on, output variables to stdout
     /*if(debugOn)  
     {
         std::cout << "===============" << std::endl;   
@@ -106,9 +111,11 @@ float PID::calculate(float error)
 
 }
 
-//checks if the PID drive has finished
+//checks if the PID drive has finished or reached timeout
 bool PID::isFinished(){
+    // check how long it runs
     unsigned int runningTime = toolbox::highResTimerMs() - this->startTime;
+    // if error less than exit error, we have reached destination
     if(fabs(this->error) < this->pidExitError)
     {
         if(debugOn)  
@@ -117,6 +124,7 @@ bool PID::isFinished(){
         };
         return true;
     }
+    // if running time more than timeout (hit the wall, hit other robot and stuck) then exit
     if(runningTime > this->timeout)
     {
         if(debugOn)  
