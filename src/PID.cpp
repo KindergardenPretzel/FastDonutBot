@@ -51,7 +51,7 @@ void PID::setPIDmin(float minOutput){
     this->minOutput = minOutput;
 }
 
-//calculates all PID
+//PID controller function
 float PID::calculate(float error)
 {
     float totalGain = 0;
@@ -120,14 +120,14 @@ bool PID::isFinished(){
     {
         if(debugOn)  
         {
-            std::cout << "PID Eror Exit. Running Time:" << runningTime << std::endl;
+            std::cout << "PID Error Exit. Running Time:" << runningTime << std::endl;
         };
         return true;
     }
     // if running time more than timeout (hit the wall, hit other robot and stuck) then exit
     if(runningTime > this->timeout)
     {
-        if(debugOn)  
+        if(debugOn)  s
         {
             std::cout << "PID Timeout Exit. Running Time:" << runningTime << std::endl;
         };

@@ -295,9 +295,9 @@ void DriveBase::TurnAngle(float angle, float Kp, float Ki, float Kd, float limit
 
     this->RightMotors.spin(vex::fwd, 0, vex::volt);
     this->LeftMotors.spin(vex::fwd, 0, vex::volt);
-    while(isLeftMotorSpinning() || isRightMotorSpinning()){
-        vex::wait(5, vex::msec);
-    }
+   // while(isLeftMotorSpinning() || isRightMotorSpinning()){
+   //     vex::wait(5, vex::msec);
+   // }
 }
 
 void DriveBase::swingRightHold(float angle)
@@ -420,6 +420,7 @@ void DriveBase::driveToXY(float destX, float destY, float maxOut, bool wait)
     }while(!drive_pid.isFinished());
     this->RightMotors.spin(vex::fwd, 0, vex::volt);
     this->LeftMotors.spin(vex::fwd, 0, vex::volt);
+    
    if (wait) {
     while(isLeftMotorSpinning() || isRightMotorSpinning()){
         vex::wait(5, vex::msec);
