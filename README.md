@@ -11,6 +11,6 @@ Woodcrest School VEX Team 96140A Robot Code for Season 2024-2025
 ## Author
 
 Oleg Khavroniuk  
-[@KindergardenPretzel](okhavroniuk@woodcrestschool.org)
+email: okhavroniuk@woodcrestschool.org
 
 
