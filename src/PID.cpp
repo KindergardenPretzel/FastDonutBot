@@ -127,7 +127,7 @@ bool PID::isFinished(){
     // if running time more than timeout (hit the wall, hit other robot and stuck) then exit
     if(runningTime > this->timeout)
     {
-        if(debugOn)  s
+        if(debugOn)  
         {
             std::cout << "PID Timeout Exit. Running Time:" << runningTime << std::endl;
         };

@@ -45,7 +45,7 @@ std::shared_ptr<DriveBase> robot(new DriveBase(PORT13, -PORT11, PORT12, -PORT1, 
 bool isBeltSpinning = false;
 bool isStopperEnabled = false;
 bool autonEnabled = false;
-int autonId = 1;
+int autonId = 6;
 bool isBypassEnabled = false;
 
 float redStakeApproachDist = 5.2;
@@ -640,6 +640,7 @@ robot->default_drive_exit_error = 2;
 robot->default_drive_max = 6;
 robot->default_heading_max = 10;
 
+
 // do not score blue rings
 enableBypass();
 
@@ -651,8 +652,8 @@ score();
 //drive to take first MoGo
 robot->driveToXY(75,25);
 wait(30, msec);
-//robot->TurnAngle(180);
-robot->turnToXY(60, 25); // +1 inch for controller exit error correction
+robot->TurnAngle(180);
+//robot->turnToXY(60, 25); // +1 inch for controller exit error correction
 wait(30, msec);
 robot->DriveDistance(-14, 1.5, 0, 8, 1, 2, 0, 5, 750);
 wait(40, msec);
@@ -667,7 +668,7 @@ wait(20, msec);
 robot->driveToXY(127,70);
 wait(20, msec);
 robot->driveToXY(118,69); // was 63
-wait(500, msec); // wait before turning
+wait(300, msec); // wait before turning
 robot->turnToXY(118,12);
 wait(20, msec);
 //robot->default_drive_max = 6;
@@ -707,7 +708,7 @@ score();
 wait(20, msec);
 robot->driveToXY(46 , 48);
 wait(20, msec);
-robot->driveToXY(10,75);
+robot->driveToXY(14,75); // was 10 dec 2nd
 wait(20, msec);
 robot->driveToXY(22,73);
 wait(20, msec);
@@ -734,17 +735,17 @@ wait(20, msec);
 score();
 stopWhenColorSeen();
 robot->driveToXY(66,66);
+wait(20, msec);
 score();
 robot->driveToXY(82,82);
-//score();
+wait(20, msec);
 intake_spin_fwd();
-robot->driveToXY(96,96);
+robot->driveToXY(100,100);
 wait(200, msec);
 intake_stop();
-//robot->TurnAngle(315);
-robot->turnToXY(82, 106);
-wait(20, msec);
-robot->driveToXY(82, 106);
+robot->TurnAngle(315);
+//wait(20, msec);
+//robot->driveToXY(82, 106);
 wait(20, msec);
 robot->default_drive_max = 5;
 robot->driveToXY(70, 122);
@@ -758,10 +759,18 @@ wait(30, msec);
 score();
 wait(20, msec);
 robot->driveToXY(47, 96);
-wait(200, msec);
+wait(100, msec);
 robot->turnToXY(22,96);
-wait(40, msec);
+wait(20, msec);
 robot->driveToXY(22,96);
+wait(20, msec);
+robot->turnToXY(22,120);
+wait(20, msec);
+robot->driveToXY(22,115);
+wait(20, msec);
+robot->driveToXY(22,105);
+wait(20, msec);
+
 }
 
 
