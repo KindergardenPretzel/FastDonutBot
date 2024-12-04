@@ -223,7 +223,7 @@ void score(){
  {
 //  if (!highStakeLift.value()) {
     intake_spin_fwd(70);
-    scoring.spin(forward, 75, vex::pct);
+    scoring.spin(forward, 80, vex::pct);
  //   }
  //   else
  //   {
@@ -636,8 +636,9 @@ void test_auton() {
 }
 
 void skills() {
+float max_speed = 6;
 robot->default_drive_exit_error = 2;
-robot->default_drive_max = 6;
+robot->default_drive_max = max_speed;
 robot->default_heading_max = 10;
 
 
@@ -702,7 +703,7 @@ robot->driveToXY(46,26);
 wait(200, msec);
 clampFunc();
 wait(200, msec);
-robot->default_drive_max = 6;
+robot->default_drive_max = max_speed;
 robot->turnToXY(51,46);
 score();
 wait(20, msec);
@@ -743,6 +744,45 @@ intake_spin_fwd();
 robot->driveToXY(100,100);
 wait(200, msec);
 intake_stop();
+
+// 
+// new
+robot->TurnAngle(270);
+wait(20, msec);
+robot->default_drive_max = 5;
+robot->driveToXY(97, 130);
+robot->default_drive_max = max_speed;
+wait(20, msec);
+clampFunc();
+wait(20, msec);
+robot->TurnAngle(200);
+robot->default_drive_max = 10;
+robot->driveToXY(135, 135);
+//robot->DriveDistance(-19, 1.5, 0, 8, 1, 2, 0, 5, 1000);
+wait(20, msec);
+clampFunc();
+robot->default_drive_max = max_speed;
+robot->driveToXY(90, 124);
+wait(20, msec);
+robot->TurnAngle(0);
+robot->default_drive_max = 5;
+wait(20, msec);
+robot->driveToXY(70, robot->getY());
+wait(20, msec);
+robot->default_drive_max = max_speed;
+clampFunc();
+wait(20, msec);
+score();
+wait(20, msec);
+robot->TurnAngle(340);
+wait(20, msec);
+robot->default_drive_max = 10;
+robot->driveToXY(5, 135);
+clampFunc();
+robot->DriveDistance(15, 1.5, 0, 8, 1, 2, 0, 5, 1000);
+
+//
+/*
 robot->TurnAngle(315);
 //wait(20, msec);
 //robot->driveToXY(82, 106);
@@ -770,7 +810,10 @@ robot->driveToXY(22,115);
 wait(20, msec);
 robot->driveToXY(22,105);
 wait(20, msec);
+*/
 
+//266, 
+//Y=96, 127
 }
 
 
