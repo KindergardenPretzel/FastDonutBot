@@ -26,7 +26,7 @@ controller Controller1 = controller(primary);
 digital_out clamp = digital_out(Brain.ThreeWirePort.A);
 digital_out intake_lift = digital_out(Brain.ThreeWirePort.B);
 digital_out bypass = digital_out(Brain.ThreeWirePort.H);
-digital_out highStakeLift = digital_out(Brain.ThreeWirePort.G);
+digital_out arm = digital_out(Brain.ThreeWirePort.G);
 limit auton_switch = limit(Brain.ThreeWirePort.E);
 
 motor intake = motor(PORT5,ratio6_1,false); 
@@ -45,11 +45,11 @@ std::shared_ptr<DriveBase> robot(new DriveBase(PORT13, -PORT11, PORT12, -PORT1, 
 bool isBeltSpinning = false;
 bool isStopperEnabled = false;
 bool autonEnabled = false;
-int autonId = 6;
+int autonId = 5;
 bool isBypassEnabled = false;
 
-float redStakeApproachDist = 5.2;
-float blueStakeApproachDist = 5.2;
+float redStakeApproachDist = 5.1;
+float blueStakeApproachDist = 5.1;
 
 #define JOYSTICK_DEADZONE 8
 
@@ -140,22 +140,19 @@ void reverseIntake(){
   scoring.stop();
 }
 
-/*
-void liftRamp()
+
+void armMove()
 {
-  if(highStakeLift.value())
+  if(arm.value())
   {
-    highStakeLift.set(false);
+    arm.set(false);
   }
-  else if(!highStakeLift.value())
+  else if(!arm.value())
   {
-    if (isBeltSpinning) {
-      scoring.stop();
-    }
-    highStakeLift.set(true);
+    arm.set(true);
   }
 }
-*/
+
 
 int ColorSensing()
 {
@@ -323,7 +320,7 @@ void pre_auton(void) {
 
   bypass.set(false);
   setAlliance(RED);
-  highStakeLift.set(false);
+  arm.set(false);
   Brain.Screen.setCursor(4,3);
   Brain.Screen.print("Calibrating Inertial Sensor");
   robot->calibrateInertial();
@@ -631,8 +628,75 @@ score();
 }
 
 void test_auton() {
-  //robot->DriveDistance(30, 60);
+}
 
+void auton_red_left_new() {
+float max_speed = 7.5;
+robot->default_drive_exit_error = 2;
+robot->default_drive_max = max_speed;
+robot->default_heading_max = 10; 
+enableBypass();
+armMove();
+lift_intake();
+wait(150, msec);
+robot->driveToXY(57, robot->getY());
+wait(20, msec);
+robot->TurnAngle(30);
+wait(20, msec);
+robot->DriveDistance(4, 1.5, 0, 8, 1, 2, 0, 5, 500);
+intake_spin_fwd();
+lift_intake();
+wait(400, msec);
+intake_stop();
+wait(20, msec);
+//robot->driveToXY(71, 24);
+robot->DriveDistance(11.5, 1.5, 0, 8, 1, 2, 0, 5, 700);
+armMove();
+wait(20, msec);
+robot->TurnAngle(90);
+wait(60, msec);
+float distToField = DistanceSensor.objectDistance(inches);
+wait(20,msec);
+robot->DriveDistance(-(distToField - redStakeApproachDist));
+wait(20,msec);
+  score();
+  wait(500,msec);
+  score();
+wait(20, msec);
+  // drive to the MOGO
+  robot->driveToXY(36, 30);
+  
+  
+  robot->TurnAngle(240);
+  robot->driveToXY(46.5, 44.5);
+  wait(20, msec);
+  clampFunc();
+  wait(50, msec);
+  robot->turnToXY(21, 46);
+  score();
+    wait(100,msec);
+
+  robot->driveToXY(16, 46);
+    wait(100,msec);
+    robot->TurnAngle(90);
+    wait(20,msec);
+
+      robot->default_drive_max = 6;
+      float X1 = robot->getX();
+      float Y1 = robot->getY();
+  robot->driveToXY(X1, Y1+14);
+  wait(200,msec);
+  robot->DriveDistance(-10, 1.5, 0, 8, 1, 2, 0, 5, 750);
+  wait(40,msec);
+   robot->TurnAngle(64);
+ wait(40,msec);
+   robot->DriveDistance(10, 1.5, 0, 8, 1, 2, 0, 5, 750);
+wait(200,msec);
+   robot->TurnAngle(10);
+    wait(40,msec);
+   robot->default_drive_max = 10;
+      robot->DriveDistance(21, 1.5, 0, 8, 1, 2, 0, 5, 1450);
+score();
 }
 
 void skills() {
@@ -761,6 +825,7 @@ robot->driveToXY(135, 135);
 //robot->DriveDistance(-19, 1.5, 0, 8, 1, 2, 0, 5, 1000);
 wait(20, msec);
 clampFunc();
+wait(200, msec);
 robot->default_drive_max = max_speed;
 robot->driveToXY(90, 124);
 wait(20, msec);
@@ -774,7 +839,10 @@ clampFunc();
 wait(20, msec);
 score();
 wait(20, msec);
-robot->TurnAngle(340);
+
+robot->driveToXY(34, robot->getY());
+
+robot->TurnAngle(330);
 wait(20, msec);
 robot->default_drive_max = 10;
 robot->driveToXY(5, 135);
@@ -825,9 +893,9 @@ switch(autonId)
 {
   case 1: {
     setAlliance(RED);
-    robot->setStartingPoint(55, 12, 45);
+    robot->setStartingPoint(51, 17.5, 0);
     vex::task Position(updatePos);
-    auton_red_left();
+    auton_red_left_new();
   break;
   }
   case 2: {
@@ -853,7 +921,7 @@ switch(autonId)
   }
   case 5: {
     setAlliance(RED);
-    robot->setStartingPoint(70, 12, 90);
+    robot->setStartingPoint(51, 17.5, 0);
     vex::task Position(updatePos);
     test_auton(); 
   break;
@@ -917,6 +985,7 @@ int main() {
     Controller1.ButtonR1.pressed(score);
     Controller1.ButtonY.pressed(stopWhenColorSeen);
     Controller1.ButtonA.pressed(enableBypass);
+    Controller1.ButtonUp.pressed(armMove);
     // Controller1.ButtonUp.pressed(liftRamp);
   
   
