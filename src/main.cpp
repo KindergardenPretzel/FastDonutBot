@@ -45,11 +45,11 @@ std::shared_ptr<DriveBase> robot(new DriveBase(PORT13, -PORT11, PORT12, -PORT1, 
 bool isBeltSpinning = false;
 bool isStopperEnabled = false;
 bool autonEnabled = false;
-int autonId = 2;
+int autonId = 4;
 bool isBypassEnabled = false;
 
-float redStakeApproachDist = 5.1;
-float blueStakeApproachDist = 6;
+float redStakeApproachDist = 5;
+float blueStakeApproachDist = 5.1;
 
 #define JOYSTICK_DEADZONE 8
 
@@ -305,7 +305,7 @@ int ShowMeInfo(){
 
 void auton_select() {
   autonId ++;
-  if(autonId > 6)
+  if(autonId > 8)
     {
       autonId = 1;
     }
@@ -332,27 +332,27 @@ void pre_auton(void) {
     {
       case 1: 
         Brain.Screen.setCursor(8,2);
-        Brain.Screen.print("Auton: Red Left Side Id: %d", autonId);
+        Brain.Screen.print("Auton: Red Left Qual Id: %d", autonId);
         Controller1.Screen.setCursor(3,10);
-        Controller1.Screen.print("A: RL");
+        Controller1.Screen.print("A: RLQ");
       break;
       case 2: 
         Brain.Screen.setCursor(8,2);
-        Brain.Screen.print("Auton: Red Right Side Id: %d", autonId);
+        Brain.Screen.print("Auton: Red Right Qual Id: %d", autonId);
         Controller1.Screen.setCursor(3,10);
-        Controller1.Screen.print("A: RR");
+        Controller1.Screen.print("A: RRQ");
       break;
       case 3: 
         Brain.Screen.setCursor(8,2);
-        Brain.Screen.print("Auton: Blue Left Side Id: %d", autonId);
+        Brain.Screen.print("Auton: Blue Left Qual Id: %d", autonId);
         Controller1.Screen.setCursor(3,10);
-        Controller1.Screen.print("A: BL");
+        Controller1.Screen.print("A: BLQ");
       break;
       case 4: 
         Brain.Screen.setCursor(8,2);
-        Brain.Screen.print("Auton: Blue Right Side Id: %d", autonId);
+        Brain.Screen.print("Auton: Blue Right Qual Id: %d", autonId);
         Controller1.Screen.setCursor(3,10);
-        Controller1.Screen.print("A: BR");
+        Controller1.Screen.print("A: BRQ");
       break;
       case 5: 
         Brain.Screen.setCursor(8,2);
@@ -365,6 +365,18 @@ void pre_auton(void) {
         Brain.Screen.print("Auton: Skills Id: %d", autonId);
         Controller1.Screen.setCursor(3,10);
         Controller1.Screen.print("A: SKLS");
+      break;   
+      case 7: 
+        Brain.Screen.setCursor(8,2);
+        Brain.Screen.print("Auton: Blue Left Elimination Id: %d", autonId);
+        Controller1.Screen.setCursor(3,10);
+        Controller1.Screen.print("A: BLE");
+      break;   
+      case 8: 
+        Brain.Screen.setCursor(8,2);
+        Brain.Screen.print("Auton: Red Right Elimination Id: %d", autonId);
+        Controller1.Screen.setCursor(3,10);
+        Controller1.Screen.print("A: RRE");
       break;   
     }
 
@@ -400,7 +412,61 @@ void pre_auton(void) {
 /*---------------------------------------------------------------------------*/
 
 
+void auton_blue_left_elimination() {
+   enableBypass();
+  // take middle ring
+float max_speed = 8;
+robot->default_drive_exit_error = 1;
+robot->default_drive_max = max_speed;
+robot->default_heading_max = 10; 
+intake_spin_back(100);
+robot->DriveDistance(6, 1.5, 0, 8, 1, 2, 0, 5, 500);
+intake_stop();
+lift_intake();
+wait(20, msec);
+robot->TurnAngle(59);
 
+wait(20, msec);
+robot->DriveDistance(3, 1.5, 0, 8, 1, 2, 0, 5, 500);
+wait(20, msec);
+lift_intake();
+
+robot->DriveDistance(11.5, 1.5, 0, 8, 1, 2, 0, 5, 800);
+intake_spin_fwd();
+wait(300, msec);
+intake_stop();
+wait(20, msec);
+robot->TurnAngle(90);
+waitUntil(!robot->isMoving());
+//wait(60, msec);
+float distToField = DistanceSensor.objectDistance(inches);
+wait(20,msec);
+robot->DriveDistance(-(distToField - blueStakeApproachDist), 1.5, 0, 8, 1, 2, 0, 5, 700);
+waitUntil(!robot->isMoving());
+//wait(20,msec);
+score();
+wait(500,msec);
+score();
+wait(20, msec);
+ robot->default_drive_exit_error = 2;
+  // drive to the MOGO
+  robot->driveToXY(38, 30);
+  robot->TurnAngle(244);
+  robot->default_drive_max = 5;
+  robot->driveToXY(46, 45);
+  wait(20, msec);
+  clampFunc();
+  wait(300, msec);
+  robot->turnToXY(24, 45);
+wait(20, msec);
+score();
+wait(20, msec);
+  robot->default_drive_max = max_speed;
+  robot->driveToXY(22, 46);  
+  wait(1000, msec);
+  robot->driveToXY(12, 15);  
+  score();
+}
 
 
 void auton_blue_left() {
@@ -422,18 +488,19 @@ robot->DriveDistance(3, 1.5, 0, 8, 1, 2, 0, 5, 500);
 wait(20, msec);
 lift_intake();
 
-robot->DriveDistance(10, 1.5, 0, 8, 1, 2, 0, 5, 800);
+robot->DriveDistance(11.5, 1.5, 0, 8, 1, 2, 0, 5, 800);
 intake_spin_fwd();
-wait(500, msec);
-intake_stop();
+wait(300, msec);
 intake_stop();
 wait(20, msec);
 robot->TurnAngle(90);
-wait(60, msec);
+waitUntil(!robot->isMoving());
+//wait(60, msec);
 float distToField = DistanceSensor.objectDistance(inches);
 wait(20,msec);
 robot->DriveDistance(-(distToField - blueStakeApproachDist), 1.5, 0, 8, 1, 2, 0, 5, 700);
-wait(20,msec);
+waitUntil(!robot->isMoving());
+//wait(20,msec);
 score();
 wait(500,msec);
 score();
@@ -447,18 +514,70 @@ wait(20, msec);
   wait(20, msec);
   clampFunc();
   wait(300, msec);
-    robot->turnToXY(24, 45);
+  robot->turnToXY(24, 45);
 wait(20, msec);
 score();
 wait(20, msec);
   robot->default_drive_max = max_speed;
   robot->driveToXY(22, 46);  
-  wait(400, msec);
+  wait(1000, msec);
   robot->TurnAngle(193);
 wait(20, msec);
 robot->driveToXY(58, 55);  
 
  }
+
+void auton_red_right_elimination(){
+    enableBypass();
+  // take middle ring
+float max_speed = 8;
+robot->default_drive_exit_error = 1;
+robot->default_drive_max = max_speed;
+robot->default_heading_max = 10; 
+intake_spin_back(100);
+robot->DriveDistance(6, 1.5, 0, 8, 1, 2, 0, 5, 500);
+intake_stop();
+lift_intake();
+wait(20, msec);
+robot->TurnAngle(123);
+wait(20, msec);
+robot->DriveDistance(3, 1.5, 0, 8, 1, 2, 0, 5, 500);
+wait(20, msec);
+robot->DriveDistance(8.5, 1.5, 0, 8, 1, 2, 0, 5, 800);
+intake_spin_fwd();
+lift_intake();
+wait(300, msec);
+intake_stop();
+wait(20, msec);
+robot->TurnAngle(90);
+waitUntil(!robot->isMoving());
+float distToField = DistanceSensor.objectDistance(inches);
+robot->DriveDistance(-(distToField - redStakeApproachDist), 1.5, 0, 8, 1, 2, 0, 5, 700);
+waitUntil(!robot->isMoving());
+score();
+wait(500,msec);
+score();
+wait(20, msec);
+ robot->default_drive_exit_error = 2;
+  // drive to the MOGO
+  robot->driveToXY(104, 29);
+  robot->TurnAngle(305);
+  robot->default_drive_max = 5;
+  robot->driveToXY(94, 46);
+  wait(20, msec);
+  clampFunc();
+  wait(300, msec);
+    robot->turnToXY(116, 47);
+wait(20, msec);
+score();
+wait(20, msec);
+  robot->default_drive_max = max_speed;
+  robot->driveToXY(116, 47);  
+  wait(1000, msec);
+  robot->driveToXY(129, 17);  
+  score();
+
+}
 
 void auton_red_right() {
   enableBypass();
@@ -483,14 +602,12 @@ wait(300, msec);
 intake_stop();
 wait(20, msec);
 robot->TurnAngle(90);
-
-wait(60, msec);
+waitUntil(!robot->isMoving());
 float distToField = DistanceSensor.objectDistance(inches);
-wait(20,msec);
 robot->DriveDistance(-(distToField - redStakeApproachDist), 1.5, 0, 8, 1, 2, 0, 5, 700);
-wait(20,msec);
+waitUntil(!robot->isMoving());
 score();
-wait(600,msec);
+wait(500,msec);
 score();
 wait(20, msec);
  robot->default_drive_exit_error = 2;
@@ -508,7 +625,7 @@ score();
 wait(20, msec);
   robot->default_drive_max = max_speed;
   robot->driveToXY(116, 47);  
-  wait(400, msec);
+  wait(1000, msec);
   robot->TurnAngle(348);
 wait(20, msec);
 robot->DriveDistance(-35, 1.5, 0, 8, 1, 2, 0, 5, 1500);
@@ -516,78 +633,12 @@ robot->DriveDistance(-35, 1.5, 0, 8, 1, 2, 0, 5, 1500);
 }
 
 
-void auton_red_left()
-{
-  robot->default_drive_exit_error = 1;
-  robot->default_drive_max = 6;
-  robot->default_heading_max = 10;
-
-
-  // take middle ring
-  enableBypass(); 
-  lift_intake();
-  robot->DriveDistance(9, 1.5, 0, 8, 1, 2, 0, 5, 750);
-  wait(20,msec);
-  lift_intake();
-  intake_spin_fwd();
-  wait(400,msec);
-  intake_stop();
-  robot->DriveDistance(12, 1.5, 0, 8, 1, 2, 0, 5, 750);
-  wait(40,msec);
-  robot->TurnAngle(90);
-
-
-  float distToField = DistanceSensor.objectDistance(inches);
-  wait(20,msec);
-  robot->DriveDistance(-(distToField - redStakeApproachDist));
-  wait(20,msec);
-  // score two rings
-  score();
-  wait(600,msec);
-  score();
-  wait(20, msec);
-  // drive to the MOGO
-  robot->driveToXY(32, 32);
-  robot->TurnAngle(240);
-  robot->driveToXY(43, 49);
-  wait(20, msec);
-  clampFunc();
-  robot->turnToXY(21, 46);
-  score();
-    wait(100,msec);
-
-  robot->driveToXY(25, 46);
-    wait(100,msec);
-    robot->TurnAngle(90);
-    wait(20,msec);
-
-      robot->default_drive_max = 6;
-      float X1 = robot->getX();
-      float Y1 = robot->getY();
-  robot->driveToXY(X1, Y1+14);
-  wait(300,msec);
-  robot->DriveDistance(-10, 1.5, 0, 8, 1, 2, 0, 5, 750);
-  wait(40,msec);
- robot->TurnAngle(109);
- wait(40,msec);
-   robot->DriveDistance(10, 1.5, 0, 8, 1, 2, 0, 5, 750);
-wait(300,msec);
-   robot->TurnAngle(10);
-    wait(40,msec);
-   robot->default_drive_max = 10;
-      robot->DriveDistance(21, 1.5, 0, 8, 1, 2, 0, 5, 1450);
-score();
-
-}
-
 
 void auton_blue_right()
 {
  
-
-}
-
-void test_auton() {
+    enableBypass();
+  // take middle ring
 float max_speed = 8;
 robot->default_drive_exit_error = 1;
 robot->default_drive_max = max_speed;
@@ -601,91 +652,125 @@ robot->TurnAngle(123);
 wait(20, msec);
 robot->DriveDistance(3, 1.5, 0, 8, 1, 2, 0, 5, 500);
 wait(20, msec);
+robot->DriveDistance(8.5, 1.5, 0, 8, 1, 2, 0, 5, 800);
 intake_spin_fwd();
 lift_intake();
 wait(300, msec);
 intake_stop();
-robot->DriveDistance(9.3, 1.5, 0, 8, 1, 2, 0, 5, 800);
 wait(20, msec);
 robot->TurnAngle(90);
-
-wait(60, msec);
+waitUntil(!robot->isMoving());
 float distToField = DistanceSensor.objectDistance(inches);
-wait(20,msec);
-robot->DriveDistance(-(distToField - redStakeApproachDist), 1.5, 0, 8, 1, 2, 0, 5, 700);
-wait(20,msec);
+robot->DriveDistance(-(distToField - blueStakeApproachDist), 1.5, 0, 8, 1, 2, 0, 5, 700);
+waitUntil(!robot->isMoving());
 score();
 wait(500,msec);
 score();
 wait(20, msec);
-}
-
-void auton_red_left_new() {
-float max_speed = 7.5;
-robot->default_drive_exit_error = 2;
-robot->default_drive_max = max_speed;
-robot->default_heading_max = 10; 
-enableBypass();
-armMove();
-lift_intake();
-wait(150, msec);
-robot->driveToXY(57, robot->getY());
-wait(20, msec);
-robot->TurnAngle(30);
-wait(20, msec);
-robot->DriveDistance(4, 1.5, 0, 8, 1, 2, 0, 5, 500);
-intake_spin_fwd();
-lift_intake();
-wait(400, msec);
-intake_stop();
-wait(20, msec);
-//robot->driveToXY(71, 24);
-robot->DriveDistance(11.5, 1.5, 0, 8, 1, 2, 0, 5, 700);
-armMove();
-wait(20, msec);
-robot->TurnAngle(90);
-wait(60, msec);
-float distToField = DistanceSensor.objectDistance(inches);
-wait(20,msec);
-robot->DriveDistance(-(distToField - redStakeApproachDist));
-wait(20,msec);
-  score();
-  wait(500,msec);
-  score();
-wait(20, msec);
+ robot->default_drive_exit_error = 2;
   // drive to the MOGO
-  robot->driveToXY(36, 30);
-  
-  
-  robot->TurnAngle(240);
-  robot->driveToXY(46.5, 44.5);
+  robot->driveToXY(104, 29);
+  robot->TurnAngle(305);
+  robot->default_drive_max = 5;
+  robot->driveToXY(94, 46);
   wait(20, msec);
   clampFunc();
-  wait(50, msec);
-  robot->turnToXY(21, 46);
-  score();
-    wait(100,msec);
+  wait(300, msec);
+    robot->turnToXY(116, 47);
+wait(20, msec);
+score();
+wait(20, msec);
+  robot->default_drive_max = max_speed;
+  robot->driveToXY(116, 47);  
+ 
+ wait(20, msec);
+  robot->TurnAngle(77); 
+  wait(20, msec);
 
-  robot->driveToXY(16, 46);
-    wait(100,msec);
-    robot->TurnAngle(90);
-    wait(20,msec);
+robot->DriveDistance(12.5, 1.5, 0, 8, 1, 2, 0, 5, 800);
+wait(200, msec);
+robot->DriveDistance(-5, 1.6, 0, 8, 1, 2, 0, 5, 800);
+  wait(20, msec);
+  robot->TurnAngle(92); 
+  wait(20, msec);
+robot->DriveDistance(7, 1.5, 0, 8, 1, 2, 0, 5, 800);
+  wait(200, msec);
 
-      robot->default_drive_max = 6;
-      float X1 = robot->getX();
-      float Y1 = robot->getY();
-  robot->driveToXY(X1, Y1+14);
-  wait(200,msec);
-  robot->DriveDistance(-10, 1.5, 0, 8, 1, 2, 0, 5, 750);
-  wait(40,msec);
-   robot->TurnAngle(64);
- wait(40,msec);
-   robot->DriveDistance(10, 1.5, 0, 8, 1, 2, 0, 5, 750);
-wait(200,msec);
-   robot->TurnAngle(10);
-    wait(40,msec);
-   robot->default_drive_max = 10;
-      robot->DriveDistance(21, 1.5, 0, 8, 1, 2, 0, 5, 1450);
+  robot->TurnAngle(175); 
+    wait(20, msec);
+robot->DriveDistance(20, 1.5, 0, 8, 1, 2, 0, 5, 1000);
+score();
+}
+
+void test_auton() {
+}
+
+void auton_red_left() {
+// new
+enableBypass();
+  // take middle ring
+float max_speed = 8;
+robot->default_drive_exit_error = 1;
+robot->default_drive_max = max_speed;
+robot->default_heading_max = 10; 
+intake_spin_back(100);
+robot->DriveDistance(6, 1.5, 0, 8, 1, 2, 0, 5, 500);
+intake_stop();
+lift_intake();
+wait(20, msec);
+robot->TurnAngle(59);
+
+wait(20, msec);
+robot->DriveDistance(3, 1.5, 0, 8, 1, 2, 0, 5, 500);
+wait(20, msec);
+lift_intake();
+
+robot->DriveDistance(11.5, 1.5, 0, 8, 1, 2, 0, 5, 800);
+intake_spin_fwd();
+wait(300, msec);
+intake_stop();
+wait(20, msec);
+robot->TurnAngle(90);
+waitUntil(!robot->isMoving());
+//wait(60, msec);
+float distToField = DistanceSensor.objectDistance(inches);
+wait(20,msec);
+robot->DriveDistance(-(distToField - redStakeApproachDist), 1.5, 0, 8, 1, 2, 0, 5, 700);
+waitUntil(!robot->isMoving());
+//wait(20,msec);
+score();
+wait(500,msec);
+score();
+wait(20, msec);
+ robot->default_drive_exit_error = 2;
+  // drive to the MOGO
+  robot->driveToXY(38, 30);
+  robot->TurnAngle(244);
+  robot->default_drive_max = 5;
+  robot->driveToXY(46, 45);
+  wait(20, msec);
+  clampFunc();
+  wait(300, msec);
+  robot->turnToXY(24, 45);
+wait(20, msec);
+score();
+wait(20, msec);
+  robot->default_drive_max = max_speed;
+  robot->driveToXY(25, 46);  
+wait(200, msec);
+  robot->TurnAngle(99);
+wait(20, msec);
+robot->DriveDistance(12, 1.5, 0, 8, 1, 2, 0, 5, 800);
+wait(200, msec);
+robot->DriveDistance(-5, 1.6, 0, 8, 1, 2, 0, 5, 800);
+wait(20, msec);
+robot->TurnAngle(80);
+wait(20, msec);
+robot->DriveDistance(8, 1.5, 0, 8, 1, 2, 0, 5, 800);
+wait(200, msec);
+robot->TurnAngle(10);
+wait(100, msec);
+robot->DriveDistance(20, 1.5, 0, 8, 1, 2, 0, 5, 800);
 score();
 }
 
@@ -883,9 +968,9 @@ switch(autonId)
 {
   case 1: {
     setAlliance(RED);
-    robot->setStartingPoint(51, 17.5, 0);
+    robot->setStartingPoint(58, 12, 0);
     vex::task Position(updatePos);
-    auton_red_left_new();
+    auton_red_left();
   break;
   }
   case 2: {
@@ -904,14 +989,14 @@ switch(autonId)
   }
   case 4: {
     setAlliance(BLUE);
-    robot->setStartingPoint(58, 12, 0);
+    robot->setStartingPoint(83, 12, 180);
     vex::task Position(updatePos);
     auton_blue_right();
   break;
   }
   case 5: {
     setAlliance(RED);
-    robot->setStartingPoint(51, 17.5, 180);
+    robot->setStartingPoint(58, 12, 0);
     vex::task Position(updatePos);
     test_auton(); 
   break;
@@ -923,7 +1008,20 @@ switch(autonId)
     skills(); 
   break;
   }
-  
+  case 7: {
+    setAlliance(BLUE);
+    robot->setStartingPoint(58, 12, 0);
+    vex::task Position(updatePos);
+    auton_blue_left_elimination();
+  break;
+  }
+  case 8: {
+    setAlliance(RED);
+    robot->setStartingPoint(83, 12, 180);
+    vex::task Position(updatePos);
+    auton_red_right_elimination();
+  break;
+  }  
 }
 
 }
