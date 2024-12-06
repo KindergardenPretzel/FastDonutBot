@@ -445,3 +445,9 @@ bool DriveBase::isRightMotorSpinning()
     return true;
 }
 
+bool DriveBase::isMoving() {
+    if (this->isLeftMotorSpinning() || this->isRightMotorSpinning()){
+        return true;
+    }
+    return false;
+}

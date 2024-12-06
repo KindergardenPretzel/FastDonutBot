@@ -88,7 +88,7 @@ class DriveBase
         //void driveToXY(float destX, float destY);
         void driveToXY(float destX, float destY, bool wait=true);
         void driveToXY(float destX, float destY, float maxOut, bool wait=false);
-        
+        bool isMoving();
         
         
        
