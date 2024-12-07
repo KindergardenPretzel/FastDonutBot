@@ -1073,7 +1073,7 @@ int main() {
     Controller1.ButtonR1.pressed(score);
     Controller1.ButtonY.pressed(stopWhenColorSeen);
     Controller1.ButtonA.pressed(enableBypass);
-    Controller1.ButtonUp.pressed(armMove);
+    Controller1.ButtonLeft.pressed(armMove);
     // Controller1.ButtonUp.pressed(liftRamp);
   
   
