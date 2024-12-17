@@ -77,6 +77,12 @@ float PID::calculate(float error)
     else{
         this->integral = 0;
     }
+    
+    // if error crosses 0, then eliminate accumulated integral
+    if ((this->error > 0 && this->prevError < 0) || ( this->error < 0 && this->prevError > 0)){ 
+        this->integral = 0; 
+    }
+
     integralGain = this->Ki * this->integral;
     
     // calculate derivative component
