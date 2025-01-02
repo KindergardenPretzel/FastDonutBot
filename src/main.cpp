@@ -31,6 +31,7 @@ limit auton_switch = limit(Brain.ThreeWirePort.E);
 
 motor intake = motor(PORT5,ratio6_1,false); 
 motor scoring = motor(PORT6,ratio6_1,true);
+motor hiStakes = motor(PORT10,ratio18_1,true);
 
 optical eyeball = optical(PORT14);
 distance DistanceSensor = distance(PORT7);
@@ -50,7 +51,8 @@ bool isBypassEnabled = false;
 
 float redStakeApproachDist = 5;
 float blueStakeApproachDist = 5.1;
-
+//bool isScoringDown = true;
+//bool isArmed = false;
 #define JOYSTICK_DEADZONE 8
 
 int getExpoValue(int joystickValue)
@@ -73,8 +75,16 @@ enum Alliance {
   BLUE = 255
 };
 
+enum HiStakesEnum {
+  Down,
+  Armed,
+  Scoring
+};
+
 Alliance OWN;
 Alliance OPPOSITE;
+
+HiStakesEnum ScorePosition;
 /*enum Colors {
   OWN = 255, // BLUE 
   OPPOSITE = 16711680 // RED
@@ -236,6 +246,33 @@ void score(){
   };
 }
 
+void hiStakeScore(){
+    if(ScorePosition == Armed){
+      hiStakes.setVelocity(40,pct);
+      hiStakes.spinFor(150,deg,false);
+      wait(700,msec);
+      hiStakes.stop();
+      
+      ScorePosition = Scoring;
+
+    }
+    if(ScorePosition == Down){
+      hiStakes.setVelocity(10,pct);
+      hiStakes.spinTo(25,deg,false);
+      wait(500,msec);
+      hiStakes.stop();
+      ScorePosition = Armed;
+    }
+    
+}
+
+void lowerMech(){
+  
+  hiStakes.spinTo(0, deg, false);
+  hiStakes.setTimeout(1000, msec);
+  ScorePosition = Down;
+}
+
 //task that updates the robots position
 int updatePos()
 {
@@ -263,6 +300,9 @@ int ShowMeInfo(){
   Brain.Screen.setPenColor(red);
   float heading_angle;
   while(true) {
+    Brain.Screen.setCursor(2,2);
+    Brain.Screen.print("PosHiStake: %f", hiStakes.position(vex::deg));
+
     Brain.Screen.setCursor(3,2);
     Brain.Screen.print("X: %f, Y: %f", robot->getX(), robot->getY());
 
@@ -1065,7 +1105,7 @@ void usercontrol(void) {
 // Main will set up the competition functions and callbacks.
 //
 int main() {
-
+    
     //starts all functions
     Controller1.ButtonL1.pressed(clampFunc);
     Controller1.ButtonL2.pressed(lift_intake);
@@ -1074,8 +1114,13 @@ int main() {
     Controller1.ButtonY.pressed(stopWhenColorSeen);
     Controller1.ButtonA.pressed(enableBypass);
     Controller1.ButtonLeft.pressed(armMove);
-    // Controller1.ButtonUp.pressed(liftRamp);
-  
+    Controller1.ButtonUp.pressed(hiStakeScore);
+    Controller1.ButtonDown.pressed(lowerMech);
+    
+    hiStakes.resetPosition();
+
+    ScorePosition = Down;
+    hiStakes.setBrake(hold);
   
    // start debug output;
   vex::task Debug(ShowMeInfo);
