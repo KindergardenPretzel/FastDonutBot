@@ -31,11 +31,11 @@ limit auton_switch = limit(Brain.ThreeWirePort.E);
 
 motor intake = motor(PORT5,ratio6_1,false); 
 motor scoring = motor(PORT6,ratio6_1,true);
-motor hiStakes = motor(PORT10,ratio18_1,true);
+motor hiStakes = motor(PORT10,ratio36_1,true);
 
 optical eyeball = optical(PORT14);
 distance DistanceSensor = distance(PORT7);
-
+rotation StakeElevation = rotation(PORT15);
 
 float power_pct = 0.8;
 // define your global instances of motors and other devices here
@@ -84,7 +84,7 @@ enum HiStakesEnum {
 Alliance OWN;
 Alliance OPPOSITE;
 
-HiStakesEnum ScorePosition;
+HiStakesEnum StakeScorePosition;
 /*enum Colors {
   OWN = 255, // BLUE 
   OPPOSITE = 16711680 // RED
@@ -168,10 +168,18 @@ int ColorSensing()
 {
   eyeball.setLightPower(50, vex::pct);
   eyeball.setLight(ledState::on);
+  int prevVelocity;
   while (true) {
     color detectColor = eyeball.color();
     //std::cout << detectColor << std::endl;
     //vex::wait(10, msec);
+    if (eyeball.color() == OWN && isBeltSpinning && StakeScorePosition == Armed)
+    {
+      prevVelocity = scoring.velocity(pct);
+      scoring.setVelocity(60, pct);
+      wait(1000, msec);
+      score();
+    }
     if (eyeball.color() == OWN && isStopperEnabled && isBeltSpinning){
       wait(10, msec);
       score();
@@ -246,31 +254,43 @@ void score(){
   };
 }
 
-void hiStakeScore(){
-    if(ScorePosition == Armed){
-      hiStakes.setVelocity(40,pct);
-      hiStakes.spinFor(150,deg,false);
-      wait(700,msec);
-      hiStakes.stop();
-      
-      ScorePosition = Scoring;
 
+void hiStakeMechGoToPos(float position, vex::brakeType braking_mode)
+{
+      PID arm_pid = PID(0.7, 0.00002, 0, 5, 1, 2000);
+      do {
+        float arm_error = position - StakeElevation.position(vex::deg);
+        float volt_arm = arm_pid.calculate(arm_error);
+        hiStakes.spin(fwd, volt_arm, vex::volt);
+      } while (!arm_pid.isFinished());
+      hiStakes.stop(braking_mode);
+      wait(100, msec);
+}
+
+void hiStakeScore(){
+    if(StakeScorePosition == Armed){
+      hiStakes.setVelocity(40,pct);
+      hiStakes.spinFor(165, deg, false);
+      wait(700,msec);
+      hiStakes.stop(hold);
+      StakeScorePosition = Scoring;
     }
-    if(ScorePosition == Down){
-      hiStakes.setVelocity(10,pct);
-      hiStakes.spinTo(25,deg,false);
-      wait(500,msec);
-      hiStakes.stop();
-      ScorePosition = Armed;
+    if(StakeScorePosition == Down){
+      hiStakeMechGoToPos(8, vex::hold);
+      StakeScorePosition = Armed;
     }
     
 }
 
 void lowerMech(){
-  
-  hiStakes.spinTo(0, deg, false);
-  hiStakes.setTimeout(1000, msec);
-  ScorePosition = Down;
+  if (StakeScorePosition == Armed || StakeScorePosition == Scoring) {
+      hiStakeMechGoToPos(0, vex::coast);
+      StakeScorePosition = Down;
+      wait(300, msec);
+      //StakeElevation.resetPosition();
+
+    
+  }
 }
 
 //task that updates the robots position
@@ -301,7 +321,7 @@ int ShowMeInfo(){
   float heading_angle;
   while(true) {
     Brain.Screen.setCursor(2,2);
-    Brain.Screen.print("PosHiStake: %f", hiStakes.position(vex::deg));
+    Brain.Screen.print("PosHiStake: %f", StakeElevation.position(vex::deg));
 
     Brain.Screen.setCursor(3,2);
     Brain.Screen.print("X: %f, Y: %f", robot->getX(), robot->getY());
@@ -1117,10 +1137,10 @@ int main() {
     Controller1.ButtonUp.pressed(hiStakeScore);
     Controller1.ButtonDown.pressed(lowerMech);
     
-    hiStakes.resetPosition();
-
-    ScorePosition = Down;
-    hiStakes.setBrake(hold);
+    //hiStakes.resetPosition();
+    StakeElevation.resetPosition();
+    StakeScorePosition = Down;
+    //hiStakes.setBrake(hold);
   
    // start debug output;
   vex::task Debug(ShowMeInfo);
