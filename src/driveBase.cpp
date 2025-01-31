@@ -37,6 +37,8 @@ DriveBase::DriveBase(int gyroPort, int fwdRotatePort, int sideRotatePort,
 void DriveBase::setStartingPoint(float startX, float startY, float startHeading ){
     this->x = startX;
     this->y = startY;
+    this->x1 = startX;
+    this->y1 = startY;
     this->setHeading(startHeading);
     this->prev_heading = startHeading;
     this->resetFwdEncoder();
@@ -57,6 +59,9 @@ void DriveBase::updatePosition() {
     float deltaFwd = fwdPos - this->fwdPosition;
     float deltaSide = sidePos - this->sidePosition;
     float deltaHead = currentHead - this->prev_heading;
+
+    // calculate avg heading in Rad
+    float avgHeadRad = toolbox::degreesToRadians(currentHead + deltaHead / 2);
 
     // convert heading difference to Radians
     float deltaHeadRad = toolbox::degreesToRadians(deltaHead);
@@ -101,6 +106,11 @@ void DriveBase::updatePosition() {
    this->x += deltaX;
    this->y += deltaY;
 
+    // test more precise approach
+    this->x1 += localY * sin(avgHeadRad);
+    this->y1 += localY * cos(avgHeadRad);
+    this->x1 += localX * -cos(avgHeadRad);
+    this->y1+= localX * sin(avgHeadRad);
 
     // updating stored positions and heading
     this->fwdPosition = fwdPos;

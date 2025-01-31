@@ -29,6 +29,9 @@ class DriveBase
         bool isLeftMotorSpinning();
         bool isRightMotorSpinning();
     public:
+        float x1;
+        float y1;
+
         float default_drive_Kp{1.5};
         float default_drive_Ki{0};
         float default_drive_Kd{8};

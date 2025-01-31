@@ -46,7 +46,7 @@ std::shared_ptr<DriveBase> robot(new DriveBase(PORT13, -PORT11, PORT12, -PORT1, 
 bool isBeltSpinning = false;
 bool isStopperEnabled = false;
 bool autonEnabled = false;
-int autonId = 4;
+int autonId = 5;
 bool isBypassEnabled = false;
 
 float redStakeApproachDist = 5;
@@ -332,10 +332,10 @@ int ShowMeInfo(){
     Brain.Screen.print("Heading: %f", heading_angle);
 
     Brain.Screen.setCursor(5,2);
-    Brain.Screen.print("Fwd Tracker value: %f", robot->getFwdPosition());
+    Brain.Screen.print("X1: %f, Y1: %f", robot->x1, robot->y1);
 
-    Brain.Screen.setCursor(6,2);
-    Brain.Screen.print("Side Tracker value: %f", robot->getSidePosition());
+    //Brain.Screen.setCursor(6,2);
+    //Brain.Screen.print("Side Tracker value: %f", robot->getSidePosition());
   
   if (clamp.value()) 
   {
@@ -438,6 +438,7 @@ void pre_auton(void) {
         Controller1.Screen.setCursor(3,10);
         Controller1.Screen.print("A: RRE");
       break;   
+      
     }
 
     /*if(Brain.Screen.pressing() || auton_switch.pressing())
@@ -763,6 +764,11 @@ score();
 }
 
 void test_auton() {
+  enableBypass();
+float max_speed = 6;
+robot->default_drive_exit_error = 2;
+robot->default_drive_max = max_speed;
+robot->default_heading_max = 10;
 }
 
 void auton_red_left() {
@@ -1056,7 +1062,7 @@ switch(autonId)
   }
   case 5: {
     setAlliance(RED);
-    robot->setStartingPoint(58, 12, 0);
+    robot->setStartingPoint(70, 11, 90);
     vex::task Position(updatePos);
     test_auton(); 
   break;
