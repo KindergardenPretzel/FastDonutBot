@@ -45,7 +45,7 @@ std::shared_ptr<DriveBase> robot(new DriveBase(PORT13, -PORT11, PORT12, -PORT1, 
 
 bool isBeltSpinning = false;
 bool isStopperEnabled = false;
-bool autonEnabled = false;
+bool autonEnabled = true;
 int autonId = 5;
 bool isBypassEnabled = false;
 
@@ -257,7 +257,7 @@ void score(){
 
 void hiStakeMechGoToPos(float position, vex::brakeType braking_mode)
 {
-      PID arm_pid = PID(0.7, 0.00002, 0, 5, 1, 2000);
+      PID arm_pid = PID(0.9, 0.00002, 0, 5, 1, 7000);
       do {
         float arm_error = position - StakeElevation.position(vex::deg);
         float volt_arm = arm_pid.calculate(arm_error);
@@ -764,11 +764,46 @@ score();
 }
 
 void test_auton() {
-  enableBypass();
-float max_speed = 6;
+  
+float max_speed = 8;
 robot->default_drive_exit_error = 2;
 robot->default_drive_max = max_speed;
 robot->default_heading_max = 10;
+
+// do not score blue rings
+enableBypass();
+
+// score alliance stake
+score();
+wait(600, msec);
+score();
+robot->default_drive_max = 6;
+//drive to take first MoGo
+robot->driveToXY(83,39);
+wait(30, msec);
+//exit(0);
+robot->TurnAngle(120);
+//robot->turnToXY(60, 25); // +1 inch for controller exit error correction
+wait(30, msec);
+robot->driveToXY(98,28);
+wait(40, msec);
+clampFunc();
+wait(20, msec);
+
+robot->default_drive_max = 8;
+score();
+robot->driveToXY(92,51);
+wait(20, msec);
+robot->TurnAngle(28);
+wait(20, msec);
+hiStakeScore();
+wait(20, msec);
+robot->driveToXY(121,76);
+wait(20, msec);
+robot->turnToXY(142,81);
+wait(20, msec);
+robot->DriveDistance(3, 1.5, 0, 8, 1, 2, 0, 5, 500);
+hiStakeScore();
 }
 
 void auton_red_left() {

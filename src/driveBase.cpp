@@ -69,16 +69,24 @@ void DriveBase::updatePosition() {
     float localX;
     float localY;
 
+    float localX1;
+    float localY1;
+
     //calculating distance between robot tracking center
     if (deltaHead==0) {
         // if angle is not changed - then localY and localX is corresponding tracking wheel difference
         localX = deltaSide;
         localY = deltaFwd;
+        localX1 = -deltaSide;
+        localY1 = deltaFwd;
     }
     else{
     // calculate arc chord (h) for side movement and forward movement
      localX = 2 * sin(deltaHeadRad/2) * ( (deltaSide/deltaHeadRad) - SIDE_DISTANCE);
      localY = 2 * sin(deltaHeadRad/2) * ( (deltaFwd/deltaHeadRad) - FWD_DISTANCE);
+
+    localX1 = 2 * sin(deltaHeadRad/2) * ( (deltaSide/deltaHeadRad) + SIDE_DISTANCE);
+    localY1 = 2 * sin(deltaHeadRad/2) * ( (deltaFwd/deltaHeadRad) + FWD_DISTANCE);
      }
 
     
@@ -107,10 +115,10 @@ void DriveBase::updatePosition() {
    this->y += deltaY;
 
     // test more precise approach
-    this->x1 += localY * sin(avgHeadRad);
-    this->y1 += localY * cos(avgHeadRad);
-    this->x1 += localX * -cos(avgHeadRad);
-    this->y1+= localX * sin(avgHeadRad);
+    this->y1 += localY1 * sin(avgHeadRad);
+    this->x1 += localY1 * cos(avgHeadRad);
+    this->y1 += localX1 * -cos(avgHeadRad);
+    this->x1 += localX1 * sin(avgHeadRad);
 
     // updating stored positions and heading
     this->fwdPosition = fwdPos;
@@ -120,12 +128,12 @@ void DriveBase::updatePosition() {
 
 // returns X coordinate
 float DriveBase::getX() {
-    return this->x;
+    return this->x1;
 }
 
 // returns Y coordinate
 float DriveBase::getY() {
-    return this->y;
+    return this->y1;
 }
 
 
