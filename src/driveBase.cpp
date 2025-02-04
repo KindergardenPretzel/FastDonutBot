@@ -401,8 +401,8 @@ void DriveBase::driveToXY(float destX, float destY, float maxOut, bool wait)
     float headingError;
     float headingCorrectionSpeed;
     float destHeading;
-    float currX;
-    float currY;
+    float currX, virtX;
+    float currY, virtY;
 
     // define PID controllers for Drive and Heading correction
     PID drive_pid = PID(default_drive_Kp, default_drive_Ki, default_drive_Kd, default_drive_limit_integral, default_drive_exit_error, default_drive_min, maxOut, default_drive_timeout);
@@ -413,13 +413,26 @@ void DriveBase::driveToXY(float destX, float destY, float maxOut, bool wait)
         currX = this->getX();
         currY = this->getY();
 
+        // add virtual point on the line between source and dest point to head the robot towards it
+        // (avoid wiggly behavior by the end of the drive)
+        if(destX > currX)
+        {
+            virtX = destX + 5;
+        }
+        else if(destX < currX)
+        {
+            virtX = destX - 5;
+        }
+        // find new Y for virtual point
+        virtY = ((destY - currY) / (destX - currX)) * (virtX - currX) - currY;
+
         // Calculate distance to the point using pythagorean theorem.
         error = sqrt(pow(destX-currX,2) + pow(destY-currY,2));
         speed = drive_pid.calculate(error);
 
         // calculate heading correction angle using atan2 function. X,Y flipped, so we calculating angle to Y axis
-        //destHeading = toolbox::radiansToDegrees(atan2(destX - currX, destY - currY));
-        destHeading = toolbox::radiansToDegrees(atan2(destY - currY, destX - currX));
+        //destHeading = toolbox::radiansToDegrees(atan2(destY - currY, destX - currX));
+        destHeading = toolbox::radiansToDegrees(atan2(virtY - currY, virtX - currX));
         headingError = destHeading - this->getHeading();
 
         float optimizedAngle = turnAngleOptimization(headingError);
