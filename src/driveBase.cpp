@@ -424,7 +424,7 @@ void DriveBase::driveToXY(float destX, float destY, float maxOut, bool wait)
             virtX = destX - 5;
         }
         // find new Y for virtual point
-        virtY = ((destY - currY) / (destX - currX)) * (virtX - currX) - currY;
+        virtY = ((destY - currY) / (destX - currX)) * (virtX - currX) +currY;
 
         // Calculate distance to the point using pythagorean theorem.
         error = sqrt(pow(destX-currX,2) + pow(destY-currY,2));

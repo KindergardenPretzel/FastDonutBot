@@ -45,7 +45,7 @@ std::shared_ptr<DriveBase> robot(new DriveBase(PORT13, -PORT11, PORT12, -PORT1, 
 
 bool isBeltSpinning = false;
 bool isStopperEnabled = false;
-bool autonEnabled = true;
+bool autonEnabled = false;
 int autonId = 5;
 bool isBypassEnabled = false;
 
@@ -773,12 +773,19 @@ robot->default_heading_max = 10;
 // do not score blue rings
 enableBypass();
 
+
 // score alliance stake
 score();
 wait(600, msec);
 score();
 robot->default_drive_max = 6;
 //drive to take first MoGo
+
+robot->driveToXY(75,25);
+wait(30, msec);
+//robot->turnToXY(94, 24);
+
+exit(0);
 robot->driveToXY(83,39);
 wait(30, msec);
 //exit(0);
