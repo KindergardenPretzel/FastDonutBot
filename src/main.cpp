@@ -25,6 +25,7 @@ brain Brain;
 controller Controller1 = controller(primary);
 digital_out clamp = digital_out(Brain.ThreeWirePort.A);
 digital_out intake_lift = digital_out(Brain.ThreeWirePort.B);
+digital_out Hang = digital_out(Brain.ThreeWirePort.C);
 digital_out bypass = digital_out(Brain.ThreeWirePort.H);
 digital_out arm = digital_out(Brain.ThreeWirePort.G);
 limit auton_switch = limit(Brain.ThreeWirePort.E);
@@ -121,6 +122,16 @@ void lift_intake(){
       }
       else {
         intake_lift.set(false);
+  };
+}
+
+
+void hangRobot(){
+  if (!Hang.value()) {
+        Hang.set(true);
+      }
+      else {
+        Hang.set(false);
   };
 }
 
@@ -1184,6 +1195,7 @@ int main() {
     Controller1.ButtonLeft.pressed(armMove);
     Controller1.ButtonUp.pressed(hiStakeScore);
     Controller1.ButtonDown.pressed(lowerMech);
+    Controller1.ButtonX.pressed(hangRobot);
     
     //hiStakes.resetPosition();
     StakeElevation.resetPosition();
