@@ -128,12 +128,12 @@ void DriveBase::updatePosition() {
 
 // returns X coordinate
 float DriveBase::getX() {
-    return this->x;
+    return this->x1;
 }
 
 // returns Y coordinate
 float DriveBase::getY() {
-    return this->y;
+    return this->y1;
 }
 
 

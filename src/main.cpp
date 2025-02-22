@@ -42,7 +42,7 @@ float power_pct = 0.8;
 // define your global instances of motors and other devices here
 
 // Inertial, ForwardTrackingWheel, SideTrackingWheel, LeftFrontMotor, LeftBackMotor, RightFrontMotor, RightBackMotor, trackingIntchesPerRevolution
-std::shared_ptr<DriveBase> robot(new DriveBase(PORT13, -PORT11, PORT12, -PORT1, -PORT2, PORT3, PORT4, 6.28));
+std::shared_ptr<DriveBase> robot(new DriveBase(PORT13, -PORT11, -PORT12, -PORT1, -PORT2, PORT3, PORT4, 6.28));
 
 bool isBeltSpinning = false;
 bool isStopperEnabled = false;
@@ -268,7 +268,7 @@ void score(){
 
 void hiStakeMechGoToPos(float position, vex::brakeType braking_mode)
 {
-      PID arm_pid = PID(0.5, 0.00002, 0, 5, 1, 7000);
+      PID arm_pid = PID(0.5, 0.00002, 0, 5, 1, 2, 6, 2000);
       do {
         float arm_error = position - StakeElevation.position(vex::deg);
         float volt_arm = arm_pid.calculate(arm_error);
@@ -783,45 +783,17 @@ robot->default_heading_max = 10;
 
 // do not score blue rings
 enableBypass();
+robot->turnToXY(70,2);
+wait(20, msec);
+hiStakeMechGoToPos(170, coast);
+wait(300, msec);
+hiStakeMechGoToPos(0, coast);
+wait(20, msec);
+robot->turnToXY(70,24);
+wait(20, msec);
+lift_intake();
+robot->driveToXY(64,16);
 
-
-// score alliance stake
-score();
-wait(600, msec);
-score();
-robot->default_drive_max = 6;
-//drive to take first MoGo
-
-robot->driveToXY(75,25);
-wait(30, msec);
-//robot->turnToXY(94, 24);
-
-exit(0);
-robot->driveToXY(83,39);
-wait(30, msec);
-//exit(0);
-robot->TurnAngle(120);
-//robot->turnToXY(60, 25); // +1 inch for controller exit error correction
-wait(30, msec);
-robot->driveToXY(98,28);
-wait(40, msec);
-clampFunc();
-wait(20, msec);
-
-robot->default_drive_max = 8;
-score();
-robot->driveToXY(92,51);
-wait(20, msec);
-robot->TurnAngle(28);
-wait(20, msec);
-hiStakeScore();
-wait(20, msec);
-robot->driveToXY(121,76);
-wait(20, msec);
-robot->turnToXY(142,81);
-wait(20, msec);
-robot->DriveDistance(3, 1.5, 0, 8, 1, 2, 0, 5, 500);
-hiStakeScore();
 }
 
 void auton_red_left() {
@@ -1115,7 +1087,7 @@ switch(autonId)
   }
   case 5: {
     setAlliance(RED);
-    robot->setStartingPoint(70, 11, 90);
+    robot->setStartingPoint(56, 12, 0);
     vex::task Position(updatePos);
     test_auton(); 
   break;
