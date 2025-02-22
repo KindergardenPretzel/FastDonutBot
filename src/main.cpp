@@ -187,7 +187,7 @@ int ColorSensing()
     if (eyeball.color() == OWN && isBeltSpinning && StakeScorePosition == Armed)
     {
       prevVelocity = scoring.velocity(pct);
-      scoring.setVelocity(60, pct);
+      //scoring.setVelocity(60, pct);
       wait(1000, msec);
       score();
     }
@@ -268,7 +268,7 @@ void score(){
 
 void hiStakeMechGoToPos(float position, vex::brakeType braking_mode)
 {
-      PID arm_pid = PID(0.9, 0.00002, 0, 5, 1, 7000);
+      PID arm_pid = PID(0.5, 0.00002, 0, 5, 1, 7000);
       do {
         float arm_error = position - StakeElevation.position(vex::deg);
         float volt_arm = arm_pid.calculate(arm_error);
@@ -287,7 +287,7 @@ void hiStakeScore(){
       StakeScorePosition = Scoring;
     }
     if(StakeScorePosition == Down){
-      hiStakeMechGoToPos(8, vex::hold);
+      hiStakeMechGoToPos(11, vex::hold);
       StakeScorePosition = Armed;
     }
     
