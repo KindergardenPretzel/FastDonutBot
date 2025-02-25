@@ -790,10 +790,26 @@ wait(300, msec);
 hiStakeMechGoToPos(0, coast);
 wait(20, msec);
 robot->turnToXY(70,24);
+//exit(0);
 wait(20, msec);
 lift_intake();
-robot->driveToXY(64,16);
-
+robot->driveToXY(66,20);
+wait(20, msec);
+lift_intake();
+wait(40, msec);
+intake_spin_fwd();
+wait(300, msec);
+intake_stop();
+wait(200, msec);
+robot->TurnAngle(308);
+wait(20, msec);
+robot->default_drive_max = 6;
+robot->driveToXY(48.8,43.4);
+wait(20, msec);
+clampFunc();
+wait(200, msec);
+robot->default_drive_max = max_speed;
+robot->TurnAngle(160);
 }
 
 void auton_red_left() {

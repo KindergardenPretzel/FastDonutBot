@@ -417,11 +417,11 @@ void DriveBase::driveToXY(float destX, float destY, float maxOut, bool wait)
         // (avoid wiggly behavior by the end of the drive)
         if(destX > currX)
         {
-            virtX = destX + 5;
+            virtX = destX + 14;
         }
         else if(destX < currX)
         {
-            virtX = destX - 5;
+            virtX = destX - 14;
         }
         // find new Y for virtual point
         virtY = ((destY - currY) / (destX - currX)) * (virtX - currX) +currY;
@@ -433,7 +433,9 @@ void DriveBase::driveToXY(float destX, float destY, float maxOut, bool wait)
         // calculate heading correction angle using atan2 function. X,Y flipped, so we calculating angle to Y axis
         //destHeading = toolbox::radiansToDegrees(atan2(destY - currY, destX - currX));
         destHeading = toolbox::radiansToDegrees(atan2(virtY - currY, virtX - currX));
+        std::cout <<" destHeading: " << destHeading << std::endl; 
         headingError = destHeading - this->getHeading();
+        std::cout <<" headingError: " << headingError << std::endl; 
 
         float optimizedAngle = turnAngleOptimization(headingError);
 
