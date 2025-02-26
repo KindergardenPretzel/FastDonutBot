@@ -406,7 +406,7 @@ void DriveBase::driveToXY(float destX, float destY, float maxOut, bool wait)
 
     currX = this->getX();
     currY = this->getY();
-    hypotToAxisAngle = toolbox::radiansToDegrees(atan2(virtY - currY, virtX - currX));
+    hypotToAxisAngle = toolbox::radiansToDegrees(atan2(destX - currY, destX - currX));
 
 
     // define PID controllers for Drive and Heading correction
