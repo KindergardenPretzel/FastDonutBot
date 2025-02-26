@@ -398,20 +398,33 @@ void DriveBase::driveToXY(float destX, float destY, float maxOut, bool wait)
 {
     float error;
     float speed;
-    float headingError;
+    float headingError, hypotToAxisAngle;
     float headingCorrectionSpeed;
     float destHeading;
     float currX, virtX;
     float currY, virtY;
 
+    currX = this->getX();
+    currY = this->getY();
+    hypotToAxisAngle = toolbox::radiansToDegrees(atan2(virtY - currY, virtX - currX));
+
+
     // define PID controllers for Drive and Heading correction
     PID drive_pid = PID(default_drive_Kp, default_drive_Ki, default_drive_Kd, default_drive_limit_integral, default_drive_exit_error, default_drive_min, maxOut, default_drive_timeout);
     PID heading_pid = PID(default_heading_Kp, default_heading_Ki, default_heading_Kd, default_heading_limit_integral, default_heading_exit_error, default_heading_min, default_heading_max, default_heading_timeout);
+
+
 
     do
     {   // get current X, Y postion
         currX = this->getX();
         currY = this->getY();
+
+        // check if robot crossed imaginary line  perpendicular to staring angle via destination point X,Y
+        if ((destY - currY) * cos(hypotToAxisAngle) <= -1 * (destX - currX) * sin(hypotToAxisAngle)) 
+        {
+            break;
+        }
 
         // add virtual point on the line between source and dest point to head the robot towards it
         // (avoid wiggly behavior by the end of the drive)
