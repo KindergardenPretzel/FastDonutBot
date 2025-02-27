@@ -408,10 +408,12 @@ void DriveBase::driveToXY(float destX, float destY, float maxOut, bool wait)
     currY = this->getY();
     hypotToAxisAngle = atan2(destX - currX, destY - currY);
     std::cout << "srcX:" << currX << std::endl;
-    std::cout << "srcY:" << currX << std::endl;
+    std::cout << "srcY:" << currY << std::endl;
     std::cout << "dstX:" << destX << std::endl;
     std::cout << "dstY:" << destY << std::endl;
-    std::cout << "hypotToAxisAngle: " << toolbox::radiansToDegrees(hypotToAxisAngle) << std::endl;
+    std::cout << "hypotToAxisAngle RAD: " << hypotToAxisAngle << std::endl;
+    std::cout << "hypotToAxisAngle: " << (hypotToAxisAngle * 180)/M_PI << std::endl;
+    // 1rad × 180/π
     std::cout << "####################" << std::endl;
 
 
@@ -423,10 +425,12 @@ void DriveBase::driveToXY(float destX, float destY, float maxOut, bool wait)
     {   // get current X, Y postion
         currX = this->getX();
         currY = this->getY();
-
+        //std::cout << "L1: " << (destY - currY) * cos(hypotToAxisAngle) <<  std::endl;
+        //std::cout << "L2: " << -1 * (destX - currX) * sin(hypotToAxisAngle) <<  std::endl;
         // check if robot crossed imaginary line  perpendicular to staring angle via destination point X,Y
         if ((destY - currY) * cos(hypotToAxisAngle) <= -1 * (destX - currX) * sin(hypotToAxisAngle)) 
         {
+
             std::cout << "break !" << std::endl;
             break;
         }
