@@ -406,14 +406,18 @@ void DriveBase::driveToXY(float destX, float destY, float maxOut, bool wait)
 
     currX = this->getX();
     currY = this->getY();
-    hypotToAxisAngle = toolbox::radiansToDegrees(atan2(destX - currY, destX - currX));
+    hypotToAxisAngle = atan2(destX - currX, destY - currY);
+    std::cout << "srcX:" << currX << std::endl;
+    std::cout << "srcY:" << currX << std::endl;
+    std::cout << "dstX:" << destX << std::endl;
+    std::cout << "dstY:" << destY << std::endl;
+    std::cout << "hypotToAxisAngle: " << toolbox::radiansToDegrees(hypotToAxisAngle) << std::endl;
+    std::cout << "####################" << std::endl;
 
 
     // define PID controllers for Drive and Heading correction
     PID drive_pid = PID(default_drive_Kp, default_drive_Ki, default_drive_Kd, default_drive_limit_integral, default_drive_exit_error, default_drive_min, maxOut, default_drive_timeout);
     PID heading_pid = PID(default_heading_Kp, default_heading_Ki, default_heading_Kd, default_heading_limit_integral, default_heading_exit_error, default_heading_min, default_heading_max, default_heading_timeout);
-
-
 
     do
     {   // get current X, Y postion
@@ -423,6 +427,7 @@ void DriveBase::driveToXY(float destX, float destY, float maxOut, bool wait)
         // check if robot crossed imaginary line  perpendicular to staring angle via destination point X,Y
         if ((destY - currY) * cos(hypotToAxisAngle) <= -1 * (destX - currX) * sin(hypotToAxisAngle)) 
         {
+            std::cout << "break !" << std::endl;
             break;
         }
 
@@ -446,9 +451,9 @@ void DriveBase::driveToXY(float destX, float destY, float maxOut, bool wait)
         // calculate heading correction angle using atan2 function. X,Y flipped, so we calculating angle to Y axis
         //destHeading = toolbox::radiansToDegrees(atan2(destY - currY, destX - currX));
         destHeading = toolbox::radiansToDegrees(atan2(virtY - currY, virtX - currX));
-        std::cout <<" destHeading: " << destHeading << std::endl; 
+        //std::cout <<" destHeading: " << destHeading << std::endl; 
         headingError = destHeading - this->getHeading();
-        std::cout <<" headingError: " << headingError << std::endl; 
+        //std::cout <<" headingError: " << headingError << std::endl; 
 
         float optimizedAngle = turnAngleOptimization(headingError);
 

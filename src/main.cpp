@@ -268,7 +268,7 @@ void score(){
 
 void hiStakeMechGoToPos(float position, vex::brakeType braking_mode)
 {
-      PID arm_pid = PID(0.5, 0.00002, 0, 5, 1, 2, 6, 2000);
+      PID arm_pid = PID(0.5, 0.00002, 0, 5, 1, 2, 8, 1000);
       do {
         float arm_error = position - StakeElevation.position(vex::deg);
         float volt_arm = arm_pid.calculate(arm_error);
@@ -776,7 +776,7 @@ score();
 
 void test_auton() {
   
-float max_speed = 8;
+float max_speed = 9;
 robot->default_drive_exit_error = 2;
 robot->default_drive_max = max_speed;
 robot->default_heading_max = 10;
@@ -810,6 +810,9 @@ clampFunc();
 wait(200, msec);
 robot->default_drive_max = max_speed;
 robot->TurnAngle(160);
+wait(20, msec);
+score();
+robot->driveToXY(23,50);
 }
 
 void auton_red_left() {
