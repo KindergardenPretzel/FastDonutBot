@@ -1,5 +1,5 @@
 #include "vex.h"
-#include "drivebase.h"
+#include "driveBase.h"
 #include "PID.h"
 #include <iostream>
 #include <cmath>
@@ -407,7 +407,7 @@ void DriveBase::driveToXY(float destX, float destY, float maxOut, bool wait)
     currX = this->getX();
     currY = this->getY();
     hypotToAxisAngle = atan2(destX - currX, destY - currY);
-    std::cout << "srcX:" << currX << std::endl;
+    /* std::cout << "srcX:" << currX << std::endl;
     std::cout << "srcY:" << currY << std::endl;
     std::cout << "dstX:" << destX << std::endl;
     std::cout << "dstY:" << destY << std::endl;
@@ -415,6 +415,7 @@ void DriveBase::driveToXY(float destX, float destY, float maxOut, bool wait)
     std::cout << "hypotToAxisAngle: " << (hypotToAxisAngle * 180)/M_PI << std::endl;
     // 1rad × 180/π
     std::cout << "####################" << std::endl;
+    */
 
 
     // define PID controllers for Drive and Heading correction
@@ -427,11 +428,16 @@ void DriveBase::driveToXY(float destX, float destY, float maxOut, bool wait)
         currY = this->getY();
         //std::cout << "L1: " << (destY - currY) * cos(hypotToAxisAngle) <<  std::endl;
         //std::cout << "L2: " << -1 * (destX - currX) * sin(hypotToAxisAngle) <<  std::endl;
+
         // check if robot crossed imaginary line  perpendicular to staring angle via destination point X,Y
-        if ((destY - currY) * cos(hypotToAxisAngle) <= -1 * (destX - currX) * sin(hypotToAxisAngle)) 
+        //early_exit = 5
+        //line = (yc - y_dest) * -math.sin(start_angle) + early_exit
+        //line1 = (xc - x_dest) * math.cos(start_angle)
+
+        if (((currY -destY) * -sin(hypotToAxisAngle) + this->default_drive_exit_error) >= (cuttX - destX) * cos(hypotToAxisAngle)) 
         {
 
-            std::cout << "break !" << std::endl;
+            //std::cout << "break !" << std::endl;
             break;
         }
 

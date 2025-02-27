@@ -8,8 +8,8 @@
 /*----------------------------------------------------------------------------*/
 
 #include "vex.h"
-#include "drivebase.h"
-#include "comp_debug.h"
+#include "driveBase.h"
+//#include "comp_debug.h"
 #include "PID.h"
 #include <memory>
 #include <iostream>
