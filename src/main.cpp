@@ -774,7 +774,7 @@ robot->DriveDistance(20, 1.5, 0, 8, 1, 2, 0, 5, 1000);
 score();
 }
 
-void test_auton() {
+void auton_red_left() {
   
 float max_speed = 9;
 robot->default_drive_exit_error = 2;
@@ -828,73 +828,10 @@ wait(20, msec);
 robot->driveToXY(42,62.5);
 }
 
-void auton_red_left() {
+void test_auton() {
 // new
 enableBypass();
-  // take middle ring
-float max_speed = 8;
-robot->default_drive_exit_error = 1;
-robot->default_drive_max = max_speed;
-robot->default_heading_max = 10; 
-intake_spin_back(100);
-robot->DriveDistance(6, 1.5, 0, 8, 1, 2, 0, 5, 500);
-intake_stop();
-lift_intake();
-wait(20, msec);
-robot->TurnAngle(59);
 
-wait(20, msec);
-robot->DriveDistance(3, 1.5, 0, 8, 1, 2, 0, 5, 500);
-wait(20, msec);
-lift_intake();
-
-robot->DriveDistance(11.5, 1.5, 0, 8, 1, 2, 0, 5, 800);
-intake_spin_fwd();
-wait(300, msec);
-intake_stop();
-wait(20, msec);
-robot->TurnAngle(90);
-waitUntil(!robot->isMoving());
-//wait(60, msec);
-float distToField = DistanceSensor.objectDistance(inches);
-wait(20,msec);
-robot->DriveDistance(-(distToField - redStakeApproachDist), 1.5, 0, 8, 1, 2, 0, 5, 700);
-waitUntil(!robot->isMoving());
-//wait(20,msec);
-score();
-wait(500,msec);
-score();
-wait(20, msec);
- robot->default_drive_exit_error = 2;
-  // drive to the MOGO
-  robot->driveToXY(38, 30);
-  robot->TurnAngle(244);
-  robot->default_drive_max = 5;
-  robot->driveToXY(46, 45);
-  wait(20, msec);
-  clampFunc();
-  wait(300, msec);
-  robot->turnToXY(24, 45);
-wait(20, msec);
-score();
-wait(20, msec);
-  robot->default_drive_max = max_speed;
-  robot->driveToXY(25, 46);  
-wait(200, msec);
-  robot->TurnAngle(99);
-wait(20, msec);
-robot->DriveDistance(12, 1.5, 0, 8, 1, 2, 0, 5, 800);
-wait(200, msec);
-robot->DriveDistance(-5, 1.6, 0, 8, 1, 2, 0, 5, 800);
-wait(20, msec);
-robot->TurnAngle(80);
-wait(20, msec);
-robot->DriveDistance(8, 1.5, 0, 8, 1, 2, 0, 5, 800);
-wait(200, msec);
-robot->TurnAngle(10);
-wait(100, msec);
-robot->DriveDistance(20, 1.5, 0, 8, 1, 2, 0, 5, 800);
-score();
 }
 
 void skills() {
@@ -1091,7 +1028,7 @@ switch(autonId)
 {
   case 1: {
     setAlliance(RED);
-    robot->setStartingPoint(58, 12, 0);
+    robot->setStartingPoint(56, 12, 0);
     vex::task Position(updatePos);
     auton_red_left();
   break;
