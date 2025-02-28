@@ -430,14 +430,16 @@ void DriveBase::driveToXY(float destX, float destY, float maxOut, bool wait)
         //std::cout << "L2: " << -1 * (destX - currX) * sin(hypotToAxisAngle) <<  std::endl;
 
         // check if robot crossed imaginary line  perpendicular to staring angle via destination point X,Y
-        //early_exit = 5
-        //line = (yc - y_dest) * -math.sin(start_angle) + early_exit
-        //line1 = (xc - x_dest) * math.cos(start_angle)
 
-        if (((currY -destY) * -sin(hypotToAxisAngle) + this->default_drive_exit_error) >= (cuttX - destX) * cos(hypotToAxisAngle)) 
+
+        if ((destY-currY) * cos(hypotToAxisAngle) <= (destX - currX) * -sin(hypotToAxisAngle) + this->default_drive_exit_error+0.3) 
         {
 
-            //std::cout << "break !" << std::endl;
+            std::cout << "break !" << std::endl;
+            std::cout << "X:" << this->getX() << std::endl;
+            std::cout << "Y:" << this->getY() << std::endl;
+            std::cout << "####################" << std::endl;
+
             break;
         }
 
@@ -479,6 +481,7 @@ void DriveBase::driveToXY(float destX, float destY, float maxOut, bool wait)
         vex::wait(20, vex::msec);
 
     }while(!drive_pid.isFinished());
+
     this->RightMotors.spin(vex::fwd, 0, vex::volt);
     this->LeftMotors.spin(vex::fwd, 0, vex::volt);
     

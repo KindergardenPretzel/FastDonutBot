@@ -25,8 +25,8 @@ brain Brain;
 controller Controller1 = controller(primary);
 digital_out clamp = digital_out(Brain.ThreeWirePort.A);
 digital_out intake_lift = digital_out(Brain.ThreeWirePort.B);
-digital_out Hang = digital_out(Brain.ThreeWirePort.C);
-digital_out bypass = digital_out(Brain.ThreeWirePort.H);
+digital_out Hang = digital_out(Brain.ThreeWirePort.H);
+digital_out bypass = digital_out(Brain.ThreeWirePort.C);
 digital_out arm = digital_out(Brain.ThreeWirePort.G);
 limit auton_switch = limit(Brain.ThreeWirePort.E);
 
@@ -188,7 +188,7 @@ int ColorSensing()
     {
       prevVelocity = scoring.velocity(pct);
       //scoring.setVelocity(60, pct);
-      wait(1000, msec);
+      wait(800, msec);
       score();
     }
     if (eyeball.color() == OWN && isStopperEnabled && isBeltSpinning){
@@ -204,7 +204,7 @@ int ColorSensing()
     {
       bypass.set(false);
     }
-   vex::wait(10, msec);
+   vex::wait(5, msec);
   }
   return 0;
 }
@@ -786,7 +786,7 @@ enableBypass();
 robot->turnToXY(70,2);
 wait(20, msec);
 hiStakeMechGoToPos(170, coast);
-wait(300, msec);
+wait(100, msec);
 hiStakeMechGoToPos(0, coast);
 wait(20, msec);
 robot->turnToXY(70,24);
@@ -796,16 +796,15 @@ lift_intake();
 robot->driveToXY(66,20);
 wait(20, msec);
 lift_intake();
-wait(40, msec);
+wait(10, msec);
 intake_spin_fwd();
-wait(300, msec);
-intake_stop();
 wait(200, msec);
 robot->TurnAngle(308);
 wait(20, msec);
 robot->default_drive_max = 6;
 robot->driveToXY(48.8,43.4);
 wait(20, msec);
+intake_stop();
 clampFunc();
 wait(200, msec);
 robot->default_drive_max = max_speed;
@@ -813,6 +812,20 @@ robot->TurnAngle(160);
 wait(20, msec);
 score();
 robot->driveToXY(23,50);
+wait(20, msec);
+robot->turnToXY(20.6,68.3);
+wait(20, msec);
+robot->driveToXY(21.2,60);
+wait(20, msec);
+robot->driveToXY(21,57);
+wait(20, msec);
+robot->TurnAngle(64);
+wait(20, msec);
+robot->driveToXY(23.6,63);
+wait(20, msec);
+robot->TurnAngle(0);
+wait(20, msec);
+robot->driveToXY(42,62.5);
 }
 
 void auton_red_left() {
