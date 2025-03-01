@@ -582,11 +582,11 @@ void test_auton() {
   robot->driveToXY(17, 15);
   wait(20, msec);
   robot->TurnAngle(230);
-  wait(20, msec);
+  wait(150, msec);
   armMove();
   wait(20, msec);
   robot->driveToXY(25, 21);
-  wait(100, msec);
+  wait(150, msec);
   armMove();
   wait(20, msec);
   float curr_head = robot->getHeading();
