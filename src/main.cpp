@@ -541,61 +541,57 @@ wait(20, msec);
 }
 
 
-void auton_blue_left() {
- enableBypass();
-  // take middle ring
-float max_speed = 8;
-robot->default_drive_exit_error = 1;
-robot->default_drive_max = max_speed;
-robot->default_heading_max = 10; 
-intake_spin_back(100);
-robot->DriveDistance(6, 1.5, 0, 8, 1, 2, 0, 5, 500);
-intake_stop();
-lift_intake();
-wait(20, msec);
-robot->TurnAngle(59);
-
-wait(20, msec);
-robot->DriveDistance(3, 1.5, 0, 8, 1, 2, 0, 5, 500);
-wait(20, msec);
-lift_intake();
-
-robot->DriveDistance(11.5, 1.5, 0, 8, 1, 2, 0, 5, 800);
-intake_spin_fwd();
-wait(300, msec);
-intake_stop();
-wait(20, msec);
-robot->TurnAngle(90);
-waitUntil(!robot->isMoving());
-//wait(60, msec);
-float distToField = DistanceSensor.objectDistance(inches);
-wait(20,msec);
-robot->DriveDistance(-(distToField - blueStakeApproachDist), 1.5, 0, 8, 1, 2, 0, 5, 700);
-waitUntil(!robot->isMoving());
-//wait(20,msec);
-score();
-wait(500,msec);
-score();
-wait(20, msec);
- robot->default_drive_exit_error = 2;
-  // drive to the MOGO
-  robot->driveToXY(38, 30);
-  robot->TurnAngle(244);
-  robot->default_drive_max = 5;
-  robot->driveToXY(46, 45);
-  wait(20, msec);
-  clampFunc();
-  wait(300, msec);
-  robot->turnToXY(24, 45);
-wait(20, msec);
-score();
-wait(20, msec);
+void test_auton() {
+  float max_speed = 9;
+  robot->default_drive_exit_error = 2;
   robot->default_drive_max = max_speed;
-  robot->driveToXY(22, 46);  
-  wait(1000, msec);
-  robot->TurnAngle(193);
-wait(20, msec);
-robot->driveToXY(58, 55);  
+  robot->default_heading_max = 10;
+  
+  // do not score blue rings
+  enableBypass();
+  robot->turnToXY(70,2);
+  wait(20, msec);
+  hiStakeMechGoToPos(170, coast);
+  wait(100, msec);
+  hiStakeMechGoToPos(0, coast);
+  wait(20, msec);
+  robot->turnToXY(70,24);
+  //exit(0);
+  wait(20, msec);
+  lift_intake();
+  robot->driveToXY(66,20);
+  wait(20, msec);
+  lift_intake();
+  wait(10, msec);
+  intake_spin_fwd();
+  wait(200, msec);
+  robot->TurnAngle(308);
+  wait(20, msec);
+  robot->default_drive_max = 6;
+  robot->driveToXY(48.8,43.4);
+  wait(20, msec);
+  intake_stop();
+  clampFunc();
+  wait(200, msec);
+  robot->default_drive_max = max_speed;
+  robot->TurnAngle(160);
+  wait(20, msec);
+  score();
+  robot->driveToXY(23, 50);
+  wait(20, msec);
+  robot->driveToXY(17, 15);
+  wait(20, msec);
+  robot->TurnAngle(230);
+  wait(20, msec);
+  armMove();
+  wait(20, msec);
+  robot->driveToXY(25, 21);
+  armMove();
+  wait(20, msec);
+  float curr_head = robot->getHeading();
+  robot->TurnAngle(curr_head - 20);
+  robot->DriveDistance(10);
+  wait(20, msec);
 
  }
 
@@ -828,9 +824,48 @@ wait(20, msec);
 robot->driveToXY(42,62.5);
 }
 
-void test_auton() {
-// new
-enableBypass();
+void auton_blue_left() {
+  float max_speed = 9;
+  robot->default_drive_exit_error = 2;
+  robot->default_drive_max = max_speed;
+  robot->default_heading_max = 10;
+  
+  // do not score blue rings
+  enableBypass();
+  robot->turnToXY(70,2);
+  wait(20, msec);
+  hiStakeMechGoToPos(170, coast);
+  wait(100, msec);
+  hiStakeMechGoToPos(0, coast);
+  wait(20, msec);
+  robot->turnToXY(70,24);
+  //exit(0);
+  wait(20, msec);
+  lift_intake();
+  robot->driveToXY(66,20);
+  wait(20, msec);
+  lift_intake();
+  wait(10, msec);
+  intake_spin_fwd();
+  wait(200, msec);
+  robot->TurnAngle(308);
+  wait(20, msec);
+  robot->default_drive_max = 6;
+  robot->driveToXY(48.8,43.4);
+  wait(20, msec);
+  intake_stop();
+  clampFunc();
+  wait(200, msec);
+  robot->default_drive_max = max_speed;
+  robot->TurnAngle(160);
+  wait(20, msec);
+  score();
+  robot->driveToXY(23,50);
+  wait(20, msec);
+  robot->driveToXY(51.5,62.4);
+  hangRobot();
+  wait(300, msec);
+  score();
 
 }
 
@@ -1042,7 +1077,7 @@ switch(autonId)
   }
   case 3: {
     setAlliance(BLUE);
-    robot->setStartingPoint(58, 12, 0);
+    robot->setStartingPoint(56, 12, 0);
     vex::task Position(updatePos);
     auton_blue_left();
   break;
@@ -1098,7 +1133,10 @@ switch(autonId)
 
 void usercontrol(void) {
   robot->SetBrake(coast);
-
+  if (Hang.value()) 
+  {
+    Hang.set(false);
+  }
 
   while (1) {
     float throttle = getExpoValue(Controller1.Axis3.value());
