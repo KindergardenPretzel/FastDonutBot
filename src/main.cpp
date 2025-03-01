@@ -586,6 +586,7 @@ void test_auton() {
   armMove();
   wait(20, msec);
   robot->driveToXY(25, 21);
+  wait(100, msec);
   armMove();
   wait(20, msec);
   float curr_head = robot->getHeading();
