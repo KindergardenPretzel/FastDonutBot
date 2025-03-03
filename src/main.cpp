@@ -46,8 +46,8 @@ std::shared_ptr<DriveBase> robot(new DriveBase(PORT13, -PORT11, -PORT12, -PORT1,
 
 bool isBeltSpinning = false;
 bool isStopperEnabled = false;
-bool autonEnabled = false;
-int autonId = 5;
+bool autonEnabled = true;
+int autonId = 4;
 bool isBypassEnabled = false;
 
 float redStakeApproachDist = 5;
@@ -595,28 +595,30 @@ void auton_blue_right()
   clampFunc();
   wait(200, msec);
   robot->default_drive_max = max_speed;
-  
-  robot->TurnAngle(20);
+  robot->TurnAngle(10);
   wait(20, msec);
   score();
-  robot->driveToXY(117,50);
+  robot->driveToXY(120,50);
   wait(20, msec);
-  robot->turnToXY(119.4,68.3);
+  robot->turnToXY(119.5,68.3);
   wait(20, msec);
-  
-  robot->driveToXY(118.8,60);
+  robot->default_drive_max = 6;
+
+  robot->driveToXY(123,60);
   wait(20, msec);
-  robot->driveToXY(119,57);
+  robot->driveToXY(119.5,56);
   wait(20, msec);
-  
-  robot->TurnAngle(334);
+
+  robot->TurnAngle(109);
   wait(20, msec);
   robot->driveToXY(116.4,63);
   wait(20, msec);
+  robot->default_drive_max = max_speed;
+
   robot->TurnAngle(180);
   wait(20, msec);
-  robot->driveToXY(98,62.5);
-
+  robot->driveToXY(86,61);
+  hangRobot();
 }
 
 // red left side for qualification and elimination. ID=1
