@@ -407,6 +407,20 @@ void DriveBase::driveToXY(float destX, float destY, float maxOut, bool wait)
     currX = this->getX();
     currY = this->getY();
     hypotToAxisAngle = atan2(destX - currX, destY - currY);
+
+    // add virtual point on the line between source and dest point to head the robot towards it. Thanks EZ template guide for nice solution :)
+    // (avoid wiggly behavior by the end of the drive)
+    if(destX > currX)
+    {
+      virtX = destX + 8;
+    }
+    else if(destX < currX)
+    {
+     virtX = destX - 8;
+    }
+    // find new Y for virtual point using line equation
+    virtY = ((destY - currY) / (destX - currX)) * (virtX - currX) + currY;
+    
     /* std::cout << "srcX:" << currX << std::endl;
     std::cout << "srcY:" << currY << std::endl;
     std::cout << "dstX:" << destX << std::endl;
@@ -426,12 +440,8 @@ void DriveBase::driveToXY(float destX, float destY, float maxOut, bool wait)
     {   // get current X, Y postion
         currX = this->getX();
         currY = this->getY();
-        //std::cout << "L1: " << (destY - currY) * cos(hypotToAxisAngle) <<  std::endl;
-        //std::cout << "L2: " << -1 * (destX - currX) * sin(hypotToAxisAngle) <<  std::endl;
 
         // check if robot crossed imaginary line  perpendicular to staring angle via destination point X,Y
-
-
         if ((destY-currY) * cos(hypotToAxisAngle) <= (destX - currX) * -sin(hypotToAxisAngle) + this->default_drive_exit_error+0.3) 
         {
 
@@ -443,18 +453,6 @@ void DriveBase::driveToXY(float destX, float destY, float maxOut, bool wait)
             break;
         }
 
-        // add virtual point on the line between source and dest point to head the robot towards it
-        // (avoid wiggly behavior by the end of the drive)
-        if(destX > currX)
-        {
-            virtX = destX + 14;
-        }
-        else if(destX < currX)
-        {
-            virtX = destX - 14;
-        }
-        // find new Y for virtual point
-        virtY = ((destY - currY) / (destX - currX)) * (virtX - currX) +currY;
 
         // Calculate distance to the point using pythagorean theorem.
         error = sqrt(pow(destX-currX,2) + pow(destY-currY,2));
