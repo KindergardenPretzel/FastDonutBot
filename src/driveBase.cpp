@@ -401,8 +401,8 @@ void DriveBase::driveToXY(float destX, float destY, float maxOut, bool wait)
     float headingError, hypotToAxisAngle;
     float headingCorrectionSpeed;
     float destHeading;
-    float currX, virtX;
-    float currY, virtY;
+    float currX, virtX{0};
+    float currY, virtY{0};
 
     currX = this->getX();
     currY = this->getY();

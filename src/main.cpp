@@ -46,7 +46,7 @@ std::shared_ptr<DriveBase> robot(new DriveBase(PORT13, -PORT11, -PORT12, -PORT1,
 
 bool isBeltSpinning = false;
 bool isStopperEnabled = false;
-bool autonEnabled = true;
+bool autonEnabled = false;
 int autonId = 4;
 bool isBypassEnabled = false;
 
@@ -554,7 +554,43 @@ void auton_red_right_elimination(){
 // red right side for qualification. ID=2
 void auton_red_right() {
 
-
+  
+  float max_speed = 9;
+  robot->default_drive_exit_error = 2;
+  robot->default_drive_max = max_speed;
+  robot->default_heading_max = 10;
+  
+  // do not score blue rings
+  enableBypass();
+  robot->turnToXY(70,2);
+  wait(20, msec);
+  hiStakeMechGoToPos(170, coast);
+  wait(100, msec);
+  hiStakeMechGoToPos(0, coast);
+  wait(20, msec);
+  robot->turnToXY(70,24);
+  wait(20, msec);
+  lift_intake();
+  robot->driveToXY(74,20);
+  wait(20, msec);
+  lift_intake();
+  wait(10, msec);
+  intake_spin_fwd();
+  wait(200, msec);
+  robot->TurnAngle(218);
+  wait(20, msec);
+  robot->default_drive_max = 6;
+  robot->driveToXY(91.2,43.4);
+  wait(20, msec);
+  intake_stop();
+  clampFunc();
+  wait(200, msec);
+  robot->default_drive_max = max_speed;
+  robot->TurnAngle(10);
+  wait(20, msec);
+  score();
+  robot->driveToXY(120,50);
+  wait(20, msec);
 
 
 }
@@ -893,7 +929,7 @@ switch(autonId)
   case 2: {
     // red right qual
     setAlliance(RED);
-    robot->setStartingPoint(83, 12, 180);
+    robot->setStartingPoint(84, 12, 180);
     vex::task Position(updatePos);
     auton_red_right();
   break;
