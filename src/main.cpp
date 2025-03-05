@@ -8,8 +8,8 @@
 /*----------------------------------------------------------------------------*/
 
 #include "vex.h"
-#include "drivebase.h"
-#include "comp_debug.h"
+#include "driveBase.h"
+//#include "comp_debug.h"
 #include "PID.h"
 #include <memory>
 #include <iostream>
@@ -25,8 +25,8 @@ brain Brain;
 controller Controller1 = controller(primary);
 digital_out clamp = digital_out(Brain.ThreeWirePort.A);
 digital_out intake_lift = digital_out(Brain.ThreeWirePort.B);
-digital_out Hang = digital_out(Brain.ThreeWirePort.C);
-digital_out bypass = digital_out(Brain.ThreeWirePort.H);
+digital_out Hang = digital_out(Brain.ThreeWirePort.H);
+digital_out bypass = digital_out(Brain.ThreeWirePort.C);
 digital_out arm = digital_out(Brain.ThreeWirePort.G);
 limit auton_switch = limit(Brain.ThreeWirePort.E);
 
@@ -42,12 +42,12 @@ float power_pct = 0.8;
 // define your global instances of motors and other devices here
 
 // Inertial, ForwardTrackingWheel, SideTrackingWheel, LeftFrontMotor, LeftBackMotor, RightFrontMotor, RightBackMotor, trackingIntchesPerRevolution
-std::shared_ptr<DriveBase> robot(new DriveBase(PORT13, -PORT11, PORT12, -PORT1, -PORT2, PORT3, PORT4, 6.28));
+std::shared_ptr<DriveBase> robot(new DriveBase(PORT13, -PORT11, -PORT12, -PORT1, -PORT2, PORT3, PORT4, 6.28));
 
 bool isBeltSpinning = false;
 bool isStopperEnabled = false;
 bool autonEnabled = false;
-int autonId = 5;
+int autonId = 4;
 bool isBypassEnabled = false;
 
 float redStakeApproachDist = 5;
@@ -188,7 +188,7 @@ int ColorSensing()
     {
       prevVelocity = scoring.velocity(pct);
       //scoring.setVelocity(60, pct);
-      wait(1000, msec);
+      wait(800, msec);
       score();
     }
     if (eyeball.color() == OWN && isStopperEnabled && isBeltSpinning){
@@ -204,7 +204,7 @@ int ColorSensing()
     {
       bypass.set(false);
     }
-   vex::wait(10, msec);
+   vex::wait(5, msec);
   }
   return 0;
 }
@@ -268,7 +268,7 @@ void score(){
 
 void hiStakeMechGoToPos(float position, vex::brakeType braking_mode)
 {
-      PID arm_pid = PID(0.5, 0.00002, 0, 5, 1, 7000);
+      PID arm_pid = PID(0.5, 0.00002, 0, 5, 1, 2, 8, 1000);
       do {
         float arm_error = position - StakeElevation.position(vex::deg);
         float volt_arm = arm_pid.calculate(arm_error);
@@ -483,416 +483,281 @@ void pre_auton(void) {
 /*  You must modify the code to add your own robot specific commands here.   */
 /*---------------------------------------------------------------------------*/
 
-
+ // blue left side for elimination. ID=7
 void auton_blue_left_elimination() {
    enableBypass();
-  // take middle ring
-float max_speed = 8;
-robot->default_drive_exit_error = 1;
-robot->default_drive_max = max_speed;
-robot->default_heading_max = 10; 
-intake_spin_back(100);
-robot->DriveDistance(6, 1.5, 0, 8, 1, 2, 0, 5, 500);
-intake_stop();
-lift_intake();
-wait(20, msec);
-robot->TurnAngle(59);
 
-wait(20, msec);
-robot->DriveDistance(3, 1.5, 0, 8, 1, 2, 0, 5, 500);
-wait(20, msec);
-lift_intake();
-
-robot->DriveDistance(11.5, 1.5, 0, 8, 1, 2, 0, 5, 800);
-intake_spin_fwd();
-wait(300, msec);
-intake_stop();
-wait(20, msec);
-robot->TurnAngle(90);
-waitUntil(!robot->isMoving());
-//wait(60, msec);
-float distToField = DistanceSensor.objectDistance(inches);
-wait(20,msec);
-robot->DriveDistance(-(distToField - blueStakeApproachDist), 1.5, 0, 8, 1, 2, 0, 5, 700);
-waitUntil(!robot->isMoving());
-//wait(20,msec);
-score();
-wait(500,msec);
-score();
-wait(20, msec);
- robot->default_drive_exit_error = 2;
-  // drive to the MOGO
-  robot->driveToXY(38, 30);
-  robot->TurnAngle(244);
-  robot->default_drive_max = 5;
-  robot->driveToXY(46, 45);
-  wait(20, msec);
-  clampFunc();
-  wait(300, msec);
-  robot->turnToXY(24, 45);
-wait(20, msec);
-score();
-wait(20, msec);
-  robot->default_drive_max = max_speed;
-  robot->driveToXY(22, 46);  
-  wait(1000, msec);
-  robot->driveToXY(12, 15);  
-  score();
 }
 
 
-void auton_blue_left() {
- enableBypass();
-  // take middle ring
-float max_speed = 8;
-robot->default_drive_exit_error = 1;
-robot->default_drive_max = max_speed;
-robot->default_heading_max = 10; 
-intake_spin_back(100);
-robot->DriveDistance(6, 1.5, 0, 8, 1, 2, 0, 5, 500);
-intake_stop();
-lift_intake();
-wait(20, msec);
-robot->TurnAngle(59);
-
-wait(20, msec);
-robot->DriveDistance(3, 1.5, 0, 8, 1, 2, 0, 5, 500);
-wait(20, msec);
-lift_intake();
-
-robot->DriveDistance(11.5, 1.5, 0, 8, 1, 2, 0, 5, 800);
-intake_spin_fwd();
-wait(300, msec);
-intake_stop();
-wait(20, msec);
-robot->TurnAngle(90);
-waitUntil(!robot->isMoving());
-//wait(60, msec);
-float distToField = DistanceSensor.objectDistance(inches);
-wait(20,msec);
-robot->DriveDistance(-(distToField - blueStakeApproachDist), 1.5, 0, 8, 1, 2, 0, 5, 700);
-waitUntil(!robot->isMoving());
-//wait(20,msec);
-score();
-wait(500,msec);
-score();
-wait(20, msec);
- robot->default_drive_exit_error = 2;
-  // drive to the MOGO
-  robot->driveToXY(38, 30);
-  robot->TurnAngle(244);
-  robot->default_drive_max = 5;
-  robot->driveToXY(46, 45);
-  wait(20, msec);
-  clampFunc();
-  wait(300, msec);
-  robot->turnToXY(24, 45);
-wait(20, msec);
-score();
-wait(20, msec);
+void test_auton() {
+  float max_speed = 9;
+  robot->default_drive_exit_error = 2;
   robot->default_drive_max = max_speed;
-  robot->driveToXY(22, 46);  
-  wait(1000, msec);
-  robot->TurnAngle(193);
-wait(20, msec);
-robot->driveToXY(58, 55);  
+  robot->default_heading_max = 10;
+  
+  // do not score blue rings
+  enableBypass();
+  robot->turnToXY(70,2);
+  wait(20, msec);
+  hiStakeMechGoToPos(170, coast);
+  wait(100, msec);
+  hiStakeMechGoToPos(0, coast);
+  wait(20, msec);
+  robot->turnToXY(70,24);
+  //exit(0);
+  wait(20, msec);
+  lift_intake();
+  robot->driveToXY(66,20);
+  wait(20, msec);
+  lift_intake();
+  wait(10, msec);
+  intake_spin_fwd();
+  wait(200, msec);
+  robot->TurnAngle(308);
+  wait(20, msec);
+  robot->default_drive_max = 6;
+  robot->driveToXY(48.8,43.4);
+  wait(20, msec);
+  intake_stop();
+  clampFunc();
+  wait(200, msec);
+  robot->default_drive_max = max_speed;
+  robot->TurnAngle(160);
+  wait(20, msec);
+  score();
+  robot->driveToXY(23, 50);
+  wait(20, msec);
+  robot->driveToXY(17, 15);
+  wait(20, msec);
+  robot->TurnAngle(230);
+  wait(150, msec);
+  armMove();
+  wait(20, msec);
+  robot->driveToXY(25, 21);
+  wait(150, msec);
+  armMove();
+  wait(20, msec);
+  float curr_head = robot->getHeading();
+  robot->TurnAngle(curr_head - 20);
+  robot->DriveDistance(10);
+  wait(20, msec);
 
  }
 
+ // red right side for elimination. ID=8
 void auton_red_right_elimination(){
-    enableBypass();
-  // take middle ring
-float max_speed = 8;
-robot->default_drive_exit_error = 1;
-robot->default_drive_max = max_speed;
-robot->default_heading_max = 10; 
-intake_spin_back(100);
-robot->DriveDistance(6, 1.5, 0, 8, 1, 2, 0, 5, 500);
-intake_stop();
-lift_intake();
-wait(20, msec);
-robot->TurnAngle(123);
-wait(20, msec);
-robot->DriveDistance(3, 1.5, 0, 8, 1, 2, 0, 5, 500);
-wait(20, msec);
-robot->DriveDistance(8.5, 1.5, 0, 8, 1, 2, 0, 5, 800);
-intake_spin_fwd();
-lift_intake();
-wait(300, msec);
-intake_stop();
-wait(20, msec);
-robot->TurnAngle(90);
-waitUntil(!robot->isMoving());
-float distToField = DistanceSensor.objectDistance(inches);
-robot->DriveDistance(-(distToField - redStakeApproachDist), 1.5, 0, 8, 1, 2, 0, 5, 700);
-waitUntil(!robot->isMoving());
-score();
-wait(500,msec);
-score();
-wait(20, msec);
- robot->default_drive_exit_error = 2;
-  // drive to the MOGO
-  robot->driveToXY(104, 29);
-  robot->TurnAngle(305);
-  robot->default_drive_max = 5;
-  robot->driveToXY(94, 46);
-  wait(20, msec);
-  clampFunc();
-  wait(300, msec);
-    robot->turnToXY(116, 47);
-wait(20, msec);
-score();
-wait(20, msec);
-  robot->default_drive_max = max_speed;
-  robot->driveToXY(116, 47);  
-  wait(1000, msec);
-  robot->driveToXY(129, 17);  
-  score();
+
 
 }
 
+// red right side for qualification. ID=2
 void auton_red_right() {
-  enableBypass();
-  // take middle ring
-float max_speed = 8;
-robot->default_drive_exit_error = 1;
-robot->default_drive_max = max_speed;
-robot->default_heading_max = 10; 
-intake_spin_back(100);
-robot->DriveDistance(6, 1.5, 0, 8, 1, 2, 0, 5, 500);
-intake_stop();
-lift_intake();
-wait(20, msec);
-robot->TurnAngle(123);
-wait(20, msec);
-robot->DriveDistance(3, 1.5, 0, 8, 1, 2, 0, 5, 500);
-wait(20, msec);
-robot->DriveDistance(8.5, 1.5, 0, 8, 1, 2, 0, 5, 800);
-intake_spin_fwd();
-lift_intake();
-wait(300, msec);
-intake_stop();
-wait(20, msec);
-robot->TurnAngle(90);
-waitUntil(!robot->isMoving());
-float distToField = DistanceSensor.objectDistance(inches);
-robot->DriveDistance(-(distToField - redStakeApproachDist), 1.5, 0, 8, 1, 2, 0, 5, 700);
-waitUntil(!robot->isMoving());
-score();
-wait(500,msec);
-score();
-wait(20, msec);
- robot->default_drive_exit_error = 2;
-  // drive to the MOGO
-  robot->driveToXY(104, 29);
-  robot->TurnAngle(305);
-  robot->default_drive_max = 5;
-  robot->driveToXY(94, 46);
-  wait(20, msec);
-  clampFunc();
-  wait(300, msec);
-    robot->turnToXY(116, 47);
-wait(20, msec);
-score();
-wait(20, msec);
+
+  
+  float max_speed = 9;
+  robot->default_drive_exit_error = 2;
   robot->default_drive_max = max_speed;
-  robot->driveToXY(116, 47);  
-  wait(1000, msec);
-  robot->TurnAngle(348);
-wait(20, msec);
-robot->DriveDistance(-35, 1.5, 0, 8, 1, 2, 0, 5, 1500);
+  robot->default_heading_max = 10;
+  
+  // do not score blue rings
+  enableBypass();
+  robot->turnToXY(70,2);
+  wait(20, msec);
+  hiStakeMechGoToPos(170, coast);
+  wait(100, msec);
+  hiStakeMechGoToPos(0, coast);
+  wait(20, msec);
+  robot->turnToXY(70,24);
+  wait(20, msec);
+  lift_intake();
+  robot->driveToXY(74,20);
+  wait(20, msec);
+  lift_intake();
+  wait(10, msec);
+  intake_spin_fwd();
+  wait(200, msec);
+  robot->TurnAngle(218);
+  wait(20, msec);
+  robot->default_drive_max = 6;
+  robot->driveToXY(91.2,43.4);
+  wait(20, msec);
+  intake_stop();
+  clampFunc();
+  wait(200, msec);
+  robot->default_drive_max = max_speed;
+  robot->TurnAngle(10);
+  wait(20, msec);
+  score();
+  robot->driveToXY(120,50);
+  wait(20, msec);
+
 
 }
 
 
-
+// blue right side for qualification. ID=4
 void auton_blue_right()
 {
  
-    enableBypass();
-  // take middle ring
-float max_speed = 8;
-robot->default_drive_exit_error = 1;
-robot->default_drive_max = max_speed;
-robot->default_heading_max = 10; 
-intake_spin_back(100);
-robot->DriveDistance(6, 1.5, 0, 8, 1, 2, 0, 5, 500);
-intake_stop();
-lift_intake();
-wait(20, msec);
-robot->TurnAngle(123);
-wait(20, msec);
-robot->DriveDistance(3, 1.5, 0, 8, 1, 2, 0, 5, 500);
-wait(20, msec);
-robot->DriveDistance(8.5, 1.5, 0, 8, 1, 2, 0, 5, 800);
-intake_spin_fwd();
-lift_intake();
-wait(300, msec);
-intake_stop();
-wait(20, msec);
-robot->TurnAngle(90);
-waitUntil(!robot->isMoving());
-float distToField = DistanceSensor.objectDistance(inches);
-robot->DriveDistance(-(distToField - blueStakeApproachDist), 1.5, 0, 8, 1, 2, 0, 5, 700);
-waitUntil(!robot->isMoving());
-score();
-wait(500,msec);
-score();
-wait(20, msec);
- robot->default_drive_exit_error = 2;
-  // drive to the MOGO
-  robot->driveToXY(104, 29);
-  robot->TurnAngle(305);
-  robot->default_drive_max = 5;
-  robot->driveToXY(94, 46);
-  wait(20, msec);
-  clampFunc();
-  wait(300, msec);
-    robot->turnToXY(116, 47);
-wait(20, msec);
-score();
-wait(20, msec);
+  float max_speed = 9;
+  robot->default_drive_exit_error = 2;
   robot->default_drive_max = max_speed;
-  robot->driveToXY(116, 47);  
- 
- wait(20, msec);
-  robot->TurnAngle(77); 
+  robot->default_heading_max = 10;
+  
+  // do not score blue rings
+  enableBypass();
+  robot->turnToXY(70,2);
   wait(20, msec);
-
-robot->DriveDistance(12.5, 1.5, 0, 8, 1, 2, 0, 5, 800);
-wait(200, msec);
-robot->DriveDistance(-5, 1.6, 0, 8, 1, 2, 0, 5, 800);
+  hiStakeMechGoToPos(170, coast);
+  wait(100, msec);
+  hiStakeMechGoToPos(0, coast);
   wait(20, msec);
-  robot->TurnAngle(92); 
+  robot->turnToXY(70,24);
   wait(20, msec);
-robot->DriveDistance(7, 1.5, 0, 8, 1, 2, 0, 5, 800);
+  lift_intake();
+  robot->driveToXY(74,20);
+  wait(20, msec);
+  lift_intake();
+  wait(10, msec);
+  intake_spin_fwd();
   wait(200, msec);
+  robot->TurnAngle(218);
+  wait(20, msec);
+  robot->default_drive_max = 6;
+  robot->driveToXY(91.2,43.4);
+  wait(20, msec);
+  intake_stop();
+  clampFunc();
+  wait(200, msec);
+  robot->default_drive_max = max_speed;
+  robot->TurnAngle(10);
+  wait(20, msec);
+  score();
+  robot->driveToXY(120,50);
+  wait(20, msec);
+  robot->turnToXY(119.5,68.3);
+  wait(20, msec);
+  robot->default_drive_max = 6;
 
-  robot->TurnAngle(175); 
-    wait(20, msec);
-robot->DriveDistance(20, 1.5, 0, 8, 1, 2, 0, 5, 1000);
-score();
+  robot->driveToXY(123,60);
+  wait(20, msec);
+  robot->driveToXY(119.5,56);
+  wait(20, msec);
+
+  robot->TurnAngle(109);
+  wait(20, msec);
+  robot->driveToXY(116.4,63);
+  wait(20, msec);
+  robot->default_drive_max = max_speed;
+
+  robot->TurnAngle(180);
+  wait(20, msec);
+  robot->driveToXY(86,61);
+  hangRobot();
 }
 
-void test_auton() {
+// red left side for qualification and elimination. ID=1
+void auton_red_left() {
   
-float max_speed = 8;
+float max_speed = 9;
 robot->default_drive_exit_error = 2;
 robot->default_drive_max = max_speed;
 robot->default_heading_max = 10;
 
 // do not score blue rings
 enableBypass();
-
-
-// score alliance stake
-score();
-wait(600, msec);
-score();
-robot->default_drive_max = 6;
-//drive to take first MoGo
-
-robot->driveToXY(75,25);
-wait(30, msec);
-//robot->turnToXY(94, 24);
-
-exit(0);
-robot->driveToXY(83,39);
-wait(30, msec);
-//exit(0);
-robot->TurnAngle(120);
-//robot->turnToXY(60, 25); // +1 inch for controller exit error correction
-wait(30, msec);
-robot->driveToXY(98,28);
-wait(40, msec);
-clampFunc();
+robot->turnToXY(70,2);
 wait(20, msec);
-
-robot->default_drive_max = 8;
-score();
-robot->driveToXY(92,51);
-wait(20, msec);
-robot->TurnAngle(28);
-wait(20, msec);
-hiStakeScore();
-wait(20, msec);
-robot->driveToXY(121,76);
-wait(20, msec);
-robot->turnToXY(142,81);
-wait(20, msec);
-robot->DriveDistance(3, 1.5, 0, 8, 1, 2, 0, 5, 500);
-hiStakeScore();
-}
-
-void auton_red_left() {
-// new
-enableBypass();
-  // take middle ring
-float max_speed = 8;
-robot->default_drive_exit_error = 1;
-robot->default_drive_max = max_speed;
-robot->default_heading_max = 10; 
-intake_spin_back(100);
-robot->DriveDistance(6, 1.5, 0, 8, 1, 2, 0, 5, 500);
-intake_stop();
-lift_intake();
-wait(20, msec);
-robot->TurnAngle(59);
-
-wait(20, msec);
-robot->DriveDistance(3, 1.5, 0, 8, 1, 2, 0, 5, 500);
-wait(20, msec);
-lift_intake();
-
-robot->DriveDistance(11.5, 1.5, 0, 8, 1, 2, 0, 5, 800);
-intake_spin_fwd();
-wait(300, msec);
-intake_stop();
-wait(20, msec);
-robot->TurnAngle(90);
-waitUntil(!robot->isMoving());
-//wait(60, msec);
-float distToField = DistanceSensor.objectDistance(inches);
-wait(20,msec);
-robot->DriveDistance(-(distToField - redStakeApproachDist), 1.5, 0, 8, 1, 2, 0, 5, 700);
-waitUntil(!robot->isMoving());
-//wait(20,msec);
-score();
-wait(500,msec);
-score();
-wait(20, msec);
- robot->default_drive_exit_error = 2;
-  // drive to the MOGO
-  robot->driveToXY(38, 30);
-  robot->TurnAngle(244);
-  robot->default_drive_max = 5;
-  robot->driveToXY(46, 45);
-  wait(20, msec);
-  clampFunc();
-  wait(300, msec);
-  robot->turnToXY(24, 45);
-wait(20, msec);
-score();
-wait(20, msec);
-  robot->default_drive_max = max_speed;
-  robot->driveToXY(25, 46);  
-wait(200, msec);
-  robot->TurnAngle(99);
-wait(20, msec);
-robot->DriveDistance(12, 1.5, 0, 8, 1, 2, 0, 5, 800);
-wait(200, msec);
-robot->DriveDistance(-5, 1.6, 0, 8, 1, 2, 0, 5, 800);
-wait(20, msec);
-robot->TurnAngle(80);
-wait(20, msec);
-robot->DriveDistance(8, 1.5, 0, 8, 1, 2, 0, 5, 800);
-wait(200, msec);
-robot->TurnAngle(10);
+hiStakeMechGoToPos(170, coast);
 wait(100, msec);
-robot->DriveDistance(20, 1.5, 0, 8, 1, 2, 0, 5, 800);
+hiStakeMechGoToPos(0, coast);
+wait(20, msec);
+robot->turnToXY(70,24);
+wait(20, msec);
+lift_intake();
+robot->driveToXY(66,20);
+wait(20, msec);
+lift_intake();
+wait(10, msec);
+intake_spin_fwd();
+wait(200, msec);
+robot->TurnAngle(308);
+wait(20, msec);
+robot->default_drive_max = 6;
+robot->driveToXY(48.8,43.4);
+wait(20, msec);
+intake_stop();
+clampFunc();
+wait(200, msec);
+robot->default_drive_max = max_speed;
+robot->TurnAngle(160);
+wait(20, msec);
 score();
+robot->driveToXY(23,50);
+wait(20, msec);
+robot->turnToXY(20.6,68.3);
+wait(20, msec);
+robot->driveToXY(21.2,60);
+wait(20, msec);
+robot->driveToXY(21,57);
+wait(20, msec);
+robot->TurnAngle(64);
+wait(20, msec);
+robot->driveToXY(23.6,63);
+wait(20, msec);
+robot->TurnAngle(0);
+wait(20, msec);
+robot->driveToXY(42,62.5);
 }
 
+// blue left side qualification. ID=3
+void auton_blue_left() {
+  float max_speed = 9;
+  robot->default_drive_exit_error = 2;
+  robot->default_drive_max = max_speed;
+  robot->default_heading_max = 10;
+  
+  // do not score red rings
+  enableBypass();
+  robot->turnToXY(70,2);
+  wait(20, msec);
+  hiStakeMechGoToPos(170, coast);
+  wait(100, msec);
+  hiStakeMechGoToPos(0, coast);
+  wait(20, msec);
+  robot->turnToXY(70,24);
+  //exit(0);
+  wait(20, msec);
+  lift_intake();
+  robot->driveToXY(66,20);
+  wait(20, msec);
+  lift_intake();
+  wait(10, msec);
+  intake_spin_fwd();
+  wait(200, msec);
+  robot->TurnAngle(308);
+  wait(20, msec);
+  robot->default_drive_max = 6;
+  robot->driveToXY(48.8,43.4);
+  wait(20, msec);
+  intake_stop();
+  clampFunc();
+  wait(200, msec);
+  robot->default_drive_max = max_speed;
+  robot->TurnAngle(160);
+  wait(20, msec);
+  score();
+  robot->driveToXY(23,50);
+  wait(20, msec);
+  robot->driveToXY(51.5,62.4);
+  hangRobot();
+  wait(300, msec);
+  score();
+
+}
+
+// Skills. ID=6
 void skills() {
 float max_speed = 6;
 robot->default_drive_exit_error = 2;
@@ -1043,39 +908,7 @@ robot->driveToXY(5, 135);
 clampFunc();
 robot->DriveDistance(15, 1.5, 0, 8, 1, 2, 0, 5, 1000);
 
-//
-/*
-robot->TurnAngle(315);
-//wait(20, msec);
-//robot->driveToXY(82, 106);
-wait(20, msec);
-robot->default_drive_max = 5;
-robot->driveToXY(70, 122);
-wait(20, msec);
-robot->default_drive_max = 6;
-clampFunc();
-wait(100, msec);
 
-robot->turnToXY(47, 96);
-wait(30, msec);
-score();
-wait(20, msec);
-robot->driveToXY(47, 96);
-wait(100, msec);
-robot->turnToXY(22,96);
-wait(20, msec);
-robot->driveToXY(22,96);
-wait(20, msec);
-robot->turnToXY(22,120);
-wait(20, msec);
-robot->driveToXY(22,115);
-wait(20, msec);
-robot->driveToXY(22,105);
-wait(20, msec);
-*/
-
-//266, 
-//Y=96, 127
 }
 
 
@@ -1086,41 +919,47 @@ Controller1.Screen.clearLine(3);
 switch(autonId)
 {
   case 1: {
+    // red left qual & elim
     setAlliance(RED);
-    robot->setStartingPoint(58, 12, 0);
+    robot->setStartingPoint(56, 12, 0);
     vex::task Position(updatePos);
     auton_red_left();
   break;
   }
   case 2: {
+    // red right qual
     setAlliance(RED);
-    robot->setStartingPoint(83, 12, 180);
+    robot->setStartingPoint(84, 12, 180);
     vex::task Position(updatePos);
     auton_red_right();
   break;
   }
   case 3: {
+    //blue left qual
     setAlliance(BLUE);
-    robot->setStartingPoint(58, 12, 0);
+    robot->setStartingPoint(56, 12, 0);
     vex::task Position(updatePos);
     auton_blue_left();
   break;
   }
   case 4: {
+    // blue right qual
     setAlliance(BLUE);
-    robot->setStartingPoint(83, 12, 180);
+    robot->setStartingPoint(84, 12, 180);
     vex::task Position(updatePos);
     auton_blue_right();
   break;
   }
   case 5: {
+    //test
     setAlliance(RED);
-    robot->setStartingPoint(70, 11, 90);
+    robot->setStartingPoint(56, 12, 0);
     vex::task Position(updatePos);
     test_auton(); 
   break;
   }
   case 6: {
+    // skills
     setAlliance(RED);
     robot->setStartingPoint(70, 11, 90);
     vex::task Position(updatePos);
@@ -1128,6 +967,7 @@ switch(autonId)
   break;
   }
   case 7: {
+    // blue left elim
     setAlliance(BLUE);
     robot->setStartingPoint(58, 12, 0);
     vex::task Position(updatePos);
@@ -1135,6 +975,7 @@ switch(autonId)
   break;
   }
   case 8: {
+    //red right elim
     setAlliance(RED);
     robot->setStartingPoint(83, 12, 180);
     vex::task Position(updatePos);
@@ -1157,7 +998,10 @@ switch(autonId)
 
 void usercontrol(void) {
   robot->SetBrake(coast);
-
+  if (Hang.value()) 
+  {
+    Hang.set(false);
+  }
 
   while (1) {
     float throttle = getExpoValue(Controller1.Axis3.value());

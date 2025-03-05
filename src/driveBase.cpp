@@ -1,5 +1,5 @@
 #include "vex.h"
-#include "drivebase.h"
+#include "driveBase.h"
 #include "PID.h"
 #include <iostream>
 #include <cmath>
@@ -128,12 +128,12 @@ void DriveBase::updatePosition() {
 
 // returns X coordinate
 float DriveBase::getX() {
-    return this->x;
+    return this->x1;
 }
 
 // returns Y coordinate
 float DriveBase::getY() {
-    return this->y;
+    return this->y1;
 }
 
 
@@ -398,11 +398,39 @@ void DriveBase::driveToXY(float destX, float destY, float maxOut, bool wait)
 {
     float error;
     float speed;
-    float headingError;
+    float headingError, hypotToAxisAngle;
     float headingCorrectionSpeed;
     float destHeading;
-    float currX, virtX;
-    float currY, virtY;
+    float currX, virtX{0};
+    float currY, virtY{0};
+
+    currX = this->getX();
+    currY = this->getY();
+    hypotToAxisAngle = atan2(destX - currX, destY - currY);
+
+    // add virtual point on the line between source and dest point to head the robot towards it. Thanks EZ template guide for nice solution :)
+    // (avoid wiggly behavior by the end of the drive)
+    if(destX > currX)
+    {
+      virtX = destX + 8;
+    }
+    else if(destX < currX)
+    {
+     virtX = destX - 8;
+    }
+    // find new Y for virtual point using line equation
+    virtY = ((destY - currY) / (destX - currX)) * (virtX - currX) + currY;
+    
+    /* std::cout << "srcX:" << currX << std::endl;
+    std::cout << "srcY:" << currY << std::endl;
+    std::cout << "dstX:" << destX << std::endl;
+    std::cout << "dstY:" << destY << std::endl;
+    std::cout << "hypotToAxisAngle RAD: " << hypotToAxisAngle << std::endl;
+    std::cout << "hypotToAxisAngle: " << (hypotToAxisAngle * 180)/M_PI << std::endl;
+    // 1rad × 180/π
+    std::cout << "####################" << std::endl;
+    */
+
 
     // define PID controllers for Drive and Heading correction
     PID drive_pid = PID(default_drive_Kp, default_drive_Ki, default_drive_Kd, default_drive_limit_integral, default_drive_exit_error, default_drive_min, maxOut, default_drive_timeout);
@@ -413,18 +441,18 @@ void DriveBase::driveToXY(float destX, float destY, float maxOut, bool wait)
         currX = this->getX();
         currY = this->getY();
 
-        // add virtual point on the line between source and dest point to head the robot towards it
-        // (avoid wiggly behavior by the end of the drive)
-        if(destX > currX)
+        // check if robot crossed imaginary line  perpendicular to staring angle via destination point X,Y
+        if ((destY-currY) * cos(hypotToAxisAngle) <= (destX - currX) * -sin(hypotToAxisAngle) + this->default_drive_exit_error+0.3) 
         {
-            virtX = destX + 5;
+
+            std::cout << "break !" << std::endl;
+            std::cout << "X:" << this->getX() << std::endl;
+            std::cout << "Y:" << this->getY() << std::endl;
+            std::cout << "####################" << std::endl;
+
+            break;
         }
-        else if(destX < currX)
-        {
-            virtX = destX - 5;
-        }
-        // find new Y for virtual point
-        virtY = ((destY - currY) / (destX - currX)) * (virtX - currX) +currY;
+
 
         // Calculate distance to the point using pythagorean theorem.
         error = sqrt(pow(destX-currX,2) + pow(destY-currY,2));
@@ -433,7 +461,9 @@ void DriveBase::driveToXY(float destX, float destY, float maxOut, bool wait)
         // calculate heading correction angle using atan2 function. X,Y flipped, so we calculating angle to Y axis
         //destHeading = toolbox::radiansToDegrees(atan2(destY - currY, destX - currX));
         destHeading = toolbox::radiansToDegrees(atan2(virtY - currY, virtX - currX));
+        //std::cout <<" destHeading: " << destHeading << std::endl; 
         headingError = destHeading - this->getHeading();
+        //std::cout <<" headingError: " << headingError << std::endl; 
 
         float optimizedAngle = turnAngleOptimization(headingError);
 
@@ -449,6 +479,7 @@ void DriveBase::driveToXY(float destX, float destY, float maxOut, bool wait)
         vex::wait(20, vex::msec);
 
     }while(!drive_pid.isFinished());
+
     this->RightMotors.spin(vex::fwd, 0, vex::volt);
     this->LeftMotors.spin(vex::fwd, 0, vex::volt);
     
