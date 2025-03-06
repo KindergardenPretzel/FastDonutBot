@@ -508,7 +508,7 @@ void test_auton() {
   //exit(0);
   wait(20, msec);
   lift_intake();
-  robot->driveToXY(66,20);
+  robot->driveToXY(66, 20, 700);
   wait(20, msec);
   lift_intake();
   wait(10, msec);
@@ -571,7 +571,7 @@ void auton_red_right() {
   robot->turnToXY(70,24);
   wait(20, msec);
   lift_intake();
-  robot->driveToXY(74,20);
+  robot->driveToXY(74,20, 700);
   wait(20, msec);
   lift_intake();
   wait(10, msec);
@@ -616,7 +616,7 @@ void auton_blue_right()
   robot->turnToXY(70,24);
   wait(20, msec);
   lift_intake();
-  robot->driveToXY(74,20);
+  robot->driveToXY(74,20, 700);
   wait(20, msec);
   lift_intake();
   wait(10, msec);
@@ -676,7 +676,7 @@ wait(20, msec);
 robot->turnToXY(70,24);
 wait(20, msec);
 lift_intake();
-robot->driveToXY(66,20);
+robot->driveToXY(66,20, 700);
 wait(20, msec);
 lift_intake();
 wait(10, msec);
@@ -727,10 +727,9 @@ void auton_blue_left() {
   hiStakeMechGoToPos(0, coast);
   wait(20, msec);
   robot->turnToXY(70,24);
-  //exit(0);
   wait(20, msec);
   lift_intake();
-  robot->driveToXY(66,20);
+  robot->driveToXY(66,20, 700);
   wait(20, msec);
   lift_intake();
   wait(10, msec);

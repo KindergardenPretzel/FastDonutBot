@@ -48,7 +48,7 @@ class DriveBase
         float default_turn_exit_error{1};
         float default_turn_min{0};
         float default_turn_max{12};
-        int default_turn_timeout{5000};
+        int default_turn_timeout{1500};
 
         float default_heading_Kp{0.4};
         float default_heading_Ki{0};
@@ -90,7 +90,8 @@ class DriveBase
         void driveStraightToXY(float destX, float destY); 
         //void driveToXY(float destX, float destY);
         void driveToXY(float destX, float destY, bool wait=true);
-        void driveToXY(float destX, float destY, float maxOut, bool wait=false);
+        void driveToXY(float destX, float destY, int timeout, bool wait=true);
+        void driveToXY(float destX, float destY, float maxOut, int timeout, bool wait=false);
         bool isMoving();
         
         

@@ -383,18 +383,18 @@ float distance_to_drive = sqrt(pow(destX-this->getX(),2) + pow(destY-this->getY(
 }
 
 
-// Odometry based drive to X, Y coordinate
-//void DriveBase::driveToXY(float destX, float destY) {
-//    this->driveToXY(destX, destY, default_drive_max, true);
-//}
+//Odometry based drive to X, Y coordinate
+void DriveBase::driveToXY(float destX, float destY, int timeout, bool wait) {
+    this->driveToXY(destX, destY, default_drive_max,  timeout, wait);
+}
 
 // Odometry based drive to X, Y coordinate
 void DriveBase::driveToXY(float destX, float destY , bool wait) {
-    this->driveToXY(destX, destY, default_drive_max, wait);
+    this->driveToXY(destX, destY, default_drive_max, default_drive_timeout, wait);
 }
 
 
-void DriveBase::driveToXY(float destX, float destY, float maxOut, bool wait)
+void DriveBase::driveToXY(float destX, float destY, float maxOut, int timeout, bool wait)
 {
     float error;
     float speed;
@@ -433,7 +433,7 @@ void DriveBase::driveToXY(float destX, float destY, float maxOut, bool wait)
 
 
     // define PID controllers for Drive and Heading correction
-    PID drive_pid = PID(default_drive_Kp, default_drive_Ki, default_drive_Kd, default_drive_limit_integral, default_drive_exit_error, default_drive_min, maxOut, default_drive_timeout);
+    PID drive_pid = PID(default_drive_Kp, default_drive_Ki, default_drive_Kd, default_drive_limit_integral, default_drive_exit_error, default_drive_min, maxOut, timeout);
     PID heading_pid = PID(default_heading_Kp, default_heading_Ki, default_heading_Kd, default_heading_limit_integral, default_heading_exit_error, default_heading_min, default_heading_max, default_heading_timeout);
 
     do
