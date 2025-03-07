@@ -46,9 +46,10 @@ std::shared_ptr<DriveBase> robot(new DriveBase(PORT13, -PORT11, -PORT12, -PORT1,
 
 bool isBeltSpinning = false;
 bool isStopperEnabled = false;
-bool autonEnabled = false;
-int autonId = 4;
+bool autonEnabled = true; // reversed. True - selector is disabled, false - enabled
+int autonId = 2;
 bool isBypassEnabled = false;
+bool stake_enable = true;
 
 float redStakeApproachDist = 5;
 float blueStakeApproachDist = 5.1;
@@ -384,10 +385,14 @@ void auton_select() {
   Controller1.Screen.clearLine(3);
 }
 
+void stake_select() {
+  stake_enable = !stake_enable;
+}
+
 void pre_auton(void) {
   // auton selector callbacks
   auton_switch.pressed(auton_select);
-  Brain.Screen.pressed(auton_select);
+  Brain.Screen.pressed(stake_select);
 
   bypass.set(false);
   setAlliance(RED);
@@ -399,74 +404,111 @@ void pre_auton(void) {
 
   while(!autonEnabled)
   {
+    wait(20, msec);
     switch(autonId)
     {
+
       case 1: 
         Brain.Screen.setCursor(8,2);
         Brain.Screen.print("Auton: Red Left Qual Id: %d", autonId);
-        Controller1.Screen.setCursor(3,10);
+        Controller1.Screen.setCursor(3,2);
         Controller1.Screen.print("A: RLQ");
+        Controller1.Screen.setCursor(3,13);
+        if (stake_enable) {
+          Controller1.Screen.print("STAKE");
+        }
+        else{
+          Controller1.Screen.print("NO STAKE");
+        }
       break;
       case 2: 
         Brain.Screen.setCursor(8,2);
         Brain.Screen.print("Auton: Red Right Qual Id: %d", autonId);
-        Controller1.Screen.setCursor(3,10);
+        Controller1.Screen.setCursor(3,2);
         Controller1.Screen.print("A: RRQ");
+        Controller1.Screen.setCursor(3,13);
+        if (stake_enable) {
+          Controller1.Screen.print("STAKE");
+        }
+        else{
+          Controller1.Screen.print("NO STAKE");
+        }
       break;
       case 3: 
         Brain.Screen.setCursor(8,2);
         Brain.Screen.print("Auton: Blue Left Qual Id: %d", autonId);
-        Controller1.Screen.setCursor(3,10);
+        Controller1.Screen.setCursor(3,2);
         Controller1.Screen.print("A: BLQ");
+        Controller1.Screen.setCursor(3,13);
+        if (stake_enable) {
+          Controller1.Screen.print("STAKE");
+        }
+        else{
+          Controller1.Screen.print("NO STAKE");
+        }
       break;
       case 4: 
         Brain.Screen.setCursor(8,2);
         Brain.Screen.print("Auton: Blue Right Qual Id: %d", autonId);
-        Controller1.Screen.setCursor(3,10);
+        Controller1.Screen.setCursor(3,2);
         Controller1.Screen.print("A: BRQ");
+        Controller1.Screen.setCursor(3,13);
+        if (stake_enable) {
+          Controller1.Screen.print("STAKE");
+        }
+        else{
+          Controller1.Screen.print("NO STAKE");
+        }
       break;
       case 5: 
         Brain.Screen.setCursor(8,2);
         Brain.Screen.print("Auton: Test Id: %d", autonId);
-        Controller1.Screen.setCursor(3,10);
+        Controller1.Screen.setCursor(3,2);
         Controller1.Screen.print("A: TST");
+        Controller1.Screen.setCursor(3,13);
+        if (stake_enable) {
+          Controller1.Screen.print("STAKE");
+        }
+        else{
+          Controller1.Screen.print("NO STAKE");
+        }
       break;   
       case 6: 
         Brain.Screen.setCursor(8,2);
         Brain.Screen.print("Auton: Skills Id: %d", autonId);
-        Controller1.Screen.setCursor(3,10);
+        Controller1.Screen.setCursor(3,2);
         Controller1.Screen.print("A: SKLS");
+        
       break;   
       case 7: 
         Brain.Screen.setCursor(8,2);
         Brain.Screen.print("Auton: Blue Left Elimination Id: %d", autonId);
-        Controller1.Screen.setCursor(3,10);
+        Controller1.Screen.setCursor(3,2);
         Controller1.Screen.print("A: BLE");
+        Controller1.Screen.setCursor(3,13);
+        if (stake_enable) {
+          Controller1.Screen.print("STAKE");
+        }
+        else{
+          Controller1.Screen.print("NO STAKE");
+        }
       break;   
       case 8: 
         Brain.Screen.setCursor(8,2);
         Brain.Screen.print("Auton: Red Right Elimination Id: %d", autonId);
-        Controller1.Screen.setCursor(3,10);
+        Controller1.Screen.setCursor(3,2);
         Controller1.Screen.print("A: RRE");
+        Controller1.Screen.setCursor(3,13);
+        if (stake_enable) {
+          Controller1.Screen.print("STAKE");
+        }
+        else{
+          Controller1.Screen.print("NO STAKE");
+        }
       break;   
       
     }
 
-    /*if(Brain.Screen.pressing() || auton_switch.pressing())
-    {
-      while(Brain.Screen.pressing() || auton_switch.pressing())
-      {}
-      autonId ++;
-      if(autonId > 6)
-      {
-        autonId = 1;
-      }
-      wait(10, msec);
-      Brain.Screen.clearLine(8);
-      Controller1.Screen.clearLine(3);
-    }*/
-
-      //wait(1000, msec);
 
   }
 
@@ -484,13 +526,13 @@ void pre_auton(void) {
 /*---------------------------------------------------------------------------*/
 
  // blue left side for elimination. ID=7
-void auton_blue_left_elimination() {
+void auton_blue_left_elimination(bool stake = true) {
    enableBypass();
 
 }
 
 
-void test_auton() {
+void test_auton(bool stake = true) {
   float max_speed = 9;
   robot->default_drive_exit_error = 2;
   robot->default_drive_max = max_speed;
@@ -498,6 +540,7 @@ void test_auton() {
   
   // do not score blue rings
   enableBypass();
+  if (stake) {
   robot->turnToXY(70,2);
   wait(20, msec);
   hiStakeMechGoToPos(170, coast);
@@ -516,6 +559,7 @@ void test_auton() {
   wait(200, msec);
   robot->TurnAngle(308);
   wait(20, msec);
+}
   robot->default_drive_max = 6;
   robot->driveToXY(48.8,43.4);
   wait(20, msec);
@@ -546,13 +590,13 @@ void test_auton() {
  }
 
  // red right side for elimination. ID=8
-void auton_red_right_elimination(){
+void auton_red_right_elimination(bool stake = true){
 
 
 }
 
 // red right side for qualification. ID=2
-void auton_red_right() {
+void auton_red_right(bool stake = true) {
 
   
   float max_speed = 9;
@@ -562,6 +606,7 @@ void auton_red_right() {
   
   // do not score blue rings
   enableBypass();
+  if (stake) {
   robot->turnToXY(70,2);
   wait(20, msec);
   hiStakeMechGoToPos(170, coast);
@@ -579,6 +624,7 @@ void auton_red_right() {
   wait(200, msec);
   robot->TurnAngle(218);
   wait(20, msec);
+  }
   robot->default_drive_max = 6;
   robot->driveToXY(91.2,43.4);
   wait(20, msec);
@@ -590,14 +636,16 @@ void auton_red_right() {
   wait(20, msec);
   score();
   robot->driveToXY(120,50);
-  wait(20, msec);
-
+  wait(200, msec);
+  robot->driveToXY(84,53);
+  score();
+  hangRobot();
 
 }
 
 
 // blue right side for qualification. ID=4
-void auton_blue_right()
+void auton_blue_right(bool stake = true)
 {
  
   float max_speed = 9;
@@ -607,23 +655,25 @@ void auton_blue_right()
   
   // do not score blue rings
   enableBypass();
-  robot->turnToXY(70,2);
-  wait(20, msec);
-  hiStakeMechGoToPos(170, coast);
-  wait(100, msec);
-  hiStakeMechGoToPos(0, coast);
-  wait(20, msec);
-  robot->turnToXY(70,24);
-  wait(20, msec);
-  lift_intake();
-  robot->driveToXY(74,20, 700);
-  wait(20, msec);
-  lift_intake();
-  wait(10, msec);
-  intake_spin_fwd();
-  wait(200, msec);
-  robot->TurnAngle(218);
-  wait(20, msec);
+  if (stake) {
+   robot->turnToXY(70,2);
+   wait(20, msec);
+   hiStakeMechGoToPos(170, coast);
+   wait(100, msec);
+   hiStakeMechGoToPos(0, coast);
+   wait(20, msec);
+   robot->turnToXY(70,24);
+   wait(20, msec);
+   lift_intake();
+   robot->driveToXY(74,20, 700);
+   wait(20, msec);
+   lift_intake();
+   wait(10, msec);
+   intake_spin_fwd();
+   wait(200, msec);
+   robot->TurnAngle(218);
+   wait(20, msec);
+  }
   robot->default_drive_max = 6;
   robot->driveToXY(91.2,43.4);
   wait(20, msec);
@@ -658,7 +708,7 @@ void auton_blue_right()
 }
 
 // red left side for qualification and elimination. ID=1
-void auton_red_left() {
+void auton_red_left(bool stake = true) {
   
 float max_speed = 9;
 robot->default_drive_exit_error = 2;
@@ -667,23 +717,25 @@ robot->default_heading_max = 10;
 
 // do not score blue rings
 enableBypass();
-robot->turnToXY(70,2);
-wait(20, msec);
-hiStakeMechGoToPos(170, coast);
-wait(100, msec);
-hiStakeMechGoToPos(0, coast);
-wait(20, msec);
-robot->turnToXY(70,24);
-wait(20, msec);
-lift_intake();
-robot->driveToXY(66,20, 700);
-wait(20, msec);
-lift_intake();
-wait(10, msec);
-intake_spin_fwd();
-wait(200, msec);
-robot->TurnAngle(308);
-wait(20, msec);
+if (stake) {
+ robot->turnToXY(70,2);
+ wait(20, msec);
+ hiStakeMechGoToPos(170, coast);
+ wait(100, msec);
+ hiStakeMechGoToPos(0, coast);
+ wait(20, msec);
+ robot->turnToXY(70,24);
+ wait(20, msec);
+ lift_intake();
+ robot->driveToXY(66,20, 700);
+ wait(20, msec);
+ lift_intake();
+ wait(10, msec);
+ intake_spin_fwd();
+ wait(200, msec);
+ robot->TurnAngle(308);
+ wait(20, msec);
+}
 robot->default_drive_max = 6;
 robot->driveToXY(48.8,43.4);
 wait(20, msec);
@@ -712,7 +764,7 @@ robot->driveToXY(42,62.5);
 }
 
 // blue left side qualification. ID=3
-void auton_blue_left() {
+void auton_blue_left(bool stake = false) {
   float max_speed = 9;
   robot->default_drive_exit_error = 2;
   robot->default_drive_max = max_speed;
@@ -720,23 +772,25 @@ void auton_blue_left() {
   
   // do not score red rings
   enableBypass();
-  robot->turnToXY(70,2);
-  wait(20, msec);
-  hiStakeMechGoToPos(170, coast);
-  wait(100, msec);
-  hiStakeMechGoToPos(0, coast);
-  wait(20, msec);
-  robot->turnToXY(70,24);
-  wait(20, msec);
-  lift_intake();
-  robot->driveToXY(66,20, 700);
-  wait(20, msec);
-  lift_intake();
-  wait(10, msec);
-  intake_spin_fwd();
-  wait(200, msec);
-  robot->TurnAngle(308);
-  wait(20, msec);
+  if (stake) {
+   robot->turnToXY(70,2);
+   wait(20, msec);
+   hiStakeMechGoToPos(170, coast);
+   wait(100, msec);
+   hiStakeMechGoToPos(0, coast);
+   wait(20, msec);
+   robot->turnToXY(70,24);
+   wait(20, msec);
+   lift_intake();
+   robot->driveToXY(66,20, 700);
+   wait(20, msec);
+   lift_intake();
+   wait(10, msec);
+   intake_spin_fwd();
+   wait(200, msec);
+   robot->TurnAngle(308);
+   wait(20, msec);
+  }
   robot->default_drive_max = 6;
   robot->driveToXY(48.8,43.4);
   wait(20, msec);
@@ -922,7 +976,7 @@ switch(autonId)
     setAlliance(RED);
     robot->setStartingPoint(56, 12, 0);
     vex::task Position(updatePos);
-    auton_red_left();
+    auton_red_left(stake_enable);
   break;
   }
   case 2: {
@@ -930,7 +984,7 @@ switch(autonId)
     setAlliance(RED);
     robot->setStartingPoint(84, 12, 180);
     vex::task Position(updatePos);
-    auton_red_right();
+    auton_red_right(stake_enable);
   break;
   }
   case 3: {
@@ -938,7 +992,7 @@ switch(autonId)
     setAlliance(BLUE);
     robot->setStartingPoint(56, 12, 0);
     vex::task Position(updatePos);
-    auton_blue_left();
+    auton_blue_left(stake_enable);
   break;
   }
   case 4: {
@@ -946,7 +1000,7 @@ switch(autonId)
     setAlliance(BLUE);
     robot->setStartingPoint(84, 12, 180);
     vex::task Position(updatePos);
-    auton_blue_right();
+    auton_blue_right(stake_enable);
   break;
   }
   case 5: {
@@ -954,7 +1008,7 @@ switch(autonId)
     setAlliance(RED);
     robot->setStartingPoint(56, 12, 0);
     vex::task Position(updatePos);
-    test_auton(); 
+    test_auton(stake_enable); 
   break;
   }
   case 6: {
@@ -970,7 +1024,7 @@ switch(autonId)
     setAlliance(BLUE);
     robot->setStartingPoint(58, 12, 0);
     vex::task Position(updatePos);
-    auton_blue_left_elimination();
+    auton_blue_left_elimination(stake_enable);
   break;
   }
   case 8: {
@@ -978,7 +1032,7 @@ switch(autonId)
     setAlliance(RED);
     robot->setStartingPoint(83, 12, 180);
     vex::task Position(updatePos);
-    auton_red_right_elimination();
+    auton_red_right_elimination(stake_enable);
   break;
   }  
 }
@@ -1041,34 +1095,39 @@ void usercontrol(void) {
 //
 int main() {
     
-    //starts all functions
-    Controller1.ButtonL1.pressed(clampFunc);
-    Controller1.ButtonL2.pressed(lift_intake);
-    Controller1.ButtonR2.pressed(reverseIntake);
-    Controller1.ButtonR1.pressed(score);
-    Controller1.ButtonY.pressed(stopWhenColorSeen);
-    Controller1.ButtonA.pressed(enableBypass);
-    Controller1.ButtonLeft.pressed(armMove);
-    Controller1.ButtonUp.pressed(hiStakeScore);
-    Controller1.ButtonDown.pressed(lowerMech);
-    Controller1.ButtonX.pressed(hangRobot);
+
     
     //hiStakes.resetPosition();
     StakeElevation.resetPosition();
     StakeScorePosition = Down;
     //hiStakes.setBrake(hold);
   
+     //starts all functions
+  Controller1.ButtonL1.pressed(clampFunc);
+  Controller1.ButtonL2.pressed(lift_intake);
+  Controller1.ButtonR2.pressed(reverseIntake);
+  Controller1.ButtonR1.pressed(score);
+  Controller1.ButtonY.pressed(stopWhenColorSeen);
+  Controller1.ButtonA.pressed(enableBypass);
+  Controller1.ButtonLeft.pressed(armMove);
+  Controller1.ButtonUp.pressed(hiStakeScore);
+  Controller1.ButtonDown.pressed(lowerMech);
+  Controller1.ButtonX.pressed(hangRobot); 
+
    // start debug output;
   vex::task Debug(ShowMeInfo);
   vex::task Stop(ColorSensing);
   
-  // Run the pre-autonomous function.
-  pre_auton();
-
-  
   // Set up callbacks for autonomous and driver control periods.
   Competition.autonomous(autonomous);
   Competition.drivercontrol(usercontrol);
+
+  // Run the pre-autonomous function.
+  pre_auton();
+
+
+  
+
 
 
   //autonomous();
