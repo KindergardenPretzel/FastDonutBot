@@ -13,7 +13,7 @@
 #include "PID.h"
 #include <memory>
 #include <iostream>
-
+#include <cmath>
 
 using namespace vex;
 
@@ -1014,8 +1014,8 @@ void usercontrol(void) {
     //float turn = getExpoValue(Controller1.Axis1.value()) * 0.4;
     
     // mnew pilons
-    double turn = curveJoystick(false, Controller1.Axis1.position(percent), 5.1); //Get curvature according to settings [-100,100]
-    double throttle = curveJoystick(false, Controller1.Axis3.position(percent), 5.1); //Get curvature according to settings [-100,100]
+    double turn = curveJoystick(Controller1.Axis1.position(percent), 5.1); //Get curvature according to settings [-100,100]
+    double throttle = curveJoystick(Controller1.Axis3.position(percent), 5.1); //Get curvature according to settings [-100,100]
 
     
     robot->SetBrake(coast);
