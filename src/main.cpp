@@ -985,6 +985,12 @@ switch(autonId)
 
 }
 
+// exponental drive. Pilons version
+// 
+int curveJoystick(int joystick_input, double t_curve){
+  return (std::exp(-t_curve/10)+std::exp((std::abs(joystick_input)-100)/10)*(1-std::exp(-t_curve/10))) * joystick_input;
+}
+
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
 /*                              User Control Task                            */
@@ -1003,8 +1009,15 @@ void usercontrol(void) {
   }
 
   while (1) {
-    float throttle = getExpoValue(Controller1.Axis3.value());
-    float turn = getExpoValue(Controller1.Axis1.value()) * 0.4;
+    // prev version. Mar 6
+    //float throttle = getExpoValue(Controller1.Axis3.value());
+    //float turn = getExpoValue(Controller1.Axis1.value()) * 0.4;
+    
+    // mnew pilons
+    double turn = curveJoystick(false, Controller1.Axis1.position(percent), 5.1); //Get curvature according to settings [-100,100]
+    double throttle = curveJoystick(false, Controller1.Axis3.position(percent), 5.1); //Get curvature according to settings [-100,100]
+
+    
     robot->SetBrake(coast);
     robot->LeftMotors.spin(fwd, throttle+turn, vex::pct);
     robot->RightMotors.spin(fwd, throttle-turn, vex::pct);
