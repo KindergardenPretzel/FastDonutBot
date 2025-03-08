@@ -47,7 +47,7 @@ std::shared_ptr<DriveBase> robot(new DriveBase(PORT13, -PORT11, -PORT12, -PORT1,
 bool isBeltSpinning = false;
 bool isStopperEnabled = false;
 bool autonEnabled = true; // reversed. True - selector is disabled, false - enabled
-int autonId = 2;
+int autonId = 6;
 bool isBypassEnabled = false;
 bool stake_enable = true;
 
@@ -189,7 +189,7 @@ int ColorSensing()
     {
       prevVelocity = scoring.velocity(pct);
       //scoring.setVelocity(60, pct);
-      wait(800, msec);
+      wait(600, msec);
       score();
     }
     if (eyeball.color() == OWN && isStopperEnabled && isBeltSpinning){
@@ -812,7 +812,7 @@ void auton_blue_left(bool stake = false) {
 
 // Skills. ID=6
 void skills() {
-float max_speed = 6;
+float max_speed = 9;
 robot->default_drive_exit_error = 2;
 robot->default_drive_max = max_speed;
 robot->default_heading_max = 10;
@@ -825,143 +825,45 @@ enableBypass();
 score();
 wait(600, msec);
 score();
-
-//drive to take first MoGo
-robot->driveToXY(75,25);
-wait(30, msec);
+robot->driveToXY(78,20);
+wait(20, msec);
 robot->TurnAngle(180);
-//robot->turnToXY(60, 25); // +1 inch for controller exit error correction
-wait(30, msec);
-robot->DriveDistance(-14, 1.5, 0, 8, 1, 2, 0, 5, 750);
-wait(40, msec);
-clampFunc();
+robot->default_drive_max = 6;
 wait(20, msec);
-robot->turnToXY(88,47);
-wait(20, msec);
-score();
-wait(20, msec);
-robot->driveToXY(93,52); // was 98
-wait(20, msec);
-robot->driveToXY(127,70);
-wait(20, msec);
-robot->driveToXY(118,69); // was 63
-wait(300, msec); // wait before turning
-robot->turnToXY(118,12);
-wait(20, msec);
-//robot->default_drive_max = 6;
-robot->driveToXY(118,16);//was 118, 38
-
-wait(200, msec);
-robot->driveToXY(115,35);
-robot->turnToXY(129,24);
-robot->driveToXY(129,24);
-wait(200, msec);
-
-robot->DriveDistance(-8, 1.5, 0, 8, 1, 2, 0, 5, 750);
-wait(20, msec);
-robot->TurnAngle(233);
-wait(20, msec);
-robot->TurnAngle(117);
-
-robot->DriveDistance(-22, 1.5, 0, 8, 1, 2, 0, 5, 1000);
+robot->driveToXY(94,25);
 wait(20, msec);
 clampFunc();
-score();
-robot->default_drive_max = 7;
 wait(20, msec);
-robot->driveToXY(65,26);
-wait(100, msec);
-robot->turnToXY(140, 26);
-wait(20, msec);
-robot->default_drive_max = 5;
-robot->driveToXY(46,26);
-
-wait(200, msec);
-clampFunc();
-wait(200, msec);
 robot->default_drive_max = max_speed;
-robot->turnToXY(51,46);
+robot->turnToXY(93.4,46.3);
+wait(20, msec);
+hiStakeScore();
 score();
 wait(20, msec);
-robot->driveToXY(46 , 48);
+robot->turnToXY(93.4,46.3);
+robot->driveToXY(93.4,46.3);
 wait(20, msec);
-robot->driveToXY(14,75); // was 10 dec 2nd
+robot->driveToXY(115,71);
 wait(20, msec);
-robot->driveToXY(22,73);
-wait(20, msec);
-robot->turnToXY(22,43);
-wait(20, msec);
-robot->driveToXY(22,16);
-wait(200, msec);
-robot->driveToXY(25,35); 
-wait(20, msec);
-
-robot->turnToXY(10,24);
-wait(20, msec);
-robot->driveToXY(10,24);
-wait(20, msec);
-robot->DriveDistance(-8, 1.5, 0, 8, 1, 2, 0, 5, 750);
-wait(20, msec);
-robot->TurnAngle(120);
-wait(20, msec);
-robot->TurnAngle(57);
-robot->DriveDistance(-19, 1.5, 0, 8, 1, 2, 0, 5, 1000);
-wait(20, msec);
-clampFunc();
-wait(20, msec);
-score();
-stopWhenColorSeen();
-robot->driveToXY(66,66);
-wait(20, msec);
-score();
-robot->driveToXY(82,82);
+robot->turnToXY(129.5,72);
 wait(20, msec);
 intake_spin_fwd();
-robot->driveToXY(100,100);
-wait(200, msec);
-intake_stop();
-
-// 
-// new
-robot->TurnAngle(270);
+robot->driveToXY(129.5,72);
 wait(20, msec);
-robot->default_drive_max = 5;
-robot->driveToXY(97, 130);
-robot->default_drive_max = max_speed;
+hiStakeScore();
 wait(20, msec);
-clampFunc();
-wait(20, msec);
-robot->TurnAngle(200);
-robot->default_drive_max = 10;
-robot->driveToXY(135, 135);
-//robot->DriveDistance(-19, 1.5, 0, 8, 1, 2, 0, 5, 1000);
-wait(20, msec);
-clampFunc();
-wait(200, msec);
-robot->default_drive_max = max_speed;
-robot->driveToXY(90, 124);
-wait(20, msec);
-robot->TurnAngle(0);
-robot->default_drive_max = 5;
-wait(20, msec);
-robot->driveToXY(70, robot->getY());
-wait(20, msec);
-robot->default_drive_max = max_speed;
-clampFunc();
-wait(20, msec);
+robot->driveToXY(115,71);
 score();
+lowerMech();
+robot->turnToXY(117.8,93.7);
+robot->driveToXY(117.8,93.7);
 wait(20, msec);
-
-robot->driveToXY(34, robot->getY());
-
-robot->TurnAngle(330);
-wait(20, msec);
-robot->default_drive_max = 10;
-robot->driveToXY(5, 135);
-clampFunc();
-robot->DriveDistance(15, 1.5, 0, 8, 1, 2, 0, 5, 1000);
-
-
+robot->turnToXY(94.7, 98.5);
+robot->driveToXY(94.7, 98.5);
+wait(100, msec);
+score();
+intake_spin_fwd();
+robot->driveToXY(70, 75);
 }
 
 
@@ -1014,7 +916,7 @@ switch(autonId)
   case 6: {
     // skills
     setAlliance(RED);
-    robot->setStartingPoint(70, 11, 90);
+    robot->setStartingPoint(70, 10.5, 90);
     vex::task Position(updatePos);
     skills(); 
   break;
