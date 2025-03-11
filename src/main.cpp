@@ -824,15 +824,16 @@ wait(20, msec);
 hiStakeScore();
 score();
 wait(20, msec);
+robot->default_drive_max = 6;
 robot->driveToXY(93.4,46.3);
 wait(20, msec);
 robot->driveToXY(115,71);
 wait(20, msec);
-robot->turnToXY(129.5,71.5);
+robot->turnToXY(140,71.5); 
 wait(20, msec);
 intake_spin_fwd();
 robot->default_drive_max = 6;
-robot->driveToXY(129,71.5);
+robot->driveToXY(140,71.5, 300); //high stake
 wait(20, msec);
 hiStakeScore();
 wait(20, msec);
@@ -857,7 +858,7 @@ robot->driveToXY(127.5, 23);
 wait(20, msec);
 robot->TurnAngle(100);
 wait(20, msec);
-robot->driveToXY(129,16);
+robot->driveToXY(132,15);
 wait(20, msec);
 score();
 clampFunc();
@@ -877,16 +878,18 @@ robot->turnToXY(42.5,41);
 wait(20, msec);
 hiStakeScore();
 wait(20, msec);
+robot->default_drive_max = 6;
+
 robot->driveToXY(42.5,41);
 intake_spin_fwd();
 wait(20, msec);
 robot->driveToXY(20, 70);
 wait(20, msec);
-robot->turnToXY(4,72.5);
-robot->default_drive_max = 6;
+robot->turnToXY(0,72);
+//robot->default_drive_max = 6;
 intake_spin_fwd();
 wait(20, msec);
-robot->driveToXY(7.5, 72.5); // high stake.
+robot->driveToXY(0, 72, 300); // high stake with timeout
 wait(20, msec);
 hiStakeScore();
 wait(20, msec);
@@ -918,20 +921,34 @@ robot->default_drive_max = 10;
 
 // enable stopper and collect first ring
 stopWhenColorSeen();
+score();
 robot->driveToXY(22, 92); 
 wait(20, msec);
 // turn to second, enable intake and go
-robot->turnToXY(48, 92);
+robot->turnToXY(44.5, 93);
 wait(20, msec);
 intake_spin_fwd();
-robot->driveToXY(48, 92); 
-
-/*robot->driveToXY(24, 72); 
-robot->driveToXY(52, 122); 
-robot->turnToXY(17, 134); 
-robot->driveToXY(17, 134); 
+robot->driveToXY(44.5, 93); 
+wait(20, msec);
+robot->TurnAngle(224);
+wait(20, msec);
+robot->default_drive_max = 6;
+robot->driveToXY(65.5, 116.2); 
+clampFunc();
+wait(20, msec);
+score();
+wait(500, msec);
+robot->default_drive_max = 10;
+robot->TurnAngle(140);
+clampFunc();
+robot->turnToXY(17, 133); 
+robot->driveToXY(17, 137); 
 robot->driveToXY(88, 133); 
-robot->driveToXY(118, 140); */
+robot->driveToXY(118, 137); 
+
+hangRobot();
+robot->driveToXY(87, 80); 
+
 }
 
 /*---------------------------------------------------------------------------*/
