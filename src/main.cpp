@@ -810,6 +810,9 @@ void auton_blue_left(bool stake = false) {
 
 }
 
+
+
+
 // Skills. ID=6
 void skills() {
 float max_speed = 9;
@@ -857,13 +860,15 @@ robot->default_drive_max = max_speed;
 robot->driveToXY(115,71);
 score();
 lowerMech();
-robot->turnToXY(117.8,93.7);
-robot->driveToXY(117.8,93.7);
+
+//robot->turnToXY(117.8,93.7);
+//robot->driveToXY(117.8,93.7);
 wait(20, msec);
-robot->default_drive_max = 7;
-robot->TurnAngle(275);
+//robot->default_drive_max = 7;
+//robot->TurnAngle(275);
+robot->turnToXY(116,14);
 robot->driveToXY(116,14);
-robot->default_drive_max = max_speed;
+//robot->default_drive_max = max_speed;
 wait(20, msec);
 robot->driveToXY(115.5,26);
 wait(20, msec);
@@ -877,6 +882,7 @@ wait(20, msec);
 score();
 clampFunc();
 wait(20, msec);
+// Goal unclamped, drive to the left side
 robot->driveToXY(70,22);
 wait(20, msec);
 robot->turnToXY(94,22);
@@ -910,9 +916,9 @@ robot->driveToXY(20, 72);
 lowerMech();
 wait(20, msec);
 score();
-robot->turnToXY(18.3, 92); 
-robot->driveToXY(18.3, 92); 
-wait(20, msec);
+//robot->turnToXY(18.3, 92); 
+//robot->driveToXY(18.3, 92); 
+//wait(20, msec);
 robot->turnToXY(22, 12); 
 robot->driveToXY(22, 12); 
 wait(20, msec);
@@ -926,16 +932,155 @@ wait(20, msec);
 robot->driveToXY(11, 12); 
 score();
 clampFunc();
+// goal uclamped, go and collect two more rings
 wait(20, msec);
 robot->default_drive_max = 10;
-robot->driveToXY(24, 72); 
+
+// enable stopper and collect first ring
+stopWhenColorSeen();
+robot->driveToXY(22, 92); 
+wait(20, msec);
+// turn to second, enable intake and go
+robot->turnToXY(48, 92);
+wait(20, msec);
+intake_spin_fwd();
+robot->driveToXY(48, 92); 
+
+/*robot->driveToXY(24, 72); 
 robot->driveToXY(52, 122); 
 robot->turnToXY(17, 134); 
 robot->driveToXY(17, 134); 
 robot->driveToXY(88, 133); 
-robot->driveToXY(118, 140);
+robot->driveToXY(118, 140); */
 }
 
+
+// Skills. ID=6. 45 points working 
+void skills45() {
+  float max_speed = 9;
+  robot->default_drive_exit_error = 2;
+  robot->default_drive_max = max_speed;
+  robot->default_heading_max = 10;
+  
+  
+  // do not score blue rings
+  enableBypass();
+  
+  // score alliance stake
+  score();
+  wait(600, msec);
+  score();
+  robot->default_drive_max = 7;
+  robot->driveToXY(78,20);
+  wait(20, msec);
+  robot->TurnAngle(180);
+  robot->default_drive_max = 6;
+  wait(20, msec);
+  robot->driveToXY(94,25);
+  wait(20, msec);
+  clampFunc();
+  wait(20, msec);
+  robot->default_drive_max = max_speed;
+  robot->turnToXY(93.4,46.3);
+  wait(20, msec);
+  hiStakeScore();
+  score();
+  wait(20, msec);
+  robot->driveToXY(93.4,46.3);
+  wait(20, msec);
+  robot->driveToXY(115,71);
+  wait(20, msec);
+  robot->turnToXY(129.5,71.5);
+  wait(20, msec);
+  intake_spin_fwd();
+  robot->default_drive_max = 6;
+  robot->driveToXY(129,71.5);
+  wait(20, msec);
+  hiStakeScore();
+  wait(20, msec);
+  robot->default_drive_max = max_speed;
+  robot->driveToXY(115,71);
+  score();
+  lowerMech();
+  robot->turnToXY(117.8,93.7);
+  robot->driveToXY(117.8,93.7);
+  wait(20, msec);
+  robot->default_drive_max = 7;
+  robot->TurnAngle(275);
+  robot->driveToXY(116,14);
+  robot->default_drive_max = max_speed;
+  wait(20, msec);
+  robot->driveToXY(115.5,26);
+  wait(20, msec);
+  robot->turnToXY(127.5, 23);
+  robot->driveToXY(127.5, 23);
+  wait(20, msec);
+  robot->TurnAngle(100);
+  wait(20, msec);
+  robot->driveToXY(129,16);
+  wait(20, msec);
+  score();
+  clampFunc();
+  wait(20, msec);
+  robot->driveToXY(70,22);
+  wait(20, msec);
+  robot->turnToXY(94,22);
+  robot->default_drive_max = 6;
+  wait(20, msec);
+  robot->driveToXY(45,22);
+  robot->default_drive_max = max_speed;
+  clampFunc();
+  score();
+  wait(20, msec);
+  robot->turnToXY(42.5,41);
+  wait(20, msec);
+  hiStakeScore();
+  wait(20, msec);
+  robot->driveToXY(42.5,41);
+  intake_spin_fwd();
+  wait(20, msec);
+  robot->driveToXY(20, 70);
+  wait(20, msec);
+  robot->turnToXY(4,72.5);
+  robot->default_drive_max = 6;
+  intake_spin_fwd();
+  wait(20, msec);
+  robot->driveToXY(7.5, 72.5); // high stake.
+  wait(20, msec);
+  hiStakeScore();
+  wait(20, msec);
+  robot->default_drive_max = max_speed;
+  wait(20, msec);
+  robot->driveToXY(20, 72);
+  lowerMech();
+  wait(20, msec);
+  score();
+  robot->turnToXY(18.3, 92); 
+  robot->driveToXY(18.3, 92); 
+  wait(20, msec);
+  robot->turnToXY(22, 12); 
+  robot->driveToXY(22, 12); 
+  wait(20, msec);
+  robot->driveToXY(22, 24); 
+  wait(20, msec);
+  robot->turnToXY(8, 22); 
+  robot->driveToXY(8, 22); 
+  wait(20, msec);
+  robot->TurnAngle(67);
+  wait(20, msec);
+  robot->driveToXY(11, 12); 
+  score();
+  clampFunc();
+  wait(20, msec);
+  robot->default_drive_max = 10;
+  robot->driveToXY(24, 72); 
+  robot->driveToXY(52, 122); 
+  robot->turnToXY(17, 134); 
+  robot->driveToXY(17, 134); 
+  robot->driveToXY(88, 133); 
+  robot->driveToXY(118, 140);
+  }
+  
 
 void autonomous(void) {
 autonEnabled = true;
