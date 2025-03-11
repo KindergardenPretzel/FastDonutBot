@@ -41,7 +41,8 @@ rotation StakeElevation = rotation(PORT15);
 float power_pct = 0.8;
 // define your global instances of motors and other devices here
 
-// Inertial, ForwardTrackingWheel, SideTrackingWheel, LeftFrontMotor, LeftBackMotor, RightFrontMotor, RightBackMotor, trackingIntchesPerRevolution
+// Robot Class Constructor
+// (Inertial, ForwardTrackingWheel, SideTrackingWheel, LeftFrontMotor, LeftBackMotor, RightFrontMotor, RightBackMotor, trackingIntchesPerRevolution)
 std::shared_ptr<DriveBase> robot(new DriveBase(PORT13, -PORT11, -PORT12, -PORT1, -PORT2, PORT3, PORT4, 6.28));
 
 bool isBeltSpinning = false;
@@ -51,32 +52,16 @@ int autonId = 6;
 bool isBypassEnabled = false;
 bool stake_enable = true;
 
-float redStakeApproachDist = 5;
-float blueStakeApproachDist = 5.1;
-//bool isScoringDown = true;
-//bool isArmed = false;
-#define JOYSTICK_DEADZONE 8
-
-int getExpoValue(int joystickValue)
-{
-    int output = 0;
-    // Ignore joystick input if it's too small
-    if(abs(joystickValue) > JOYSTICK_DEADZONE){
-      // Direction is either 1 or -1, based on joystick value
-      int direction = abs(joystickValue) / joystickValue;
-      // Plug joystick value into exponential function
-      output = direction * (1.2 * pow(1.0356, abs(joystickValue)) - 1.2 + 0.2 * abs(joystickValue));
-    }
-    return output;
-}
 
 void score();
 
+// colors from color sensor
 enum Alliance {
   RED = 16711680,
   BLUE = 255
 };
 
+// high stake scoring mech positions
 enum HiStakesEnum {
   Down,
   Armed,
@@ -87,10 +72,6 @@ Alliance OWN;
 Alliance OPPOSITE;
 
 HiStakesEnum StakeScorePosition;
-/*enum Colors {
-  OWN = 255, // BLUE 
-  OPPOSITE = 16711680 // RED
-};*/
 
 //opens or closes clamp depending on whether the pneumatic cylynder is out or in
 void clampFunc(){  
@@ -126,7 +107,7 @@ void lift_intake(){
   };
 }
 
-
+//lifts hang using pneumatic cylynder
 void hangRobot(){
   if (!Hang.value()) {
         Hang.set(true);
@@ -162,7 +143,7 @@ void reverseIntake(){
   scoring.stop();
 }
 
-
+// corner clearing arm 
 void armMove()
 {
   if(arm.value())
@@ -175,7 +156,7 @@ void armMove()
   }
 }
 
-
+// color sensor based functions: Stopper, Bypass, HighStake mech stop belt
 int ColorSensing()
 {
   eyeball.setLightPower(50, vex::pct);
@@ -210,6 +191,7 @@ int ColorSensing()
   return 0;
 }
 
+// enable or disable stopper
 void stopWhenColorSeen()
 {
   if (!isStopperEnabled) {
@@ -221,6 +203,7 @@ void stopWhenColorSeen()
 
 }
 
+// enable or disable bypass
 void enableBypass()
 {
   if (!isBypassEnabled) {
@@ -248,14 +231,8 @@ void enableBypass()
 void score(){
   if (!isBeltSpinning)
  {
-//  if (!highStakeLift.value()) {
     intake_spin_fwd(70);
     scoring.spin(forward, 80, vex::pct);
- //   }
- //   else
- //   {
-//      scoring.spin(forward, -50, vex::pct);
-//    }
     isBeltSpinning = true;
   }
   else 
@@ -266,7 +243,7 @@ void score(){
   };
 }
 
-
+// PID for high stake mech positioning
 void hiStakeMechGoToPos(float position, vex::brakeType braking_mode)
 {
       PID arm_pid = PID(0.5, 0.00002, 0, 5, 1, 2, 8, 1000);
@@ -279,6 +256,7 @@ void hiStakeMechGoToPos(float position, vex::brakeType braking_mode)
       wait(100, msec);
 }
 
+// button callback for high stake mech
 void hiStakeScore(){
     if(StakeScorePosition == Armed){
       hiStakes.setVelocity(40,pct);
@@ -294,6 +272,7 @@ void hiStakeScore(){
     
 }
 
+//lower high stake mech
 void lowerMech(){
   if (StakeScorePosition == Armed || StakeScorePosition == Scoring) {
       hiStakeMechGoToPos(0, vex::coast);
@@ -305,7 +284,7 @@ void lowerMech(){
   }
 }
 
-//task that updates the robots position
+//task that updates the robots position using odometry
 int updatePos()
 {
     while(true)
@@ -316,38 +295,24 @@ int updatePos()
     return(0);
 }
 
-/*---------------------------------------------------------------------------*/
-/*                          Pre-Autonomous Functions                         */
-/*                                                                           */
-/*  You may want to perform some actions before the competition starts.      */
-/*  Do them in the following function.  You must return from this function   */
-/*  or the autonomous and usercontrol tasks will not be started.  This       */
-/*  function is only called once after the V5 has been powered on and        */
-/*  not every time that the robot is disabled.                               */
-/*---------------------------------------------------------------------------*/
 
-//prints info on the brain screen
+//prints info on the brain screen (x,y,angle, stopper, bypass, clamp)
 int ShowMeInfo(){
   Brain.Screen.setFont(monoM);
   Brain.Screen.setPenColor(red);
   float heading_angle;
   while(true) {
-    Brain.Screen.setCursor(2,2);
-    Brain.Screen.print("PosHiStake: %f", StakeElevation.position(vex::deg));
+    //Brain.Screen.setCursor(2,2);
+    //Brain.Screen.print("PosHiStake: %f", StakeElevation.position(vex::deg));
 
     Brain.Screen.setCursor(3,2);
     Brain.Screen.print("X: %f, Y: %f", robot->getX(), robot->getY());
 
     Brain.Screen.setCursor(4,2);
     heading_angle = robot->getHeading();
-    //if (heading_angle > 180) { heading_angle -= 360;};
     Brain.Screen.print("Heading: %f", heading_angle);
 
-    Brain.Screen.setCursor(5,2);
-    Brain.Screen.print("X1: %f, Y1: %f", robot->x1, robot->y1);
 
-    //Brain.Screen.setCursor(6,2);
-    //Brain.Screen.print("Side Tracker value: %f", robot->getSidePosition());
   
   if (clamp.value()) 
   {
@@ -375,6 +340,7 @@ int ShowMeInfo(){
   return 0;
 }
 
+// Auton Selector ++/--      
 void auton_select() {
   autonId ++;
   if(autonId > 8)
@@ -385,10 +351,15 @@ void auton_select() {
   Controller1.Screen.clearLine(3);
 }
 
+// Stake/No Stake toggle  
 void stake_select() {
   stake_enable = !stake_enable;
 }
 
+
+/*---------------------------------------------------------------------------*/
+/*             Pre Autonomous Setup and Auton Selector                       */
+/*---------------------------------------------------------------------------*/
 void pre_auton(void) {
   // auton selector callbacks
   auton_switch.pressed(auton_select);
@@ -517,15 +488,14 @@ void pre_auton(void) {
 
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
-/*                              Autonomous Task                              */
+/*                              Autonomous                                   */
 /*                                                                           */
-/*  This task is used to control your robot during the autonomous phase of   */
-/*  a VEX Competition.                                                       */
-/*                                                                           */
-/*  You must modify the code to add your own robot specific commands here.   */
 /*---------------------------------------------------------------------------*/
 
- // blue left side for elimination. ID=7
+
+/*---------------------------------------------------------------------------*/
+/*             blue left side for elimination. ID=7                        */
+/*---------------------------------------------------------------------------*/
 void auton_blue_left_elimination(bool stake = true) {
    enableBypass();
 
@@ -589,13 +559,18 @@ void test_auton(bool stake = true) {
 
  }
 
- // red right side for elimination. ID=8
+
+/*---------------------------------------------------------------------------*/
+/*             red right side for elimination. ID=8                          */
+/*---------------------------------------------------------------------------*/
 void auton_red_right_elimination(bool stake = true){
 
 
 }
 
-// red right side for qualification. ID=2
+/*---------------------------------------------------------------------------*/
+/*             red right side for qualification. ID=2                        */
+/*---------------------------------------------------------------------------*/
 void auton_red_right(bool stake = true) {
 
   
@@ -643,8 +618,9 @@ void auton_red_right(bool stake = true) {
 
 }
 
-
-// blue right side for qualification. ID=4
+/*---------------------------------------------------------------------------*/
+/*             blue right side for qualification. ID=4                       */
+/*---------------------------------------------------------------------------*/
 void auton_blue_right(bool stake = true)
 {
  
@@ -707,7 +683,10 @@ void auton_blue_right(bool stake = true)
   hangRobot();
 }
 
-// red left side for qualification and elimination. ID=1
+
+/*---------------------------------------------------------------------------*/
+/*             red left side for qualification and elimination. ID=1         */
+/*---------------------------------------------------------------------------*/
 void auton_red_left(bool stake = true) {
   
 float max_speed = 9;
@@ -763,7 +742,10 @@ wait(20, msec);
 robot->driveToXY(42,62.5);
 }
 
-// blue left side qualification. ID=3
+
+/*---------------------------------------------------------------------------*/
+/*                              blue left side qualification. ID=3           */
+/*---------------------------------------------------------------------------*/
 void auton_blue_left(bool stake = false) {
   float max_speed = 9;
   robot->default_drive_exit_error = 2;
@@ -811,19 +793,17 @@ void auton_blue_left(bool stake = false) {
 }
 
 
-
-
+/*---------------------------------------------------------------------------*/
+/*                              Skills in progress, Max 50?                  */
+/*---------------------------------------------------------------------------*/
 // Skills. ID=6
 void skills() {
 float max_speed = 9;
 robot->default_drive_exit_error = 2;
 robot->default_drive_max = max_speed;
 robot->default_heading_max = 10;
-
-
 // do not score blue rings
 enableBypass();
-
 // score alliance stake
 score();
 wait(600, msec);
@@ -954,6 +934,9 @@ robot->driveToXY(88, 133);
 robot->driveToXY(118, 140); */
 }
 
+/*---------------------------------------------------------------------------*/
+/*                              Tested Skills, Max 45                        */
+/*---------------------------------------------------------------------------*/
 
 // Skills. ID=6. 45 points working 
 void skills45() {
@@ -971,6 +954,7 @@ void skills45() {
   wait(600, msec);
   score();
   robot->default_drive_max = 7;
+  // first mogo
   robot->driveToXY(78,20);
   wait(20, msec);
   robot->TurnAngle(180);
@@ -981,6 +965,7 @@ void skills45() {
   clampFunc();
   wait(20, msec);
   robot->default_drive_max = max_speed;
+  // enable high stake mech and take the ring. 
   robot->turnToXY(93.4,46.3);
   wait(20, msec);
   hiStakeScore();
@@ -992,6 +977,7 @@ void skills45() {
   wait(20, msec);
   robot->turnToXY(129.5,71.5);
   wait(20, msec);
+  // intake the ring in front of high stake
   intake_spin_fwd();
   robot->default_drive_max = 6;
   robot->driveToXY(129,71.5);
@@ -1082,8 +1068,12 @@ void skills45() {
   }
   
 
+/*---------------------------------------------------------------------------*/
+/*                              Autonomous Competition Callback              */
+/*---------------------------------------------------------------------------*/
+
 void autonomous(void) {
-autonEnabled = true;
+autonEnabled = true; // exit from auton selector
 Controller1.Screen.clearLine(3);
 
 switch(autonId)
@@ -1178,32 +1168,17 @@ void usercontrol(void) {
   {
     Hang.set(false);
   }
-
+  robot->SetBrake(coast);
   while (1) {
-    // prev version. Mar 6
-    //float throttle = getExpoValue(Controller1.Axis3.value());
-    //float turn = getExpoValue(Controller1.Axis1.value()) * 0.4;
     
-    // mnew pilons
-    double turn = curveJoystick(Controller1.Axis1.position(percent), 5.1); //Get curvature according to settings [-100,100]
-    double throttle = curveJoystick(Controller1.Axis3.position(percent), 5.1); //Get curvature according to settings [-100,100]
-
-    
-    robot->SetBrake(coast);
+    // new joystick curvatire (Pilons team)
+    double turn = curveJoystick(Controller1.Axis1.position(percent), 5.1); 
+    double throttle = curveJoystick(Controller1.Axis3.position(percent), 5.1); 
+ 
     robot->LeftMotors.spin(fwd, throttle+turn, vex::pct);
     robot->RightMotors.spin(fwd, throttle-turn, vex::pct);
 
-    //float throttle = Controller1.Axis3.position();
-    //float turn = Controller1.Axis1.position() * 0.7 ;
-    //if (fabs(throttle) < 5) {throttle = 0; }; 
-    //if (fabs(turn) < 5) { turn = 0; }
-    //robot->LeftMotors.spin(vex::fwd, power_pct * 0.0001 * pow(throttle+turn, 3), vex::pct);
-    //robot->RightMotors.spin(vex::fwd, power_pct * 0.0001 * pow(throttle-turn, 3), vex::pct);
-
-    wait(10, msec); // Sleep the task for a short amount of time to
-                    // prevent wasted resources.
-      //Brain.Screen.setCursor(4,2);
-      //Brain.Screen.print("throttle: %f, turn: %f", throttle, turn);
+    wait(10, msec); 
   }
 }
 
@@ -1211,15 +1186,10 @@ void usercontrol(void) {
 // Main will set up the competition functions and callbacks.
 //
 int main() {
-    
-
-    
-    //hiStakes.resetPosition();
-    StakeElevation.resetPosition();
-    StakeScorePosition = Down;
-    //hiStakes.setBrake(hold);
+  StakeElevation.resetPosition();
+  StakeScorePosition = Down;
   
-     //starts all functions
+  //callback
   Controller1.ButtonL1.pressed(clampFunc);
   Controller1.ButtonL2.pressed(lift_intake);
   Controller1.ButtonR2.pressed(reverseIntake);
@@ -1242,12 +1212,6 @@ int main() {
   // Run the pre-autonomous function.
   pre_auton();
 
-
-  
-
-
-
-  //autonomous();
   // Prevent main from exiting with an infinite loop.
   while (true) {
     wait(100, msec);

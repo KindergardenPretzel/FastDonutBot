@@ -66,8 +66,8 @@ void DriveBase::updatePosition() {
     // convert heading difference to Radians
     float deltaHeadRad = toolbox::degreesToRadians(deltaHead);
 
-    float localX;
-    float localY;
+    //float localX;
+    //float localY;
 
     float localX1;
     float localY1;
@@ -75,15 +75,15 @@ void DriveBase::updatePosition() {
     //calculating distance between robot tracking center
     if (deltaHead==0) {
         // if angle is not changed - then localY and localX is corresponding tracking wheel difference
-        localX = deltaSide;
-        localY = deltaFwd;
+        //localX = deltaSide;
+        //localY = deltaFwd;
         localX1 = -deltaSide;
         localY1 = deltaFwd;
     }
     else{
     // calculate arc chord (h) for side movement and forward movement
-     localX = 2 * sin(deltaHeadRad/2) * ( (deltaSide/deltaHeadRad) - SIDE_DISTANCE);
-     localY = 2 * sin(deltaHeadRad/2) * ( (deltaFwd/deltaHeadRad) - FWD_DISTANCE);
+     //localX = 2 * sin(deltaHeadRad/2) * ( (deltaSide/deltaHeadRad) - SIDE_DISTANCE);
+     //localY = 2 * sin(deltaHeadRad/2) * ( (deltaFwd/deltaHeadRad) - FWD_DISTANCE);
 
     localX1 = 2 * sin(deltaHeadRad/2) * ( (deltaSide/deltaHeadRad) + SIDE_DISTANCE);
     localY1 = 2 * sin(deltaHeadRad/2) * ( (deltaFwd/deltaHeadRad) + FWD_DISTANCE);
@@ -91,6 +91,7 @@ void DriveBase::updatePosition() {
 
     
     // converting localX and localY to polar coordinates
+    /*
     float vector_length;
     float angle_to_vector;
 
@@ -113,7 +114,7 @@ void DriveBase::updatePosition() {
     // updating global X and Y by adding delta
    this->x += deltaX;
    this->y += deltaY;
-
+*/
     // test more precise approach
     this->y1 += localY1 * sin(avgHeadRad);
     this->x1 += localY1 * cos(avgHeadRad);
@@ -146,14 +147,14 @@ void DriveBase::calibrateInertial() {
     };
 }
 
-//return inertial heading in CCW direction to simplify odometry calculation. 0 degrees is positive X-axis direction.
+//return inertial heading in counter-clock-wise direction to simplify odometry calculation. 
+// 0 degrees is positive X-axis direction.
 float DriveBase::getHeading() {
     return std::fmod(360 - this->gyroSensor.heading(vex::degrees), 360);
 }
 
 //sets inertial sensor heading
 void DriveBase::setHeading(double value){
-    //this->gyroSensor.setHeading(value, vex::deg);
     this->gyroSensor.setHeading(std::fmod(360 - value, 360), vex::deg);
 }
 
@@ -170,13 +171,11 @@ void DriveBase::resetSideEncoder(){
 //returns current position of forward tracking sensoir in inches
 float DriveBase::getFwdPosition(){
     return this->fwdRotation.position(vex::rev) * this->inchesPerRev;
-     //return toolbox::fround(this->fwdRotation.position(vex::rev)) * this->inchesPerRev;
 }
 
 //returns current position of side tracking sensoir in inches
 float DriveBase::getSidePosition(){
     return this->sideRotation.position(vex::rev) * this->inchesPerRev;
-    //return toolbox::fround(this->sideRotation.position(vex::rev)) * this->inchesPerRev;
 }
 
 //sets all motor brake-types to the type instucted
@@ -259,7 +258,7 @@ void DriveBase::DriveDistance(float distance, float dest_heading, float Kp, floa
     float heading_correction_speed;
 
     // if heading is specified in negative, convert to global heading [0 - 360]
-    if (dest_heading < 0) { dest_heading += 360; };
+    //if (dest_heading < 0) { dest_heading += 360; };
 
     do
     {   
@@ -374,12 +373,8 @@ void DriveBase::turnToXY(float destX, float destY)
 
 void DriveBase::driveStraightToXY(float destX, float destY)
 {
-float distance_to_drive = sqrt(pow(destX-this->getX(),2) + pow(destY-this->getY(),2));
-    float currX = this->getX();
-    float currY = this->getY();
-    float angle_to_turn = toolbox::radiansToDegrees(atan2(destY - currY, destX - currX));  
-    this->TurnAngle(angle_to_turn);
-    this->DriveDistance(distance_to_drive, angle_to_turn);
+    this->turnToXY(destX, destY);
+    this->driveToXY(destX, destY);
 }
 
 
@@ -421,17 +416,6 @@ void DriveBase::driveToXY(float destX, float destY, float maxOut, int timeout, b
     // find new Y for virtual point using line equation
     virtY = ((destY - currY) / (destX - currX)) * (virtX - currX) + currY;
     
-    /* std::cout << "srcX:" << currX << std::endl;
-    std::cout << "srcY:" << currY << std::endl;
-    std::cout << "dstX:" << destX << std::endl;
-    std::cout << "dstY:" << destY << std::endl;
-    std::cout << "hypotToAxisAngle RAD: " << hypotToAxisAngle << std::endl;
-    std::cout << "hypotToAxisAngle: " << (hypotToAxisAngle * 180)/M_PI << std::endl;
-    // 1rad × 180/π
-    std::cout << "####################" << std::endl;
-    */
-
-
     // define PID controllers for Drive and Heading correction
     PID drive_pid = PID(default_drive_Kp, default_drive_Ki, default_drive_Kd, default_drive_limit_integral, default_drive_exit_error, default_drive_min, maxOut, timeout);
     PID heading_pid = PID(default_heading_Kp, default_heading_Ki, default_heading_Kd, default_heading_limit_integral, default_heading_exit_error, default_heading_min, default_heading_max, default_heading_timeout);
@@ -444,26 +428,16 @@ void DriveBase::driveToXY(float destX, float destY, float maxOut, int timeout, b
         // check if robot crossed imaginary line  perpendicular to staring angle via destination point X,Y
         if ((destY-currY) * cos(hypotToAxisAngle) <= (destX - currX) * -sin(hypotToAxisAngle) + this->default_drive_exit_error+0.3) 
         {
-
-            std::cout << "break !" << std::endl;
-            std::cout << "X:" << this->getX() << std::endl;
-            std::cout << "Y:" << this->getY() << std::endl;
-            std::cout << "####################" << std::endl;
-
             break;
         }
-
 
         // Calculate distance to the point using pythagorean theorem.
         error = sqrt(pow(destX-currX,2) + pow(destY-currY,2));
         speed = drive_pid.calculate(error);
 
         // calculate heading correction angle using atan2 function. X,Y flipped, so we calculating angle to Y axis
-        //destHeading = toolbox::radiansToDegrees(atan2(destY - currY, destX - currX));
         destHeading = toolbox::radiansToDegrees(atan2(virtY - currY, virtX - currX));
-        //std::cout <<" destHeading: " << destHeading << std::endl; 
         headingError = destHeading - this->getHeading();
-        //std::cout <<" headingError: " << headingError << std::endl; 
 
         float optimizedAngle = turnAngleOptimization(headingError);
 
