@@ -827,13 +827,12 @@ wait(20, msec);
 robot->default_drive_max = 6;
 robot->driveToXY(93.4,46.3);
 wait(20, msec);
-robot->driveToXY(115,71);
+robot->driveToXY(115,70.5);
 wait(20, msec);
-robot->turnToXY(140,71.5); 
+robot->turnToXY(140,71.2); 
 wait(20, msec);
 intake_spin_fwd();
-robot->default_drive_max = 6;
-robot->driveToXY(140,71.5, 300); //high stake
+robot->driveToXY(132, 72, 6, 700, false); //high stake. Actual 72.2 (0.6 more than) should be 2 less
 wait(20, msec);
 hiStakeScore();
 wait(20, msec);
@@ -841,12 +840,7 @@ robot->default_drive_max = max_speed;
 robot->driveToXY(115,71);
 score();
 lowerMech();
-
-//robot->turnToXY(117.8,93.7);
-//robot->driveToXY(117.8,93.7);
 wait(20, msec);
-//robot->default_drive_max = 7;
-//robot->TurnAngle(275);
 robot->turnToXY(116,14);
 robot->driveToXY(116,14);
 //robot->default_drive_max = max_speed;
@@ -883,13 +877,13 @@ robot->default_drive_max = 6;
 robot->driveToXY(42.5,41);
 intake_spin_fwd();
 wait(20, msec);
-robot->driveToXY(20, 70);
+robot->driveToXY(20, 71.3);
 wait(20, msec);
-robot->turnToXY(0,72);
+robot->turnToXY(0, 72);
 //robot->default_drive_max = 6;
 intake_spin_fwd();
 wait(20, msec);
-robot->driveToXY(0, 72, 300); // high stake with timeout
+robot->driveToXY(7.5, 72); // high stake with timeout
 wait(20, msec);
 hiStakeScore();
 wait(20, msec);
@@ -899,9 +893,7 @@ robot->driveToXY(20, 72);
 lowerMech();
 wait(20, msec);
 score();
-//robot->turnToXY(18.3, 92); 
-//robot->driveToXY(18.3, 92); 
-//wait(20, msec);
+
 robot->turnToXY(22, 12); 
 robot->driveToXY(22, 12); 
 wait(20, msec);
@@ -910,9 +902,9 @@ wait(20, msec);
 robot->turnToXY(8, 22); 
 robot->driveToXY(8, 22); 
 wait(20, msec);
-robot->TurnAngle(67);
+robot->TurnAngle(76);
 wait(20, msec);
-robot->driveToXY(11, 12); 
+robot->driveToXY(8, 15); 
 score();
 clampFunc();
 // goal uclamped, go and collect two more rings
@@ -925,27 +917,25 @@ score();
 robot->driveToXY(22, 92); 
 wait(20, msec);
 // turn to second, enable intake and go
-robot->turnToXY(44.5, 93);
+robot->turnToXY(49, 96);
 wait(20, msec);
 intake_spin_fwd();
-robot->driveToXY(44.5, 93); 
+robot->driveToXY(49, 96); 
 wait(20, msec);
-robot->TurnAngle(224);
+robot->TurnAngle(233);
 wait(20, msec);
 robot->default_drive_max = 6;
-robot->driveToXY(65.5, 116.2); 
+robot->driveToXY(66, 121); 
 clampFunc();
 wait(20, msec);
 score();
 wait(500, msec);
 robot->default_drive_max = 10;
-robot->TurnAngle(140);
+robot->TurnAngle(134);
 clampFunc();
-robot->turnToXY(17, 133); 
-robot->driveToXY(17, 137); 
+robot->driveToXY(17, 131); 
 robot->driveToXY(88, 133); 
 robot->driveToXY(118, 137); 
-
 hangRobot();
 robot->driveToXY(87, 80); 
 
