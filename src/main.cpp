@@ -497,12 +497,6 @@ void pre_auton(void) {
 /*             blue left side for elimination. ID=7                        */
 /*---------------------------------------------------------------------------*/
 void auton_blue_left_elimination(bool stake = true) {
-   enableBypass();
-
-}
-
-
-void test_auton(bool stake = true) {
   float max_speed = 9;
   robot->default_drive_exit_error = 2;
   robot->default_drive_max = max_speed;
@@ -537,26 +531,31 @@ void test_auton(bool stake = true) {
   clampFunc();
   wait(200, msec);
   robot->default_drive_max = max_speed;
-  robot->TurnAngle(160);
   wait(20, msec);
   score();
-  robot->driveToXY(23, 50);
+  robot->driveStraightToXY(23, 49);
   wait(20, msec);
-  robot->driveToXY(17, 15);
+  robot->driveStraightToXY(17, 14.5);
   wait(20, msec);
   robot->TurnAngle(230);
   wait(150, msec);
   armMove();
-  wait(20, msec);
-  robot->driveToXY(25, 21);
-  wait(150, msec);
+  wait(200, msec);
+  robot->driveToXY(25, 20.7);
+  wait(200, msec);
   armMove();
-  wait(20, msec);
-  float curr_head = robot->getHeading();
-  robot->TurnAngle(curr_head - 20);
-  robot->DriveDistance(10);
-  wait(20, msec);
+  //wait(20, msec);
+  //float curr_head = robot->getHeading();
+  //robot->TurnAngle(curr_head - 20);
+  //robot->DriveDistance(10);
+  //wait(20, msec);
 
+
+}
+
+
+void test_auton(bool stake = true) {
+ 
  }
 
 
@@ -564,7 +563,53 @@ void test_auton(bool stake = true) {
 /*             red right side for elimination. ID=8                          */
 /*---------------------------------------------------------------------------*/
 void auton_red_right_elimination(bool stake = true){
-
+  float max_speed = 9;
+  robot->default_drive_exit_error = 2;
+  robot->default_drive_max = max_speed;
+  robot->default_heading_max = 10;
+  
+  // do not score blue rings
+  enableBypass();
+  if (stake) {
+   robot->turnToXY(70,2); 
+   wait(20, msec);
+   hiStakeMechGoToPos(170, coast);
+   wait(100, msec);
+   hiStakeMechGoToPos(0, coast);
+   wait(20, msec);
+   robot->turnToXY(70,24);
+   wait(20, msec);
+   lift_intake();
+   robot->driveToXY(74,20, 700);
+   wait(20, msec);
+   lift_intake();
+   wait(10, msec);
+   intake_spin_fwd();
+   wait(200, msec);
+   robot->TurnAngle(218);
+   wait(20, msec);
+  }
+  robot->default_drive_max = 6;
+  robot->driveToXY(91,47); /// change for blue right 
+  wait(20, msec);
+  intake_stop();
+  clampFunc();
+  wait(200, msec);
+  robot->default_drive_max = max_speed;
+  robot->TurnAngle(10);
+  wait(20, msec);
+  score();
+  robot->driveToXY(120,50);
+  wait(20, msec);
+  robot->driveStraightToXY(130,18);
+  wait(20, msec);
+  robot->TurnAngle(316);
+  wait(20, msec);
+  armMove();
+  wait(200, msec);
+  //robot->DriveDistance(-10);
+  //wait(500, msec);
+  //armMove();
 
 }
 
@@ -829,15 +874,15 @@ robot->driveToXY(93.4,46.3);
 wait(20, msec);
 robot->driveToXY(115,70.5);
 wait(20, msec);
-robot->turnToXY(140,71.2); 
+robot->turnToXY(140,70.8); 
 wait(20, msec);
 intake_spin_fwd();
-robot->driveToXY(132, 72, 6, 700, false); //high stake. Actual 72.2 (0.6 more than) should be 2 less
+robot->driveToXY(132, 70.8, 6, 700, false); //high stake. Actual 72.2 (0.6 more than) should be 2 less
 wait(20, msec);
 hiStakeScore();
 wait(20, msec);
 robot->default_drive_max = max_speed;
-robot->driveToXY(115,71);
+robot->driveToXY(115,robot->getY());
 score();
 lowerMech();
 wait(20, msec);
@@ -874,22 +919,22 @@ hiStakeScore();
 wait(20, msec);
 robot->default_drive_max = 6;
 
-robot->driveToXY(42.5,41);
+robot->driveToXY(43.5,41);
 intake_spin_fwd();
 wait(20, msec);
-robot->driveToXY(20, 71.3);
+robot->driveToXY(24, 71.3);
 wait(20, msec);
-robot->turnToXY(0, 72);
+robot->turnToXY(0, 72.5);
 //robot->default_drive_max = 6;
 intake_spin_fwd();
 wait(20, msec);
-robot->driveToXY(7.5, 72); // high stake with timeout
+robot->driveToXY(8.5, 72.5, 6, 500, false); // high stake with timeout
 wait(20, msec);
 hiStakeScore();
 wait(20, msec);
 robot->default_drive_max = max_speed;
 wait(20, msec);
-robot->driveToXY(20, 72);
+robot->driveToXY(20, robot->getY());
 lowerMech();
 wait(20, msec);
 score();
@@ -915,17 +960,18 @@ robot->default_drive_max = 10;
 stopWhenColorSeen();
 score();
 robot->driveToXY(22, 92); 
-wait(20, msec);
+wait(300, msec);
 // turn to second, enable intake and go
 robot->turnToXY(49, 96);
-wait(20, msec);
+wait(100, msec);
 intake_spin_fwd();
 robot->driveToXY(49, 96); 
 wait(20, msec);
 robot->TurnAngle(233);
 wait(20, msec);
 robot->default_drive_max = 6;
-robot->driveToXY(66, 121); 
+robot->driveToXY(70, 121); 
+wait(20, msec);
 clampFunc();
 wait(20, msec);
 score();
@@ -934,10 +980,14 @@ robot->default_drive_max = 10;
 robot->TurnAngle(134);
 clampFunc();
 robot->driveToXY(17, 131); 
-robot->driveToXY(88, 133); 
-robot->driveToXY(118, 137); 
+robot->driveToXY(88, 130); 
+robot->driveToXY(123, 133); 
+wait(20, msec);
+robot->driveToXY(94, 94); 
 hangRobot();
-robot->driveToXY(87, 80); 
+wait(20, msec);
+robot->default_drive_max = 12;
+robot->driveStraightToXY(72, 72);
 
 }
 
@@ -1136,7 +1186,7 @@ switch(autonId)
   case 7: {
     // blue left elim
     setAlliance(BLUE);
-    robot->setStartingPoint(58, 12, 0);
+    robot->setStartingPoint(56, 12, 0);
     vex::task Position(updatePos);
     auton_blue_left_elimination(stake_enable);
   break;
@@ -1144,7 +1194,7 @@ switch(autonId)
   case 8: {
     //red right elim
     setAlliance(RED);
-    robot->setStartingPoint(83, 12, 180);
+    robot->setStartingPoint(84, 12, 180);
     vex::task Position(updatePos);
     auton_red_right_elimination(stake_enable);
   break;
