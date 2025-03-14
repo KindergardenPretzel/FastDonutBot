@@ -260,7 +260,7 @@ void hiStakeMechGoToPos(float position, vex::brakeType braking_mode)
 void hiStakeScore(){
     if(StakeScorePosition == Armed){
       hiStakes.setVelocity(40,pct);
-      hiStakes.spinFor(165, deg, false);
+      hiStakes.spinFor(115, deg, false);
       wait(700,msec);
       hiStakes.stop(hold);
       StakeScorePosition = Scoring;
@@ -505,14 +505,13 @@ void auton_blue_left_elimination(bool stake = true) {
   // do not score blue rings
   enableBypass();
   if (stake) {
-  robot->turnToXY(70,2);
-  wait(20, msec);
-  hiStakeMechGoToPos(170, coast);
-  wait(100, msec);
-  hiStakeMechGoToPos(0, coast);
-  wait(20, msec);
+  //robot->turnToXY(70,2);
+  //wait(20, msec);
+  //hiStakeMechGoToPos(170, coast);
+  //wait(100, msec);
+  //hiStakeMechGoToPos(0, coast);
+  //wait(20, msec);
   robot->turnToXY(70,24);
-  //exit(0);
   wait(20, msec);
   lift_intake();
   robot->driveToXY(66, 20, 700);
@@ -571,12 +570,12 @@ void auton_red_right_elimination(bool stake = true){
   // do not score blue rings
   enableBypass();
   if (stake) {
-   robot->turnToXY(70,2); 
-   wait(20, msec);
-   hiStakeMechGoToPos(170, coast);
-   wait(100, msec);
-   hiStakeMechGoToPos(0, coast);
-   wait(20, msec);
+   //robot->turnToXY(70,2); 
+   //wait(20, msec);
+   //hiStakeMechGoToPos(170, coast);
+   //wait(100, msec);
+   //hiStakeMechGoToPos(0, coast);
+   //wait(20, msec);
    robot->turnToXY(70,24);
    wait(20, msec);
    lift_intake();
@@ -627,12 +626,12 @@ void auton_red_right(bool stake = true) {
   // do not score blue rings
   enableBypass();
   if (stake) {
-  robot->turnToXY(70,2);
-  wait(20, msec);
-  hiStakeMechGoToPos(170, coast);
-  wait(100, msec);
-  hiStakeMechGoToPos(0, coast);
-  wait(20, msec);
+  //robot->turnToXY(70,2);
+  //wait(20, msec);
+  //hiStakeMechGoToPos(115, coast);
+  //wait(100, msec);
+  //hiStakeMechGoToPos(0, coast);
+  //wait(20, msec);
   robot->turnToXY(70,24);
   wait(20, msec);
   lift_intake();
@@ -677,12 +676,12 @@ void auton_blue_right(bool stake = true)
   // do not score blue rings
   enableBypass();
   if (stake) {
-   robot->turnToXY(70,2);
-   wait(20, msec);
-   hiStakeMechGoToPos(170, coast);
-   wait(100, msec);
-   hiStakeMechGoToPos(0, coast);
-   wait(20, msec);
+   //robot->turnToXY(70,2);
+   //wait(20, msec);
+   //hiStakeMechGoToPos(115, coast);
+   //wait(100, msec);
+   //hiStakeMechGoToPos(0, coast);
+   //wait(20, msec);
    robot->turnToXY(70,24);
    wait(20, msec);
    lift_intake();
@@ -742,12 +741,12 @@ robot->default_heading_max = 10;
 // do not score blue rings
 enableBypass();
 if (stake) {
- robot->turnToXY(70,2);
- wait(20, msec);
- hiStakeMechGoToPos(170, coast);
- wait(100, msec);
- hiStakeMechGoToPos(0, coast);
- wait(20, msec);
+ //robot->turnToXY(70,2);
+ //wait(20, msec);
+ //hiStakeMechGoToPos(115, coast);
+ //wait(100, msec);
+ //hiStakeMechGoToPos(0, coast);
+ //wait(20, msec);
  robot->turnToXY(70,24);
  wait(20, msec);
  lift_intake();
@@ -800,12 +799,12 @@ void auton_blue_left(bool stake = false) {
   // do not score red rings
   enableBypass();
   if (stake) {
-   robot->turnToXY(70,2);
-   wait(20, msec);
-   hiStakeMechGoToPos(170, coast);
-   wait(100, msec);
-   hiStakeMechGoToPos(0, coast);
-   wait(20, msec);
+   //robot->turnToXY(70,2);
+   //wait(20, msec);
+   //hiStakeMechGoToPos(115, coast);
+   //wait(100, msec);
+   //hiStakeMechGoToPos(0, coast);
+   //wait(20, msec);
    robot->turnToXY(70,24);
    wait(20, msec);
    lift_intake();
