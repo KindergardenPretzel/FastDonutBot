@@ -848,7 +848,7 @@ robot->default_drive_exit_error = 2;
 robot->default_drive_max = max_speed;
 robot->default_heading_max = 10;
 // do not score blue rings
-enableBypass();
+//enableBypass();
 // score alliance stake
 score();
 wait(600, msec);
@@ -1004,7 +1004,7 @@ void skills45() {
   
   
   // do not score blue rings
-  enableBypass();
+  //enableBypass();
   
   // score alliance stake
   score();
