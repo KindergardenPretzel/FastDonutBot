@@ -159,7 +159,7 @@ void armMove()
 // color sensor based functions: Stopper, Bypass, HighStake mech stop belt
 int ColorSensing()
 {
-  eyeball.setLightPower(50, vex::pct);
+  eyeball.setLightPower(75, vex::pct);
   eyeball.setLight(ledState::on);
   int prevVelocity;
   while (true) {
@@ -628,10 +628,10 @@ void auton_red_right(bool stake = true) {
   enableBypass();
   if (stake) {
   robot->turnToXY(70,2);
-  //wait(20, msec);
-  //hiStakeMechGoToPos(170, coast);
-  //wait(100, msechiStakeMechGoToPos);
-  //hiStakeMechGoToPos(0, coast);
+  wait(20, msec);
+  hiStakeMechGoToPos(170, coast);
+  wait(100, msec);
+  hiStakeMechGoToPos(0, coast);
   wait(20, msec);
   robot->turnToXY(70,24);
   wait(20, msec);
@@ -678,11 +678,11 @@ void auton_blue_right(bool stake = true)
   enableBypass();
   if (stake) {
    robot->turnToXY(70,2);
-   //wait(20, msec);
-   //hiStakeMechGoToPos(170, coast);
-   //wait(100, msec);
-   //hiStakeMechGoToPos(0, coast);
-   //wait(20, msec);
+   wait(20, msec);
+   hiStakeMechGoToPos(170, coast);
+   wait(100, msec);
+   hiStakeMechGoToPos(0, coast);
+   wait(20, msec);
    robot->turnToXY(70,24);
    wait(20, msec);
    lift_intake();
@@ -743,10 +743,10 @@ robot->default_heading_max = 10;
 enableBypass();
 if (stake) {
  robot->turnToXY(70,2);
- //wait(20, msec);
- //hiStakeMechGoToPos(170, coast);
- //wait(100, msec);
- //hiStakeMechGoToPos(0, coast);
+ wait(20, msec);
+ hiStakeMechGoToPos(170, coast);
+ wait(100, msec);
+ hiStakeMechGoToPos(0, coast);
  wait(20, msec);
  robot->turnToXY(70,24);
  wait(20, msec);
@@ -801,10 +801,10 @@ void auton_blue_left(bool stake = false) {
   enableBypass();
   if (stake) {
    robot->turnToXY(70,2);
-   //wait(20, msec);
-   //hiStakeMechGoToPos(170, coast);
-   //wait(100, msec);
-   //hiStakeMechGoToPos(0, coast);
+   wait(20, msec);
+   hiStakeMechGoToPos(170, coast);
+   wait(100, msec);
+   hiStakeMechGoToPos(0, coast);
    wait(20, msec);
    robot->turnToXY(70,24);
    wait(20, msec);
